@@ -32,8 +32,8 @@
   },
   "jest": {
     "preset": "jest-expo",
-    "setupFilesAfterEach": [
-      "@testing-library/jest-native/extend-expect"
+    "setupFiles": [
+      "<rootDir>/jest.setup.js"
     ],
     "transformIgnorePatterns": [
       "node_modules/(?!(jest-)?react-native|@react-native|@react-navigation|expo(nent)?|@expo(nent)?/.*|react-clone-referenced-element|@react-native-community|sentry-expo|native-base|@unimodules)"
@@ -43,6 +43,6 @@
       "!src/api.js",
       "!src/Navigator.js"
     ]
-  },
+  }
   "private": true
 }
