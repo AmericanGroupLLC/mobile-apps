@@ -22,9 +22,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: xcodebuild -version
-      - name: Run Swift Package tests
+      # NOTE: `swift test` runs on the macOS host. FitFusionCore intentionally
+      # imports UIKit (MealPhotoRecognizer, NutritionLabelOCR) and
+      # WatchConnectivity (Bridge) — both iOS/watchOS-only. So we test the
+      # package against the iOS Simulator using xcodebuild, which Apple
+      # supports natively for SwiftPM packages since Xcode 14.
+      - name: Run tests on iPhone 15 Simulator
         working-directory: shared/FitFusionCore
-        run: swift test --parallel
+        run: |
+          xcodebuild test \
+            -scheme FitFusionCore-Package \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -enableCodeCoverage YES \
+            CODE_SIGNING_ALLOWED=NO | xcpretty --simple --report junit
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          flags: ios
+          name: ios-package-coverage
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   ios-build:
     name: iOS app build (no signing)

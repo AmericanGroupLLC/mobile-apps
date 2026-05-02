@@ -365,3 +365,45 @@ in distribution/staging-v1.2.0/.
 Yes - the release.yml workflow uploads the AAB to Play Console automatically
 when secrets are set (PLAY_STORE_SERVICE_ACCOUNT_JSON +
 PLAY_STORE_PACKAGE_NAME). See RELEASING.md for the full setup.
+
+---
+
+## 18. CI test strategy for FitFusionCore (audit summary)
+
+The shared Swift Package contains iOS-only / watchOS-only frameworks by
+design. Comprehensive audit of imports inside
+`shared/FitFusionCore/Sources/FitFusionCore/`:
+
+| File | Imports | macOS-host compatible? |
+|---|---|---|
+| AuthStore.swift / Models.swift / APIClient.swift | Foundation, SwiftUI | yes |
+| HealthArticleSeed.swift | Foundation | yes |
+| CloudStore.swift / FriendsStore.swift / ChallengesStore.swift | Foundation, CoreData, CloudKit, Combine | yes (macOS 13+) |
+| BiologicalAgeEngine / BadgesEngine / StreaksEngine / Exercise / WorkoutProgram / LeaderboardClient / AdaptivePlanner | Foundation [+ CoreML] | yes |
+| **WatchConnectivity/Bridge.swift** | Foundation, **WatchConnectivity** | NO (already gated with #if canImport) |
+| PersonalFineTuner.swift | Foundation, CoreML, **BackgroundTasks** | partial (gated with #if os(iOS)) |
+| **MealPhotoRecognizer.swift** | Foundation, **UIKit**, Vision, CoreML | NO |
+| **NutritionLabelOCR.swift** | Foundation, **UIKit**, Vision | NO |
+
+Because UIKit + WatchConnectivity cannot link on the macOS host, `swift test`
+on a macos-14 runner cannot test the package end-to-end. Two options exist:
+
+A. Test on the iOS Simulator via xcodebuild. **(Chosen.)**
+B. Split FitFusionCore into a pure-Swift sub-module + an iOS-specific module.
+
+The CI workflows now run:
+
+`xcodebuild test -scheme FitFusionCore-Package -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest'`
+
+This natively builds the package against an iOS SDK (UIKit/WatchConnectivity
+both link) and runs the test target on the iPhone simulator. macOS host tests
+were dropped from Package.swift and the workflows.
+
+## 19. Known CI caveats
+
+* Codecov upload steps emit a warning when `CODECOV_TOKEN` is unset on a
+  private repo — they are non-fatal (`fail_ci_if_error: false`).
+* Marketing Pages deploy is gated on the configure-pages step succeeding;
+  one-time enable at Settings -> Pages -> Source: GitHub Actions.
+* release.yml Play Store upload is gated on `PLAY_STORE_SERVICE_ACCOUNT_JSON`
+  secret presence; safe to commit before secrets exist.

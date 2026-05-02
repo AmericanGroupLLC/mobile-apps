@@ -6,11 +6,6 @@ let package = Package(
     platforms: [
         .iOS(.v17),
         .watchOS(.v10),
-        // macOS target is required so `swift test` works on macOS hosts
-        // (CI runs Swift Package tests on macos-14 runners).
-        // CloudStore uses NSPersistentCloudKitContainer, @MainActor, and
-        // Swift Concurrency — all macOS 13+ surfaces.
-        .macOS(.v13),
     ],
     products: [
         .library(
