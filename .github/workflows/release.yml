@@ -209,19 +209,34 @@ jobs:
     name: Upload AAB to Google Play
     needs: publish-github-release
     runs-on: ubuntu-latest
-    if: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON != '' }}
+    env:
+      PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+      PLAY_STORE_PACKAGE_NAME: ${{ secrets.PLAY_STORE_PACKAGE_NAME }}
     steps:
+      - name: Skip when secret not configured
+        id: gate
+        run: |
+          if [ -z "$PLAY_STORE_SERVICE_ACCOUNT_JSON" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "::notice::PLAY_STORE_SERVICE_ACCOUNT_JSON not set — skipping Play upload."
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
       - uses: actions/checkout@v4
+        if: steps.gate.outputs.skip != 'true'
       - uses: actions/download-artifact@v4
+        if: steps.gate.outputs.skip != 'true'
         with:
           name: android-release
           path: dist
       - name: Pick AAB
+        if: steps.gate.outputs.skip != 'true'
         id: pick
         run: |
           AAB=$(ls dist/*.aab | head -n1)
           echo "aab=$AAB" >> $GITHUB_OUTPUT
       - name: Determine track
+        if: steps.gate.outputs.skip != 'true'
         id: track
         run: |
           VERSION=${GITHUB_REF_NAME}
@@ -232,6 +247,7 @@ jobs:
             *)           echo "track=production">> $GITHUB_OUTPUT ;;
           esac
       - name: Upload to Play Console
+        if: steps.gate.outputs.skip != 'true'
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
