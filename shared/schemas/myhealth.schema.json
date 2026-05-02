@@ -1,0 +1,260 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://myhealth.app/schemas/myhealth.schema.json",
+  "title": "MyHealth Local Backup Format",
+  "description": "Cross-platform JSON shape for MyHealth backups. Both iOS Core Data and Android Room implement these entities 1:1, so users can move their data between devices via export/import without a backend.",
+  "type": "object",
+  "required": ["schemaVersion", "exportedAt"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "exportedAt": { "type": "string", "format": "date-time" },
+
+    "profile": { "$ref": "#/$defs/Profile" },
+
+    "meals": { "type": "array", "items": { "$ref": "#/$defs/Meal" }, "default": [] },
+    "activities": { "type": "array", "items": { "$ref": "#/$defs/Activity" }, "default": [] },
+    "medicines": { "type": "array", "items": { "$ref": "#/$defs/Medicine" }, "default": [] },
+    "doseLogs": { "type": "array", "items": { "$ref": "#/$defs/DoseLog" }, "default": [] },
+    "moodEntries": { "type": "array", "items": { "$ref": "#/$defs/MoodEntry" }, "default": [] },
+    "stateOfMind": { "type": "array", "items": { "$ref": "#/$defs/StateOfMind" }, "default": [] },
+    "workoutPlans": { "type": "array", "items": { "$ref": "#/$defs/WorkoutPlan" }, "default": [] },
+    "exerciseLogs": { "type": "array", "items": { "$ref": "#/$defs/ExerciseLog" }, "default": [] },
+    "customWorkouts": { "type": "array", "items": { "$ref": "#/$defs/CustomWorkout" }, "default": [] },
+    "customMeals": { "type": "array", "items": { "$ref": "#/$defs/CustomMeal" }, "default": [] },
+    "friends": { "type": "array", "items": { "$ref": "#/$defs/Friend" }, "default": [] },
+    "challenges": { "type": "array", "items": { "$ref": "#/$defs/Challenge" }, "default": [] },
+    "badges": { "type": "array", "items": { "$ref": "#/$defs/Badge" }, "default": [] },
+    "streaks": { "type": "array", "items": { "$ref": "#/$defs/Streak" }, "default": [] }
+  },
+
+  "$defs": {
+    "Uuid": { "type": "string", "format": "uuid" },
+
+    "Profile": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "name": { "type": "string" },
+        "birthDateISO": { "type": "string", "format": "date-time" },
+        "sex": { "type": "string", "enum": ["female", "male", "other"] },
+        "heightCm": { "type": "number" },
+        "weightKg": { "type": "number" },
+        "goal": { "type": "string", "enum": ["lose_weight", "maintain", "build_muscle", "endurance", "general_wellness"] },
+        "activityLevel": { "type": "string", "enum": ["sedentary", "light", "moderate", "active", "very_active"] },
+        "unitsImperial": { "type": "boolean" },
+        "themeMode": { "type": "string", "enum": ["system", "light", "dark"] },
+        "language": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "Meal": {
+      "type": "object",
+      "required": ["id", "kcal", "protein", "carbs", "fat"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "name": { "type": "string" },
+        "kcal": { "type": "number", "minimum": 0 },
+        "protein": { "type": "number", "minimum": 0 },
+        "carbs": { "type": "number", "minimum": 0 },
+        "fat": { "type": "number", "minimum": 0 },
+        "barcode": { "type": "string" },
+        "consumedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "Activity": {
+      "type": "object",
+      "required": ["id", "durationMin", "kcalBurned"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "kind": { "type": "string" },
+        "durationMin": { "type": "number", "minimum": 0 },
+        "kcalBurned": { "type": "number", "minimum": 0 },
+        "notes": { "type": "string" },
+        "performedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "Medicine": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "name": { "type": "string" },
+        "dosage": { "type": "string" },
+        "unit": { "type": "string" },
+        "manufacturer": { "type": "string" },
+        "priceCents": { "type": "integer", "minimum": 0 },
+        "criticalLevel": { "type": "string", "enum": ["low", "medium", "high"] },
+        "eatWhen": { "type": "string", "enum": ["standalone", "before", "with", "after"] },
+        "scheduleJSON": { "type": "string", "description": "Stringified Schedule object — see MedicineSchedule subschema below." },
+        "colorHex": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "archivedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "MedicineSchedule": {
+      "type": "object",
+      "required": ["times", "weekdays"],
+      "description": "The shape of the JSON encoded inside Medicine.scheduleJSON.",
+      "properties": {
+        "times": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["hour", "minute"],
+            "properties": {
+              "hour": { "type": "integer", "minimum": 0, "maximum": 23 },
+              "minute": { "type": "integer", "minimum": 0, "maximum": 59 }
+            }
+          }
+        },
+        "weekdays": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 1, "maximum": 7,
+                     "description": "1 = Sunday, 7 = Saturday" }
+        },
+        "startISO": { "type": "string", "format": "date-time" },
+        "endISO": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "DoseLog": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "medicineId": { "$ref": "#/$defs/Uuid" },
+        "scheduledFor": { "type": "string", "format": "date-time" },
+        "takenAt": { "type": "string", "format": "date-time" },
+        "snoozedAt": { "type": "string", "format": "date-time" },
+        "skipped": { "type": "boolean" }
+      }
+    },
+
+    "MoodEntry": {
+      "type": "object",
+      "required": ["id", "value"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "value": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "note": { "type": "string" },
+        "recordedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "StateOfMind": {
+      "type": "object",
+      "required": ["id", "valence", "arousal"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "label": { "type": "string" },
+        "valence": { "type": "number", "minimum": -1, "maximum": 1 },
+        "arousal": { "type": "number", "minimum": 0, "maximum": 1 },
+        "context": { "type": "string" },
+        "recordedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "WorkoutPlan": {
+      "type": "object",
+      "required": ["id", "templateId"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "templateId": { "type": "string" },
+        "scheduledFor": { "type": "string", "format": "date-time" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "ExerciseLog": {
+      "type": "object",
+      "required": ["id", "exerciseId"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "exerciseId": { "type": "string" },
+        "performedAt": { "type": "string", "format": "date-time" },
+        "setsJSON": { "type": "string", "description": "Stringified array of {reps, weight}." },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "CustomWorkout": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "name": { "type": "string" },
+        "exerciseIdsJSON": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "CustomMeal": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "name": { "type": "string" },
+        "componentsJSON": { "type": "string", "description": "Stringified array of {foodId, name, grams}." },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "Friend": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "name": { "type": "string" },
+        "handle": { "type": "string" },
+        "recordID": { "type": "string" },
+        "addedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "Challenge": {
+      "type": "object",
+      "required": ["id", "title"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "title": { "type": "string" },
+        "kind": { "type": "string", "enum": ["steps", "distance_km", "minutes", "workouts"] },
+        "startsAt": { "type": "string", "format": "date-time" },
+        "endsAt": { "type": "string", "format": "date-time" },
+        "target": { "type": "number" },
+        "joinedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "Badge": {
+      "type": "object",
+      "required": ["id", "slug", "title"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "slug": { "type": "string" },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "awardedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "Streak": {
+      "type": "object",
+      "required": ["id", "kind", "currentDays", "longestDays"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Uuid" },
+        "kind": { "type": "string" },
+        "currentDays": { "type": "integer", "minimum": 0 },
+        "longestDays": { "type": "integer", "minimum": 0 },
+        "lastDay": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

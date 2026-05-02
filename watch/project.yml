@@ -1,0 +1,56 @@
+name: HealthAppWatch
+options:
+  bundleIdPrefix: com.fitfusion
+  deploymentTarget:
+    watchOS: "10.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    DEVELOPMENT_TEAM: ""
+
+packages:
+  FitFusionCore:
+    path: ../shared/FitFusionCore
+
+targets:
+  HealthAppWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - path: HealthAppWatch
+    info:
+      path: HealthAppWatch/Info.plist
+    entitlements:
+      path: HealthAppWatch/HealthAppWatch.entitlements
+    dependencies:
+      - package: FitFusionCore
+        product: FitFusionCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fitfusion.watch
+        TARGETED_DEVICE_FAMILY: "4"
+        INFOPLIST_KEY_WKApplication: YES
+        INFOPLIST_KEY_WKWatchOnly: YES
+        CODE_SIGN_ENTITLEMENTS: HealthAppWatch/HealthAppWatch.entitlements
+    capabilities:
+      - HealthKit
+      - Siri
+
+  FitFusionComplication:
+    type: app-extension
+    platform: watchOS
+    sources:
+      - path: FitFusionComplication
+    info:
+      path: FitFusionComplication/Info.plist
+    entitlements:
+      path: FitFusionComplication/FitFusionComplication.entitlements
+    dependencies:
+      - package: FitFusionCore
+        product: FitFusionCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fitfusion.watch.complication
+        TARGETED_DEVICE_FAMILY: "4"
+        CODE_SIGN_ENTITLEMENTS: FitFusionComplication/FitFusionComplication.entitlements
+        INFOPLIST_KEY_NSExtensionPointIdentifier: com.apple.widgetkit-extension

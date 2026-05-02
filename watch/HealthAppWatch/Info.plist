@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>$(DEVELOPMENT_LANGUAGE)</string>
+    <key>CFBundleDisplayName</key>
+    <string>MyHealth</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>UIApplicationSceneManifest</key>
+    <dict>
+        <key>UIApplicationSupportsMultipleScenes</key>
+        <false/>
+    </dict>
+    <key>WKApplication</key>
+    <true/>
+    <key>WKWatchOnly</key>
+    <true/>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+        <key>NSAllowsLocalNetworking</key>
+        <true/>
+    </dict>
+    <key>NSHealthShareUsageDescription</key>
+    <string>MyHealth reads your steps, heart rate, HRV, sleep, weight, water, and workout data so the watch can coach you live.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>MyHealth writes the water, weight, mood (state of mind), mindful sessions, workouts, and run routes you log on your wrist back to Apple Health.</string>
+    <key>NSSiriUsageDescription</key>
+    <string>MyHealth uses Siri so you can log water, weight, mood, and start workouts with just your voice.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>MyHealth uses your watch's GPS to record outdoor run routes and per-kilometer splits.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>MyHealth keeps tracking your route in the background while you finish your run.</string>
+    <key>NSUserActivityTypes</key>
+    <array>
+        <string>LogWaterIntent</string>
+        <string>LogWeightIntent</string>
+        <string>LogMoodIntent</string>
+        <string>SyncHealthKitIntent</string>
+    </array>
+</dict>
+</plist>

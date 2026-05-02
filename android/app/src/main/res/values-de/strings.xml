@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MyHealth</string>
+    <string name="tab_home">Start</string>
+    <string name="tab_train">Training</string>
+    <string name="tab_diary">Tagebuch</string>
+    <string name="tab_sleep">Schlaf</string>
+    <string name="tab_more">Mehr</string>
+    <string name="welcome_title">Willkommen bei MyHealth</string>
+    <string name="welcome_subtitle">Dein persönliches Fitness-OS – Sport, Ernährung, Schlaf, Stimmung, Vitalwerte und biologisches Alter. Alles auf deinem Gerät.</string>
+    <string name="cta_get_started">Loslegen</string>
+    <string name="cta_continue">Weiter</string>
+    <string name="cta_save">Speichern</string>
+    <string name="cta_cancel">Abbrechen</string>
+</resources>
