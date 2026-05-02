@@ -2,7 +2,7 @@ import Foundation
 #if canImport(CoreML)
 import CoreML
 #endif
-#if canImport(BackgroundTasks)
+#if os(iOS) || os(tvOS)
 import BackgroundTasks
 #endif
 
@@ -43,7 +43,7 @@ public final class PersonalFineTuner {
 
     /// Schedule the next nightly fine-tune. No-op when BackgroundTasks is unavailable.
     public func scheduleNextRun(after delay: TimeInterval = 60 * 60 * 12) {
-        #if canImport(BackgroundTasks)
+        #if os(iOS) || os(tvOS)
         let request = BGProcessingTaskRequest(identifier: Self.backgroundTaskIdentifier)
         request.requiresNetworkConnectivity = false
         request.requiresExternalPower = true   // train while charging overnight
