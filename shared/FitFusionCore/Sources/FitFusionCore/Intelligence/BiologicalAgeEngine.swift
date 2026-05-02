@@ -73,7 +73,7 @@ public struct BiologicalAgeEngine {
         public var deltaYears: Double { biologicalYears - chronologicalYears }
         public var verdict: String {
             switch deltaYears {
-            case ..<(-3): return "Significantly younger than your age \u{d83d}\u{de80}"
+            case ..<(-3): return "Significantly younger than your age \u{1F680}"
             case (-3)..<(-0.5): return "Younger than your age \u{2728}"
             case (-0.5)..<0.5: return "Right on track"
             case 0.5..<3: return "Slightly older than your age"
