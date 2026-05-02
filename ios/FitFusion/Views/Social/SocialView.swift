@@ -108,7 +108,7 @@ struct SocialView: View {
                     HStack {
                         VStack(alignment: .leading) {
                             Text(c.title).font(.subheadline.bold())
-                            Text("\(c.kind.capitalized) \u00b7 target \(Int(c.target))")
+                            Text("\(c.kind.capitalized) \u{00b7} target \(Int(c.target))")
                                 .font(.caption2).foregroundStyle(.secondary)
                         }
                         Spacer()

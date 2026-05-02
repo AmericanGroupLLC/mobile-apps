@@ -149,7 +149,7 @@ struct HomeDashboardView: View {
                     .foregroundStyle(.red)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Vitals & Biological Age").font(.headline)
-                    Text("HR \u00b7 HRV \u00b7 SpO\u2082 \u00b7 BP \u00b7 VO\u2082Max \u00b7 sleep \u00b7 body comp")
+                    Text("HR \u{00b7} HRV \u{00b7} SpO\u{2082} \u{00b7} BP \u{00b7} VO\u{2082}Max \u{00b7} sleep \u{00b7} body comp")
                         .font(.caption2).foregroundStyle(.secondary)
                         .lineLimit(2)
                 }

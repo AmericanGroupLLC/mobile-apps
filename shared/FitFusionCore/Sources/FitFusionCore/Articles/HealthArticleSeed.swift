@@ -21,15 +21,15 @@ public enum HealthArticleSeed {
             summary: "A gentle 7-day plan to make daily movement a habit.",
             body: """
             Daily movement is the single biggest lever for long-term health. \
-            You don't need a gym \u2014 a brisk walk, a few flights of stairs, or \
+            You don't need a gym \u{2014} a brisk walk, a few flights of stairs, or \
             a 10-minute home circuit will do.
 
             **Day 1.** Walk 15 minutes after lunch.
             **Day 2.** Add 5 minutes of stretching after the walk.
-            **Day 3.** Try one strength move (push-ups or squats) \u00d7 10 reps.
+            **Day 3.** Try one strength move (push-ups or squats) \u{00d7} 10 reps.
             **Day 4.** Walk 20 minutes.
             **Day 5.** Strength move + 5 minute breathing.
-            **Day 6.** A 30-minute "movement snack" \u2014 anything you enjoy.
+            **Day 6.** A 30-minute "movement snack" \u{2014} anything you enjoy.
             **Day 7.** Reflect, log a mood, plan next week.
             """
         ),
@@ -42,9 +42,9 @@ public enum HealthArticleSeed {
             1. Same bedtime + wake time, even on weekends.
             2. Bright light in the morning, dim light at night.
             3. Caffeine cutoff 8 hours before bed.
-            4. Bedroom: cool (~18\u00a0\u00b0C), dark, quiet.
+            4. Bedroom: cool (~18\u{00a0}\u{00b0}C), dark, quiet.
             5. Wind-down routine: 30 minutes of low-stim activity.
-            6. No screens for the last 30 minutes \u2014 read a book instead.
+            6. No screens for the last 30 minutes \u{2014} read a book instead.
             """
         ),
         .init(
@@ -71,14 +71,14 @@ public enum HealthArticleSeed {
             The minimum effective dose for adults: **2 strength sessions per week**. \
             Start with these six compound moves:
 
-            * Squat (bodyweight \u2192 goblet \u2192 barbell)
+            * Squat (bodyweight \u{2192} goblet \u{2192} barbell)
             * Hinge (Romanian deadlift)
-            * Push (push-up \u2192 dumbbell press)
+            * Push (push-up \u{2192} dumbbell press)
             * Pull (row variations)
             * Carry (suitcase carry)
             * Anti-rotation (Pallof press)
 
-            3 sets of 8\u201312 reps each. Rest 60\u201390 seconds. Add a small bit \
+            3 sets of 8\u{2013}12 reps each. Rest 60\u{2013}90 seconds. Add a small bit \
             of weight or one more rep each week.
             """
         ),
@@ -91,7 +91,7 @@ public enum HealthArticleSeed {
             Heart Rate Variability (HRV) reflects how your nervous system is \
             balancing recovery and arousal. Higher = more recovered.
 
-            Boosters: 7\u20139 hours of sleep, slow nasal breathing, sunlight, \
+            Boosters: 7\u{2013}9 hours of sleep, slow nasal breathing, sunlight, \
             zone-2 cardio, social connection, omega-3, magnesium.
 
             Tankers: alcohol, late caffeine, poor sleep, chronic stress, \

@@ -6,12 +6,12 @@ import CoreML
 /// On-device adaptive workout planner.
 ///
 /// Wraps a small bundled `AdaptivePlanner.mlmodel` (Create ML tabular regressor
-/// trained offline on synthetic + open fitness data; ~1\u20133 MB) and overlays the
+/// trained offline on synthetic + open fitness data; ~1\u{2013}3 MB) and overlays the
 /// cloud's heuristic readiness suggestion with a personalized confidence /
 /// rationale. Inputs include readiness, recent HRV, sleep, and training load;
 /// the output is the next `WorkoutTemplate` from the local `WorkoutLibrary`.
 ///
-/// The Core ML asset itself is not committed in this plan execution \u2014 the host
+/// The Core ML asset itself is not committed in this plan execution \u{2014} the host
 /// app falls back to a deterministic heuristic when the model file is missing
 /// (so simulator builds still work) and `PersonalFineTuner` updates the asset
 /// nightly via `MLUpdateTask`.
@@ -78,7 +78,7 @@ public final class AdaptivePlanner {
     // MARK: - Internals
 
     private func predict(with model: MLModel, inputs: Inputs) -> Suggestion? {
-        // Generic feature dictionary \u2014 the bundled `.mlmodel` is expected to
+        // Generic feature dictionary \u{2014} the bundled `.mlmodel` is expected to
         // expose `readiness`, `hrv`, `sleep`, `weekly_minutes`, `rpe` features
         // and a `template_id` string output. If the bundled model has a
         // different shape, decoding fails and the caller falls back to the
@@ -111,28 +111,28 @@ public final class AdaptivePlanner {
             pick = templates.first { $0.id == "advanced-strength-45" }
                 ?? templates.first { $0.id == "tempo-run-25" }
                 ?? templates[0]
-            rationale = "High readiness \u2014 push a heavy compound day."
+            rationale = "High readiness \u{2014} push a heavy compound day."
         case 60..<80:
             pick = templates.first { $0.id == "full-body-strength-30" }
                 ?? templates.first { $0.id == "hiit-cardio-15" }
                 ?? templates[0]
-            rationale = "Solid readiness \u2014 a balanced full-body session."
+            rationale = "Solid readiness \u{2014} a balanced full-body session."
         case 40..<60:
             pick = templates.first { $0.id == "easy-run-30" }
                 ?? templates.first { $0.id == "vinyasa-flow-30" }
                 ?? templates[0]
-            rationale = "Mixed signals \u2014 zone-2 cardio keeps the engine warm."
+            rationale = "Mixed signals \u{2014} zone-2 cardio keeps the engine warm."
         default:
             pick = templates.first { $0.id == "gentle-yoga-20" }
                 ?? templates.first { $0.id == "deep-stretch-25" }
                 ?? templates[0]
-            rationale = "Recovery day \u2014 gentle mobility + breath work."
+            rationale = "Recovery day \u{2014} gentle mobility + breath work."
         }
         // Confidence scales with how much data we used.
         let dataPoints = [inputs.recentHRV, inputs.lastSleepHrs,
                           inputs.weeklyMinutes, inputs.perceivedExertion]
             .compactMap { $0 }.count
-        let confidence = 0.55 + Double(dataPoints) * 0.08    // 0.55 \u2026 0.87
+        let confidence = 0.55 + Double(dataPoints) * 0.08    // 0.55 \u{2026} 0.87
         return .init(template: pick, confidence: confidence, rationale: rationale)
     }
 }

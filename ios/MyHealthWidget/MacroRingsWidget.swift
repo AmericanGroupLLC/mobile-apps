@@ -12,7 +12,7 @@ struct MacroRingsWidget: Widget {
                 .containerBackground(.fill.tertiary, for: .widget)
         }
         .configurationDisplayName("Macros")
-        .description("Today's calories \u00b7 protein \u00b7 carbs \u00b7 fat at a glance.")
+        .description("Today's calories \u{00b7} protein \u{00b7} carbs \u{00b7} fat at a glance.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }

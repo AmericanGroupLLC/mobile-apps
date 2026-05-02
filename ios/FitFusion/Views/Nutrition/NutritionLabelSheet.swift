@@ -2,8 +2,8 @@ import SwiftUI
 import PhotosUI
 import FitFusionCore
 
-/// Nutrition-label OCR sheet. Camera or library \u2192 `NutritionLabelOCR`
-/// (`VNRecognizeTextRequest`) \u2192 editable form \u2192 existing `logMeal(_:)` flow.
+/// Nutrition-label OCR sheet. Camera or library \u{2192} `NutritionLabelOCR`
+/// (`VNRecognizeTextRequest`) \u{2192} editable form \u{2192} existing `logMeal(_:)` flow.
 struct NutritionLabelSheet: View {
     @Environment(\.dismiss) private var dismiss
     let onLog: (NutritionService.FoodItem) -> Void
@@ -85,7 +85,7 @@ struct NutritionLabelSheet: View {
                                 .foregroundStyle(.secondary))
             }
             if loading {
-                ProgressView("Reading\u2026")
+                ProgressView("Reading\u{2026}")
                     .padding(12)
                     .background(.thinMaterial, in: Capsule())
             }

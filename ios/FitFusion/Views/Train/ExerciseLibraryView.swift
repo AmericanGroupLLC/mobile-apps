@@ -2,7 +2,7 @@ import SwiftUI
 import FitFusionCore
 
 /// Searchable + filterable list of every exercise in the library. Different
-/// from `AnatomyPickerView` (anatomy-first) \u2014 this one is text-first.
+/// from `AnatomyPickerView` (anatomy-first) \u{2014} this one is text-first.
 struct ExerciseLibraryView: View {
     @State private var query: String = ""
     @State private var muscleFilter: MuscleGroup?
@@ -70,7 +70,7 @@ struct ExerciseLibraryView: View {
                 } label: { chip(label: difficultyFilter?.label ?? "Level", system: "chart.bar.xaxis") }
 
                 Toggle(isOn: $includeStretches) {
-                    chip(label: includeStretches ? "Stretches \u2713" : "No stretches",
+                    chip(label: includeStretches ? "Stretches \u{2713}" : "No stretches",
                          system: "figure.cooldown")
                 }
                 .toggleStyle(.button)

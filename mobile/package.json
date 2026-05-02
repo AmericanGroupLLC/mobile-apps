@@ -43,6 +43,6 @@
       "!src/api.js",
       "!src/Navigator.js"
     ]
-  }
+  },
   "private": true
 }

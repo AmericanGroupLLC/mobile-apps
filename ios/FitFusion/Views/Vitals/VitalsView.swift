@@ -24,8 +24,8 @@ struct VitalsView: View {
                             tile("Heart Rate", s.heartRate.map { "\(Int($0)) bpm" }, "heart.fill", .red),
                             tile("Resting HR", s.restingHR.map { "\(Int($0)) bpm" }, "bed.double.fill", .red),
                             tile("HRV (SDNN)", s.hrv.map { "\(Int($0)) ms" }, "waveform.path.ecg", .pink),
-                            tile("VO\u2082 Max", s.vo2Max.map { String(format: "%.1f", $0) }, "lungs.fill", .blue),
-                            tile("SpO\u2082", s.spo2.map { String(format: "%.0f%%", $0 * 100) }, "circle.hexagongrid.fill", .indigo),
+                            tile("VO\u{2082} Max", s.vo2Max.map { String(format: "%.1f", $0) }, "lungs.fill", .blue),
+                            tile("SpO\u{2082}", s.spo2.map { String(format: "%.0f%%", $0 * 100) }, "circle.hexagongrid.fill", .indigo),
                             tile("ECG (7d)", "\(s.ecgCountWeek)", "waveform", .orange),
                             tile("Irregular Rhythm", "\(s.irregularRhythmCount)", "exclamationmark.heart.fill", .red),
                             tile("Resp Rate", s.respiratoryRate.map { String(format: "%.0f /min", $0) }, "lungs", .teal),
@@ -48,7 +48,7 @@ struct VitalsView: View {
                             tile("Total", s.lastNightSleepHrs.map { String(format: "%.1f h", $0) }, "moon.stars.fill", .purple),
                             tile("Deep", s.deepSleepHrs.map { String(format: "%.1f h", $0) }, "moon.zzz.fill", .indigo),
                             tile("REM", s.remSleepHrs.map { String(format: "%.1f h", $0) }, "eye.fill", .blue),
-                            tile("Wrist Temp \u0394", s.wristTempDeltaC.map { String(format: "%+.1f \u00b0C", $0) }, "thermometer", .orange),
+                            tile("Wrist Temp \u{0394}", s.wristTempDeltaC.map { String(format: "%+.1f \u{00b0}C", $0) }, "thermometer", .orange),
                         ])
                     }
 
@@ -73,7 +73,7 @@ struct VitalsView: View {
                                            s.glucoseMgDl.map { String(format: "%.0f mg/dL", $0) } ?? "Tap to log",
                                            "No non-invasive sensor exists yet. Manual / CGM only.",
                                            "syringe.fill", .pink),
-                            tile("Body temp", s.bodyTempC.map { String(format: "%.1f \u00b0C", $0) }, "thermometer", .orange),
+                            tile("Body temp", s.bodyTempC.map { String(format: "%.1f \u{00b0}C", $0) }, "thermometer", .orange),
                         ])
                     }
 
@@ -205,7 +205,7 @@ struct VitalsView: View {
     }
 
     private func tile(_ name: String, _ value: String?, _ icon: String, _ color: Color) -> VitalTile {
-        VitalTile(id: name, name: name, value: value ?? "\u2014",
+        VitalTile(id: name, name: name, value: value ?? "\u{2014}",
                   icon: icon, color: color, disclaimer: nil)
     }
 
@@ -241,7 +241,7 @@ private struct VitalTile: View, Identifiable {
                 }
             }
             Text(value).font(.headline.weight(.bold))
-                .foregroundStyle(value == "\u2014" || value == "Not available" || value.contains("Tap") ? .secondary : .primary)
+                .foregroundStyle(value == "\u{2014}" || value == "Not available" || value.contains("Tap") ? .secondary : .primary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
             Text(name).font(.caption2).foregroundStyle(.secondary)

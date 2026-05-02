@@ -23,7 +23,7 @@ struct TrainView: View {
                         ExerciseLibraryView()
                     }
                     tile(title: "Programs",
-                         subtitle: "PPL \u00b7 UL \u00b7 Full Body",
+                         subtitle: "PPL \u{00b7} UL \u{00b7} Full Body",
                          system: "calendar",
                          colors: [.blue, .cyan]) {
                         ProgramsView()

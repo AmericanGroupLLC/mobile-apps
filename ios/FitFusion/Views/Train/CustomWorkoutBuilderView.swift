@@ -20,7 +20,7 @@ struct CustomWorkoutBuilderView: View {
                 ContentUnavailableView(
                     "No exercises yet",
                     systemImage: "plus.square.dashed",
-                    description: Text("Tap \u201CAdd Exercise\u201D below to start building.")
+                    description: Text("Tap \u{201C}Add Exercise\u{201D} below to start building.")
                 )
                 .padding(.top, 16)
             } else {
@@ -65,7 +65,7 @@ struct CustomWorkoutBuilderView: View {
                                 VStack(alignment: .leading) {
                                     Text((obj.value(forKey: "name") as? String) ?? "Workout")
                                         .font(.subheadline.bold())
-                                    Text(ids.map(\.name).prefix(3).joined(separator: " \u00b7 "))
+                                    Text(ids.map(\.name).prefix(3).joined(separator: " \u{00b7} "))
                                         .font(.caption2).foregroundStyle(.secondary)
                                         .lineLimit(1)
                                 }

@@ -6,7 +6,7 @@ import WatchConnectivity
 /// + readiness from iPhone -> Apple Watch (and vice versa for small status payloads).
 ///
 /// Also exposes a Combine-style `liveTickStream` (`AsyncStream`) that emits each
-/// time a peer sends a small `sendMessage(_:replyHandler:)` payload \u2014 used by
+/// time a peer sends a small `sendMessage(_:replyHandler:)` payload \u{2014} used by
 /// MyHealth's Workout Mirroring path so iOS can react to per-second
 /// HR/calories/distance ticks emitted by `WorkoutController` on the watch.
 @MainActor
@@ -75,7 +75,7 @@ public final class WatchBridge: NSObject, ObservableObject {
         do {
             try session.updateApplicationContext(context)
         } catch {
-            // Swallow \u2014 context updates are best-effort.
+            // Swallow \u{2014} context updates are best-effort.
         }
     }
 

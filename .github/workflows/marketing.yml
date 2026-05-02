@@ -31,11 +31,22 @@ jobs:
         run: |
           mkdir _site
           cp index.html styles.css script.js _site/
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
+      # GitHub Pages cannot be enabled by GITHUB_TOKEN — repo admin must
+      # toggle it once at Settings → Pages → Source: GitHub Actions.
+      # Until that's done these steps no-op gracefully so the workflow
+      # still passes.
+      - id: pages_config
+        uses: actions/configure-pages@v5
+        continue-on-error: true
+      - name: Pages not enabled — skipping deploy
+        if: steps.pages_config.outcome != 'success'
+        run: |
+          echo "::warning::Enable GitHub Pages once at Settings → Pages → Source: GitHub Actions."
+          echo "::notice::Skipping deploy this run."
       - uses: actions/upload-pages-artifact@v3
+        if: steps.pages_config.outcome == 'success'
         with:
           path: _site
       - id: deploy
+        if: steps.pages_config.outcome == 'success'
         uses: actions/deploy-pages@v4

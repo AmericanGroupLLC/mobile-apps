@@ -5,7 +5,7 @@ import GroupActivities
 import FitFusionCore
 
 /// Receiver-side surface for a `SharedWorkoutActivity`. Lets each SharePlay
-/// peer tap "I'm in" \u2014 both devices then schedule the same `WorkoutTemplate`
+/// peer tap "I'm in" \u{2014} both devices then schedule the same `WorkoutTemplate`
 /// at the same start time via `WorkoutScheduler`. The watch's
 /// `WorkoutController` emits live HR / calories ticks to the active
 /// `GroupSession.journal` so each friend can see the other's metrics.
@@ -21,7 +21,7 @@ struct SharedWorkoutView: View {
                 .foregroundStyle(.indigo)
             Text("Train together").font(.title2.bold())
             Text(template.name).font(.headline)
-            Text("\(template.durationMin) min \u00b7 \(template.category.label)")
+            Text("\(template.durationMin) min \u{00b7} \(template.category.label)")
                 .font(.subheadline).foregroundStyle(.secondary)
             Button {
                 Task { await join() }

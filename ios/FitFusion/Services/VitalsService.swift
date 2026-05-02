@@ -7,7 +7,7 @@ import FitFusionCore
 /// "Vitals" surface on the iPhone.
 ///
 /// **Honest scope:**
-/// - HealthKit-backed (sensor + manual entries): HR, RHR, HRV, SpO\u2082, VO\u2082Max,
+/// - HealthKit-backed (sensor + manual entries): HR, RHR, HRV, SpO\u{2082}, VO\u{2082}Max,
 ///   ECG, irregular rhythm, body mass / fat / lean / BMI, blood pressure,
 ///   blood glucose, body / wrist temperature, env audio, respiratory rate,
 ///   handwashing count, walking steadiness events, daily steps, exercise min,
@@ -81,7 +81,7 @@ final class VitalsService: ObservableObject {
         }
         s.handwashCountToday = await categoryCountToday(.handwashingEvent)
 
-        // Sleep snapshot \u2014 reuse existing helper.
+        // Sleep snapshot \u{2014} reuse existing helper.
         if let sleep = try? await iOSHealthKitManager.shared.fetchLastNightSleep() {
             s.lastNightSleepHrs = sleep.totalHours
             s.deepSleepHrs = sleep.totalHours(for: .deep)
@@ -253,12 +253,12 @@ struct VitalsSnapshot: Equatable {
 
     // Body composition
     var weight: Double?           // kg
-    var bodyFatPct: Double?       // 0\u20131
+    var bodyFatPct: Double?       // 0\u{2013}1
     var leanMassKg: Double?
     var heightCm: Double?
     var bmi: Double?
 
-    // BP / glucose / temp \u2014 manual or sensor
+    // BP / glucose / temp \u{2014} manual or sensor
     var systolicBP: Double?
     var diastolicBP: Double?
     var glucoseMgDl: Double?
@@ -286,7 +286,7 @@ struct VitalsSnapshot: Equatable {
     var unsteadyEvents: Int = 0
     var handwashCountToday: Int = 0
 
-    /// Body water percentage \u2014 NOT sensorable; only available via manual entry
+    /// Body water percentage \u{2014} NOT sensorable; only available via manual entry
     /// or external smart-scale.
     var bodyWaterPct: Double?
 }

@@ -28,7 +28,7 @@ extension MuscleGroup {
     }
 }
 
-/// List of muscles for a given watch region. Tap one \u2192 `MuscleExercisesView`.
+/// List of muscles for a given watch region. Tap one \u{2192} `MuscleExercisesView`.
 struct MusclesByRegionView: View {
     let region: WatchBodyRegion
 

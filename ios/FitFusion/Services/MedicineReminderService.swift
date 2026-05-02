@@ -109,7 +109,7 @@ public final class MedicineReminderService: NSObject, ObservableObject {
             for weekday in schedule.weekdays {
                 let content = UNMutableNotificationContent()
                 content.title = "Time for \(name)"
-                content.body = dosage.isEmpty ? "Tap to mark as taken." : "\(dosage) \u00b7 tap to mark as taken."
+                content.body = dosage.isEmpty ? "Tap to mark as taken." : "\(dosage) \u{00b7} tap to mark as taken."
                 content.categoryIdentifier = Self.category
                 content.userInfo = [
                     "medicineId": medicineId.uuidString,

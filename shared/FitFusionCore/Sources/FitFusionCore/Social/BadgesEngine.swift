@@ -2,7 +2,7 @@ import Foundation
 
 /// Rule-based badge awarder. Evaluates the supplied `Snapshot` and awards any
 /// missing badges via `CloudStore.awardBadge` (idempotent). Rules can be
-/// extended trivially \u2014 each badge is a `(slug, title, subtitle, predicate)`.
+/// extended trivially \u{2014} each badge is a `(slug, title, subtitle, predicate)`.
 @MainActor
 public final class BadgesEngine {
 

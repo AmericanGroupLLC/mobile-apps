@@ -67,7 +67,7 @@ struct LoginView: View {
                             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))
                             .foregroundStyle(.indigo)
                         }
-                        Text("No account, no email \u2014 everything stays on this device. You can sign in for cloud sync later from Settings.")
+                        Text("No account, no email \u{2014} everything stays on this device. You can sign in for cloud sync later from Settings.")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)

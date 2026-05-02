@@ -5,7 +5,7 @@ import Vision
 
 /// On-device nutrition-label OCR.
 ///
-/// Uses `VNRecognizeTextRequest` (Vision's built-in text recognizer \u2014 no model
+/// Uses `VNRecognizeTextRequest` (Vision's built-in text recognizer \u{2014} no model
 /// download required) and a small regex pipeline to extract calories, protein,
 /// carbohydrate, fat and (optionally) a UPC barcode from a photographed
 /// nutrition label. When a UPC is detected, the caller can fall back to
@@ -69,7 +69,7 @@ public final class NutritionLabelOCR {
         result.carbsG   = firstNumber(near: ["carbohydrate", "carbs", "total carb"], in: lower)
         result.fatG     = firstNumber(near: ["total fat", "fat"], in: lower)
 
-        // UPC: 8\u201314 consecutive digits.
+        // UPC: 8\u{2013}14 consecutive digits.
         if let range = lower.range(of: #"\b\d{8,14}\b"#, options: .regularExpression) {
             result.detectedBarcode = String(lower[range])
         }

@@ -1,7 +1,7 @@
 import SwiftUI
 import FitFusionCore
 
-/// All exercises that target a given `MuscleGroup`. Tap an exercise \u2192
+/// All exercises that target a given `MuscleGroup`. Tap an exercise \u{2192}
 /// `WatchExerciseDetailView`.
 struct MuscleExercisesView: View {
     let muscle: MuscleGroup
@@ -70,7 +70,7 @@ struct MuscleExercisesView: View {
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.white)
                     .lineLimit(2)
-                Text("\(exercise.equipment.label) \u00b7 \(exercise.difficulty.label)")
+                Text("\(exercise.equipment.label) \u{00b7} \(exercise.difficulty.label)")
                     .font(.system(size: 9))
                     .foregroundStyle(.white.opacity(0.8))
             }

@@ -59,10 +59,10 @@ struct MoodLogView: View {
                 type: "state_of_mind_valence", value: m.valence, unit: "valence"
             )
             WKInterfaceDevice.current().play(.success)
-            status = "\u2713 \(m.emoji) \(m.label)"
+            status = "\u{2713} \(m.emoji) \(m.label)"
         } catch {
             WKInterfaceDevice.current().play(.failure)
-            status = "\u26A0 Failed"
+            status = "\u{26A0} Failed"
         }
     }
 }

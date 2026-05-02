@@ -11,7 +11,7 @@ import BackgroundTasks
 /// personalize the bundled `AdaptivePlanner` model. Runs nightly via
 /// `BGTaskScheduler` (`com.fitfusion.bg.fineTune`).
 ///
-/// All training data and the updated model artifact stay on the device \u2014
+/// All training data and the updated model artifact stay on the device \u{2014}
 /// nothing is uploaded.
 public final class PersonalFineTuner {
 
@@ -21,7 +21,7 @@ public final class PersonalFineTuner {
     /// Identifier registered with `BGTaskScheduler` in `FitFusionApp`.
     public static let backgroundTaskIdentifier = "com.fitfusion.bg.fineTune"
 
-    /// One training example \u2014 the caller assembles a window of these from
+    /// One training example \u{2014} the caller assembles a window of these from
     /// HealthKit (HRV, last night sleep) plus CloudKit (planned workout) plus
     /// the user's RPE log.
     public struct Sample: Sendable {
@@ -60,7 +60,7 @@ public final class PersonalFineTuner {
         guard !samples.isEmpty else { return false }
         guard let modelURL = Bundle.main.url(forResource: "AdaptivePlanner",
                                              withExtension: "mlmodelc") else {
-            // No bundled updatable model \u2014 skip silently.
+            // No bundled updatable model \u{2014} skip silently.
             return false
         }
 

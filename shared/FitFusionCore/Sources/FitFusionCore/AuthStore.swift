@@ -13,7 +13,7 @@ public final class AuthStore: ObservableObject {
     private static let guestKey = "isGuest"
 
     public init() {
-        // Restore guest mode first \u2014 preserved across launches.
+        // Restore guest mode first \u{2014} preserved across launches.
         if UserDefaults.standard.bool(forKey: Self.guestKey) {
             self.isGuest = true
             self.isAuthenticated = true

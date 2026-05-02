@@ -1,7 +1,7 @@
 import SwiftUI
 import FitFusionCore
 
-/// Watch detail page \u2014 tight typography, scrollable instructions + form tips,
+/// Watch detail page \u{2014} tight typography, scrollable instructions + form tips,
 /// big "Quick Log" CTA at the bottom (hidden for stretches). Reads the
 /// existing PR (heaviest single-rep weight) from CloudKit-synced
 /// `ExerciseLogEntity` so the wrist shows the same number the iPhone does.

@@ -1,7 +1,7 @@
 import WidgetKit
 import SwiftUI
 
-/// "Today's Plan" widget \u2014 surfaces the first scheduled workout from
+/// "Today's Plan" widget \u{2014} surfaces the first scheduled workout from
 /// `WorkoutPlanEntity` (CloudKit-synced via CloudStore). Reads a denormalized
 /// summary string the iOS app writes to the App Group.
 struct TodaysPlanWidget: Widget {
@@ -28,7 +28,7 @@ struct TodaysPlanEntry: TimelineEntry {
 struct TodaysPlanProvider: TimelineProvider {
     func placeholder(in context: Context) -> TodaysPlanEntry {
         .init(date: Date(), title: "Full-Body Strength",
-              subtitle: "30 min \u00b7 Strength",
+              subtitle: "30 min \u{00b7} Strength",
               scheduledTime: "5:30 PM")
     }
     func getSnapshot(in context: Context, completion: @escaping (TodaysPlanEntry) -> Void) {

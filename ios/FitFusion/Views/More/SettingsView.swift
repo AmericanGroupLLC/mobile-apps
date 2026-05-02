@@ -44,10 +44,10 @@ struct SettingsView: View {
                 Toggle("Imperial units (ft/lb)", isOn: $unitsImperial)
                 Picker("Language", selection: $language) {
                     Text("English").tag("en")
-                    Text("Espa\u00f1ol").tag("es")
-                    Text("Fran\u00e7ais").tag("fr")
+                    Text("Espa\u{00f1}ol").tag("es")
+                    Text("Fran\u{00e7}ais").tag("fr")
                     Text("Deutsch").tag("de")
-                    Text("\u0939\u093f\u0928\u094d\u0926\u0940").tag("hi")
+                    Text("\u{0939}\u{093f}\u{0928}\u{094d}\u{0926}\u{0940}").tag("hi")
                 }
             }
 

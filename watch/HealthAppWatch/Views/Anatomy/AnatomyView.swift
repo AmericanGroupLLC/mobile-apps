@@ -3,8 +3,8 @@ import FitFusionCore
 
 /// Watch-friendly anatomy entry. Three tappable region tiles (Upper / Core /
 /// Lower) plus a name-search escape hatch. Each tile drills into
-/// `MusclesByRegionView` \u2192 `MuscleExercisesView` \u2192 `WatchExerciseDetailView`
-/// \u2192 `QuickExerciseLogView`.
+/// `MusclesByRegionView` \u{2192} `MuscleExercisesView` \u{2192} `WatchExerciseDetailView`
+/// \u{2192} `QuickExerciseLogView`.
 ///
 /// The full silhouette UX from iPhone isn't tappable on a 41 mm screen, so we
 /// trade pixels for tap-target size on the wrist.
@@ -20,7 +20,7 @@ struct AnatomyView: View {
                         MusclesByRegionView(region: .upper)
                     } label: {
                         regionTile(title: "Upper Body",
-                                   subtitle: "Chest \u00b7 Back \u00b7 Arms \u00b7 Shoulders",
+                                   subtitle: "Chest \u{00b7} Back \u{00b7} Arms \u{00b7} Shoulders",
                                    icon: "figure.arms.open",
                                    colors: [.red, .pink])
                     }
@@ -30,7 +30,7 @@ struct AnatomyView: View {
                         MusclesByRegionView(region: .core)
                     } label: {
                         regionTile(title: "Core",
-                                   subtitle: "Abs \u00b7 Obliques \u00b7 Lower back",
+                                   subtitle: "Abs \u{00b7} Obliques \u{00b7} Lower back",
                                    icon: "figure.core.training",
                                    colors: [.teal, .cyan])
                     }
@@ -40,7 +40,7 @@ struct AnatomyView: View {
                         MusclesByRegionView(region: .lower)
                     } label: {
                         regionTile(title: "Lower Body",
-                                   subtitle: "Quads \u00b7 Hamstrings \u00b7 Glutes \u00b7 Calves",
+                                   subtitle: "Quads \u{00b7} Hamstrings \u{00b7} Glutes \u{00b7} Calves",
                                    icon: "figure.run",
                                    colors: [.green, .indigo])
                     }

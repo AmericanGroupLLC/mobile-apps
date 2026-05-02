@@ -1,7 +1,7 @@
 import SwiftUI
 import FitFusionCore
 
-/// Stretches & mobility library \u2014 same row UI as the lift library, but
+/// Stretches & mobility library \u{2014} same row UI as the lift library, but
 /// pre-filtered to `isStretch == true` and excluding the workout logger
 /// (since stretches are timed, not rep-based).
 struct StretchingView: View {

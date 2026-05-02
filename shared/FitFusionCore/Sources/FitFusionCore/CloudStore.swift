@@ -238,11 +238,11 @@ public final class CloudStore: ObservableObject {
 
     // MARK: - Exercise logs (workout logger)
 
-    /// One exercise performance \u2014 e.g. "Bench Press: 5\u00d75 @ 60kg" \u2014 persisted as a
+    /// One exercise performance \u{2014} e.g. "Bench Press: 5\u{00d7}5 @ 60kg" \u{2014} persisted as a
     /// JSON-encoded array of (reps, weight) sets so we don't need a child entity.
     public struct LoggedSet: Codable, Hashable {
         public var reps: Int
-        public var weight: Double      // kg (or lb \u2014 caller decides per-app)
+        public var weight: Double      // kg (or lb \u{2014} caller decides per-app)
         public init(reps: Int, weight: Double) {
             self.reps = reps; self.weight = weight
         }

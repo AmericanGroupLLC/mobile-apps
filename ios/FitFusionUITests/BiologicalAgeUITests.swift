@@ -1,6 +1,6 @@
 import XCTest
 
-/// Drill into Vitals \u2192 Biological Age and verify the bio-age estimator UI
+/// Drill into Vitals \u{2192} Biological Age and verify the bio-age estimator UI
 /// renders with the default chronological age slider.
 final class BiologicalAgeUITests: XCTestCase {
 

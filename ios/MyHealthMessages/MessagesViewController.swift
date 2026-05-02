@@ -40,7 +40,7 @@ class MessagesViewController: MSMessagesAppViewController {
         let layout = MSMessageTemplateLayout()
         layout.image = renderImage()
         layout.caption = "Just finished a MyHealth workout \u{1F525}"
-        layout.subcaption = "32 min \u00b7 412 kcal \u00b7 138 bpm avg"
+        layout.subcaption = "32 min \u{00b7} 412 kcal \u{00b7} 138 bpm avg"
         message.layout = layout
         conversation.insert(message) { _ in }
     }

@@ -17,7 +17,7 @@ final class FitFusionUISmokeTests: XCTestCase {
         return app
     }
 
-    /// Verifies the very first thing a user sees \u2014 the Login screen with the
+    /// Verifies the very first thing a user sees \u{2014} the Login screen with the
     /// new "Continue as Guest" button.
     func testLoginShowsContinueAsGuest() throws {
         let app = launchedApp()
@@ -26,7 +26,7 @@ final class FitFusionUISmokeTests: XCTestCase {
                       "Continue as Guest button missing on Login")
     }
 
-    /// Tap Continue as Guest \u2192 verify Onboarding renders.
+    /// Tap Continue as Guest \u{2192} verify Onboarding renders.
     func testGuestPathLandsOnOnboarding() throws {
         let app = launchedApp()
         let guestButton = app.buttons["Continue as Guest"]
@@ -34,7 +34,7 @@ final class FitFusionUISmokeTests: XCTestCase {
         guestButton.tap()
 
         // Either the Welcome page (with title) or the dashboard if the user
-        // has already onboarded \u2014 both are valid post-tap states.
+        // has already onboarded \u{2014} both are valid post-tap states.
         let welcome = app.staticTexts["Welcome to MyHealth"]
         let homeTab = app.tabBars.buttons["Home"]
         let foundOne = welcome.waitForExistence(timeout: 5) || homeTab.waitForExistence(timeout: 5)

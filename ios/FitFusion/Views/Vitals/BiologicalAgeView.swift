@@ -121,7 +121,7 @@ struct BiologicalAgeView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Contributing factors").font(.headline)
             if r.factors.isEmpty {
-                Text("No vitals yet \u2014 grant HealthKit access to fill these in.")
+                Text("No vitals yet \u{2014} grant HealthKit access to fill these in.")
                     .font(.caption2).foregroundStyle(.secondary)
             } else {
                 ForEach(r.factors) { f in

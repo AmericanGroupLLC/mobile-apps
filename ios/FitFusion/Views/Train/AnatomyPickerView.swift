@@ -1,7 +1,7 @@
 import SwiftUI
 import FitFusionCore
 
-/// MuscleWiki-style anatomy picker. Tap a muscle on the silhouette \u2192 list
+/// MuscleWiki-style anatomy picker. Tap a muscle on the silhouette \u{2192} list
 /// the exercises that target it (filtered by equipment + difficulty). Tap an
 /// exercise to open `ExerciseDetailView` for instructions, form tips, and
 /// the workout logger.
@@ -96,11 +96,11 @@ struct ExerciseRow: View {
                 .background(.regularMaterial, in: Circle())
             VStack(alignment: .leading, spacing: 2) {
                 Text(exercise.name).font(.subheadline.bold())
-                Text("\(exercise.primaryMuscles.map(\.label).joined(separator: " \u00b7 "))")
+                Text("\(exercise.primaryMuscles.map(\.label).joined(separator: " \u{00b7} "))")
                     .font(.caption2).foregroundStyle(.secondary)
                 HStack(spacing: 6) {
                     Text(exercise.equipment.label)
-                    Text("\u00b7")
+                    Text("\u{00b7}")
                     Text(exercise.difficulty.label)
                 }
                 .font(.caption2.weight(.medium))

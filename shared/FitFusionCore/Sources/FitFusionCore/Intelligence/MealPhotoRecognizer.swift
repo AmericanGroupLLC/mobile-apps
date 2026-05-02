@@ -7,7 +7,7 @@ import CoreML
 /// On-device meal-photo recognition.
 ///
 /// Uses `VNCoreMLRequest` over a small bundled `FoodClassifier.mlmodel`
-/// (\u22483-5 MB) to suggest the top-5 candidate foods for a captured photo. The
+/// (\u{2248}3-5 MB) to suggest the top-5 candidate foods for a captured photo. The
 /// caller (typically `MealPhotoSheet`) lets the user pick the right one which
 /// then routes through the existing `NutritionService` for ground-truth
 /// macros from Open Food Facts.
@@ -36,7 +36,7 @@ public final class MealPhotoRecognizer {
     }
 
     /// Returns up to `topK` candidate labels for the supplied photo. When the
-    /// bundled classifier isn't available, returns an empty array \u2014 the UI
+    /// bundled classifier isn't available, returns an empty array \u{2014} the UI
     /// falls back to manual text search.
     public func classify(image: UIImage, topK: Int = 5) async -> [Candidate] {
         guard let visionModel,

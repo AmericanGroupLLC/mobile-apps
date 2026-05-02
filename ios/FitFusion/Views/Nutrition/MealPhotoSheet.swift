@@ -2,7 +2,7 @@ import SwiftUI
 import PhotosUI
 import FitFusionCore
 
-/// "Snap Meal" sheet \u2014 lets the user pick a photo from the library or capture
+/// "Snap Meal" sheet \u{2014} lets the user pick a photo from the library or capture
 /// one with the camera, runs `MealPhotoRecognizer` (Vision + Core ML) locally,
 /// and presents the top-N candidate foods. The user picks one which then
 /// flows through `NutritionService` (Open Food Facts) for ground-truth macros.
@@ -77,7 +77,7 @@ struct MealPhotoSheet: View {
     @ViewBuilder
     private var candidatesList: some View {
         if loading {
-            ProgressView("Recognizing\u2026").padding()
+            ProgressView("Recognizing\u{2026}").padding()
         } else if let e = error {
             Text(e).font(.footnote).foregroundStyle(.red)
         } else if !candidates.isEmpty {
@@ -122,7 +122,7 @@ struct MealPhotoSheet: View {
                 self.candidates = await MealPhotoRecognizer.shared.classify(image: ui)
                 self.loading = false
                 if candidates.isEmpty {
-                    error = "No matches \u2014 try the search button instead."
+                    error = "No matches \u{2014} try the search button instead."
                 }
             }
         } catch {

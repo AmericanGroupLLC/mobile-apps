@@ -2,8 +2,8 @@ import SwiftUI
 import FitFusionCore
 import CoreData
 
-/// "Activities" \u2014 lightweight non-workout movement (walking, gardening,
-/// cycling around town\u2026). Distinct from `WorkoutPlan`/`ExerciseLog` which
+/// "Activities" \u{2014} lightweight non-workout movement (walking, gardening,
+/// cycling around town\u{2026}). Distinct from `WorkoutPlan`/`ExerciseLog` which
 /// are intentional training sessions.
 struct ActivityListView: View {
     @State private var activities: [NSManagedObject] = []
@@ -61,7 +61,7 @@ private struct ActivityRow: View {
                 .foregroundStyle(.green)
             VStack(alignment: .leading, spacing: 2) {
                 Text(kind.capitalized).font(.headline)
-                Text("\(Int(duration)) min \u00b7 \(Int(kcal)) kcal")
+                Text("\(Int(duration)) min \u{00b7} \(Int(kcal)) kcal")
                     .font(.caption2).foregroundStyle(.secondary)
             }
             Spacer()

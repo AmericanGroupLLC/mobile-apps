@@ -21,7 +21,7 @@ public struct SharedWorkoutActivity: GroupActivity {
     public var metadata: GroupActivityMetadata {
         var meta = GroupActivityMetadata()
         meta.title = template?.name ?? "MyHealth Workout"
-        meta.subtitle = template.map { "\($0.durationMin) min \u00b7 \($0.category.label)" } ?? "Train together"
+        meta.subtitle = template.map { "\($0.durationMin) min \u{00b7} \($0.category.label)" } ?? "Train together"
         meta.type = .generic
         return meta
     }

@@ -2,7 +2,7 @@ import SwiftUI
 import HealthKit
 import FitFusionCore
 
-/// 2-axis State of Mind picker (valence \u00d7 arousal). Mirrors Apple's State of
+/// 2-axis State of Mind picker (valence \u{00d7} arousal). Mirrors Apple's State of
 /// Mind UX in the Health app: the user drags a dot in a square plane and picks
 /// a label. Writes both `HKStateOfMindSample` (iOS 17+) and a CloudKit-synced
 /// `StateOfMindEntity`.
@@ -11,8 +11,8 @@ struct StateOfMindLogger: View {
     @EnvironmentObject var cloud: CloudStore
     @Environment(\.dismiss) private var dismiss
 
-    @State private var valence: Double = 0      // -1 \u2026 1
-    @State private var arousal: Double = 0      // -1 \u2026 1
+    @State private var valence: Double = 0      // -1 \u{2026} 1
+    @State private var arousal: Double = 0      // -1 \u{2026} 1
     @State private var label: MoodLabel = .calm
     @State private var note: String = ""
     @State private var written = false

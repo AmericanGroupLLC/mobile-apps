@@ -50,7 +50,7 @@ public final class LeaderboardClient: ObservableObject {
             body: Body(challenge_id: challengeId, score: score),
             as: NoOpResponse.self
         )
-        // Optional Game Center publish \u2014 off by default.
+        // Optional Game Center publish \u{2014} off by default.
         if enableGameCenterPublishing {
             // Stubbed; wire up `GKLeaderboard.submitScore(...)` once an
             // App Store Connect leaderboard is configured.

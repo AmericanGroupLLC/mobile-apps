@@ -25,7 +25,7 @@ struct WorkoutLoggerView: View {
                             HStack {
                                 Text("Set \(i + 1)").foregroundStyle(.secondary)
                                 Spacer()
-                                Text("\(s.reps) \u00d7 \(format(s.weight)) kg")
+                                Text("\(s.reps) \u{00d7} \(format(s.weight)) kg")
                                     .monospacedDigit()
                             }
                         }

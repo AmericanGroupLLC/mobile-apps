@@ -1,7 +1,7 @@
 import SwiftUI
 import FitFusionCore
 
-/// Multi-page first-launch onboarding. Welcome \u2192 Profile setup \u2192 Goal \u2192 Done.
+/// Multi-page first-launch onboarding. Welcome \u{2192} Profile setup \u{2192} Goal \u{2192} Done.
 /// Persists `didOnboard` in UserDefaults so this view only shows once.
 struct OnboardingFlowView: View {
     @AppStorage(AuthStore.didOnboardKey) private var didOnboard: Bool = false
@@ -48,7 +48,7 @@ struct OnboardingFlowView: View {
                     .foregroundStyle(.white)
             }
             Text("Welcome to MyHealth").font(.largeTitle).bold()
-            Text("Your personal fitness OS \u2014 fitness, food, sleep, mood, vitals, and biological age. All on your device.")
+            Text("Your personal fitness OS \u{2014} fitness, food, sleep, mood, vitals, and biological age. All on your device.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal)

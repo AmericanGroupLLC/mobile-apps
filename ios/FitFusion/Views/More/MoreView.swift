@@ -38,7 +38,7 @@ struct MoreView: View {
                 Section("Social") {
                     NavigationLink {
                         SocialView()
-                    } label: { Label("Friends \u00b7 Challenges \u00b7 Badges",
+                    } label: { Label("Friends \u{00b7} Challenges \u{00b7} Badges",
                                       systemImage: "person.2.fill") }
                 }
 

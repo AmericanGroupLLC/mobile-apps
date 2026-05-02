@@ -3,7 +3,7 @@ import SwiftUI
 
 /// iOS Lock Screen + Home Screen Readiness widget. Reads from the App Group
 /// `group.com.fitfusion` shared `UserDefaults` (the same suite the watch
-/// complication already consumes \u2014 written by `HomeDashboardView.refresh()`).
+/// complication already consumes \u{2014} written by `HomeDashboardView.refresh()`).
 struct ReadinessWidget: Widget {
     let kind = "MyHealthReadinessWidget"
 
@@ -29,7 +29,7 @@ struct ReadinessTimelineEntry: TimelineEntry {
 
 struct ReadinessTimelineProvider: TimelineProvider {
     func placeholder(in context: Context) -> ReadinessTimelineEntry {
-        .init(date: Date(), score: 78, suggestion: "Solid day \u2014 moderate effort")
+        .init(date: Date(), score: 78, suggestion: "Solid day \u{2014} moderate effort")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (ReadinessTimelineEntry) -> Void) {
@@ -107,7 +107,7 @@ struct ReadinessWidgetView: View {
                 Text(entry.suggestion).font(.caption2).lineLimit(2)
             }
         case .accessoryInline:
-            Text("MyHealth \u00b7 \(entry.score)")
+            Text("MyHealth \u{00b7} \(entry.score)")
         default:
             Text("\(entry.score)")
         }

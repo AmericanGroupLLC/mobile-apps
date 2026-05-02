@@ -26,7 +26,7 @@ struct ProgramRow: View {
                 LinearGradient(colors: [.indigo, .purple],
                                startPoint: .topLeading, endPoint: .bottomTrailing)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
-                Text("\(program.daysPerWeek)\u00d7")
+                Text("\(program.daysPerWeek)\u{00d7}")
                     .font(.title3.bold()).foregroundStyle(.white)
             }
             .frame(width: 48, height: 48)
@@ -34,7 +34,7 @@ struct ProgramRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(program.name).font(.subheadline.bold())
                 Text(program.split).font(.caption2).foregroundStyle(.secondary)
-                Text("\(program.weeks) weeks \u00b7 \(program.level.label)")
+                Text("\(program.weeks) weeks \u{00b7} \(program.level.label)")
                     .font(.caption2).foregroundStyle(.tertiary)
             }
             Spacer()
@@ -73,7 +73,7 @@ struct ProgramDetailView: View {
                 Text(program.split.uppercased())
                     .font(.caption2.bold()).foregroundStyle(.white.opacity(0.85))
                 Text(program.name).font(.title2.bold()).foregroundStyle(.white)
-                Text("\(program.weeks) weeks \u00b7 \(program.daysPerWeek)\u00d7 / wk \u00b7 \(program.level.label)")
+                Text("\(program.weeks) weeks \u{00b7} \(program.daysPerWeek)\u{00d7} / wk \u{00b7} \(program.level.label)")
                     .font(.caption).foregroundStyle(.white.opacity(0.9))
             }
             .padding()
@@ -87,7 +87,7 @@ private struct DayCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(day.name).font(.headline)
-            Text("\(day.sets) sets \u00d7 \(day.repRange) reps \u00b7 \(day.restSeconds)s rest")
+            Text("\(day.sets) sets \u{00d7} \(day.repRange) reps \u{00b7} \(day.restSeconds)s rest")
                 .font(.caption).foregroundStyle(.secondary)
             ForEach(day.exerciseIds, id: \.self) { id in
                 if let exercise = ExerciseLibrary.byId(id) {

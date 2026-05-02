@@ -3,7 +3,7 @@ import WatchKit
 import FitFusionCore
 
 /// Wrist-friendly "Log a set" sheet. Digital Crown drives reps; a second
-/// crown-bound field drives weight. Save \u2192 inserts a CloudKit-synced
+/// crown-bound field drives weight. Save \u{2192} inserts a CloudKit-synced
 /// `ExerciseLogEntity` so the iPhone sees the new PR / history immediately.
 struct QuickExerciseLogView: View {
     let exercise: Exercise

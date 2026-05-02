@@ -3,7 +3,7 @@ import FitFusionCore
 
 /// Stylised anatomy silhouette with tappable muscle regions. Toggles between
 /// a Front and Back view and reports the selected `MuscleGroup` to the
-/// parent. Built entirely with SwiftUI shapes \u2014 no image assets shipped.
+/// parent. Built entirely with SwiftUI shapes \u{2014} no image assets shipped.
 struct MuscleSilhouetteView: View {
     @Binding var view: BodyView
     @Binding var selected: MuscleGroup?

@@ -3,7 +3,7 @@ import Foundation
 /// On-device heuristic biological-age estimator.
 ///
 /// Inspired by published "biological age" approaches (PhenoAge, Klemera-Doubal,
-/// resting-HR / HRV / VO\u2082Max regressions) but **simplified** so it runs in
+/// resting-HR / HRV / VO\u{2082}Max regressions) but **simplified** so it runs in
 /// pure Swift on a watch, with **no network, no third-party model, no medical
 /// claim**. Each input nudges the chronological age up or down by a small,
 /// transparent number of years; the breakdown is exposed to the UI so users
@@ -25,8 +25,8 @@ public struct BiologicalAgeEngine {
         public let hrv: Double?                 // ms (SDNN)
         public let vo2Max: Double?              // ml/kg/min
         public let avgSleepHours: Double?       // h / night, 7-day avg
-        public let bmi: Double?                 // kg/m\u00b2
-        public let bodyFatPct: Double?          // 0\u20131
+        public let bmi: Double?                 // kg/m\u{00b2}
+        public let bodyFatPct: Double?          // 0\u{2013}1
         public let systolicBP: Double?          // mmHg
         public let diastolicBP: Double?         // mmHg
         public let weeklyExerciseMin: Double?   // min / week
@@ -67,18 +67,18 @@ public struct BiologicalAgeEngine {
     public struct Result: Sendable, Hashable {
         public let chronologicalYears: Double
         public let biologicalYears: Double
-        public let confidence: Double           // 0\u20131 \u2014 scales with #signals available
+        public let confidence: Double           // 0\u{2013}1 \u{2014} scales with #signals available
         public let factors: [Factor]
 
         public var deltaYears: Double { biologicalYears - chronologicalYears }
         public var verdict: String {
             switch deltaYears {
-            case ..<(-3): return "Significantly younger than your age \ud83d\ude80"
-            case (-3)..<(-0.5): return "Younger than your age \u2728"
+            case ..<(-3): return "Significantly younger than your age \u{d83d}\u{de80}"
+            case (-3)..<(-0.5): return "Younger than your age \u{2728}"
             case (-0.5)..<0.5: return "Right on track"
             case 0.5..<3: return "Slightly older than your age"
-            case 3..<7: return "Notably older \u2014 worth attention"
-            default: return "Much older \u2014 consider lifestyle changes \u26A0\ufe0f"
+            case 3..<7: return "Notably older \u{2014} worth attention"
+            default: return "Much older \u{2014} consider lifestyle changes \u{26A0}\u{fe0f}"
             }
         }
     }
@@ -119,11 +119,11 @@ public struct BiologicalAgeEngine {
             ))
         }
         if let vo2 = inputs.vo2Max {
-            // VO\u2082Max population norm depends on sex+age; rough penalty if low.
+            // VO\u{2082}Max population norm depends on sex+age; rough penalty if low.
             let target = inputs.sex == .female ? 32.0 : 38.0
             let delta = -((vo2 - target) / 5.0) * 0.7
             factors.append(.init(
-                name: "VO\u2082 Max",
+                name: "VO\u{2082} Max",
                 value: String(format: "%.1f ml/kg/min", vo2),
                 deltaYears: clamp(delta, -4, 5),
                 direction: deltaSign(delta)
@@ -141,7 +141,7 @@ public struct BiologicalAgeEngine {
             ))
         }
         if let bmi = inputs.bmi {
-            // Healthy BMI 18.5\u201324.9 = 0; outside that band penalises ~0.4 yr per unit.
+            // Healthy BMI 18.5\u{2013}24.9 = 0; outside that band penalises ~0.4 yr per unit.
             let delta: Double
             if bmi < 18.5 { delta = (18.5 - bmi) * 0.4 }
             else if bmi > 25 { delta = (bmi - 25) * 0.4 }
