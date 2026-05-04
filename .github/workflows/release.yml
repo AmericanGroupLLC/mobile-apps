@@ -60,7 +60,6 @@ jobs:
           chmod +x gradlew || true
       - name: Build phone APK + AAB
         working-directory: android
-        continue-on-error: true
         env:
           # Sentry + PostHog secrets for production builds. When unset
           # (e.g. from a fork without secrets), the BuildConfig fields land
@@ -122,7 +121,6 @@ jobs:
         run: xcodegen generate
       - name: Build MyHealth.app for iPhone Simulator
         working-directory: ios
-        continue-on-error: true
         env:
           # Inject DSN / API key into the build environment. The Swift
           # services first read ProcessInfo.environment so these flow
@@ -132,6 +130,7 @@ jobs:
           POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
         run: |
           mkdir -p build
+          set -o pipefail
           xcodebuild -project FitFusion.xcodeproj \
             -scheme FitFusion \
             -sdk iphonesimulator \
@@ -140,7 +139,7 @@ jobs:
             -derivedDataPath build/derivedData \
             CODE_SIGNING_ALLOWED=NO \
             GCC_PREPROCESSOR_DEFINITIONS='$(inherited) SENTRY_DSN=\"'"$SENTRY_DSN"'\" POSTHOG_API_KEY=\"'"$POSTHOG_API_KEY"'\"' \
-            build | xcpretty --simple || true
+            build | xcpretty --simple
       - name: Stage outputs
         run: |
           mkdir -p staging
@@ -181,13 +180,13 @@ jobs:
         run: xcodegen generate
       - name: Build HealthAppWatch.app for watchOS Simulator
         working-directory: watch
-        continue-on-error: true
         env:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN_IOS }}
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY_IOS }}
           POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
         run: |
           mkdir -p build
+          set -o pipefail
           xcodebuild -project HealthAppWatch.xcodeproj \
             -scheme HealthAppWatch \
             -sdk watchsimulator \
@@ -195,7 +194,7 @@ jobs:
             -destination 'generic/platform=watchOS Simulator' \
             -derivedDataPath build/derivedData \
             CODE_SIGNING_ALLOWED=NO \
-            build | xcpretty --simple || true
+            build | xcpretty --simple
       - name: Stage outputs
         run: |
           mkdir -p staging

@@ -35,9 +35,9 @@ targets:
         CODE_SIGN_ENTITLEMENTS: FitFusion/FitFusion.entitlements
         CURRENT_PROJECT_VERSION: 1
         MARKETING_VERSION: "1.0"
-    capabilities:
-      - HealthKit
-      - Siri
+    # capabilities are declared in the entitlements file; the
+    # xcodegen `capabilities:` block can collide with them and yield
+    # a corrupt .xcodeproj on macos-14 with xcodegen 2.45.
 
   MyHealthLiveActivity:
     type: app-extension
