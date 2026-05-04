@@ -68,6 +68,9 @@ dependencies {
     // Tile services use ListenableFuture from Guava for the protolayout API.
     implementation("com.google.guava:guava:33.3.1-android")
 
+    // Sentry crash reporting (opt-in via shared CrashReportingService).
+    implementation("io.sentry:sentry-android:7.18.0")
+
     // Tests
     testImplementation("junit:junit:4.13.2")
     testImplementation("com.google.truth:truth:1.4.2")

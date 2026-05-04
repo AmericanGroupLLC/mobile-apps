@@ -11,6 +11,7 @@ struct FitFusionApp: App {
     @StateObject private var mirror = WorkoutMirrorReceiver.shared
     @StateObject private var vitals = VitalsService.shared
     @StateObject private var meds = MedicineReminderService.shared
+    @StateObject private var crash = CrashReportingService.shared
 
     init() {
         // UI-test entrypoint: when the bundle is launched with -resetState
@@ -22,6 +23,13 @@ struct FitFusionApp: App {
             UserDefaults.standard.removeObject(forKey: "user")
             UserDefaults.standard.removeObject(forKey: "token")
         }
+
+        // Crash reporting — opt-in via Settings + DSN must be configured.
+        // No-op when either is absent. Privacy stays first.
+        let release = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        CrashReportingService.shared.bootstrapIfEnabled(
+            release: "MyHealth-iOS@\(release)"
+        )
 
         // Register the nightly on-device fine-tune task. Identifier must
         // match `Info.plist`'s `BGTaskSchedulerPermittedIdentifiers`.

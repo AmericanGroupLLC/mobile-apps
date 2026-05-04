@@ -59,6 +59,17 @@ struct SettingsView: View {
                     .font(.caption2).foregroundStyle(.secondary)
             }
 
+            Section("Privacy") {
+                Toggle(isOn: Binding(
+                    get: { CrashReportingService.shared.isEnabled },
+                    set: { CrashReportingService.shared.setEnabled($0) }
+                )) {
+                    Label("Send crash reports", systemImage: "ant.fill")
+                }
+                Text("Off by default. When on, anonymous crash stack traces (no personal data) are sent to Sentry to help fix bugs. You can turn this off any time.")
+                    .font(.caption2).foregroundStyle(.secondary)
+            }
+
             Section("Data") {
                 Button {
                     do {

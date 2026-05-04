@@ -28,20 +28,31 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settings: SettingsRepository,
+    @dagger.hilt.android.qualifiers.ApplicationContext private val ctx: android.content.Context,
 ) : ViewModel() {
     val units: StateFlow<Boolean> = settings.unitsImperial
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
     val isGuest: StateFlow<Boolean> = settings.isGuest
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
+    private val _crashReports = kotlinx.coroutines.flow.MutableStateFlow(
+        com.myhealth.app.crash.CrashReportingService.isEnabled(ctx)
+    )
+    val crashReports: StateFlow<Boolean> = _crashReports
+
     fun setUnits(v: Boolean) { viewModelScope.launch { settings.setUnitsImperial(v) } }
     fun setGuest(v: Boolean) { viewModelScope.launch { settings.setGuest(v) } }
+    fun setCrashReports(v: Boolean) {
+        com.myhealth.app.crash.CrashReportingService.setEnabled(ctx, v)
+        _crashReports.value = v
+    }
 }
 
 @Composable
 fun SettingsScreen(vm: SettingsViewModel = hiltViewModel()) {
     val units by vm.units.collectAsStateWithLifecycle(false)
     val guest by vm.isGuest.collectAsStateWithLifecycle(true)
+    val crashReports by vm.crashReports.collectAsStateWithLifecycle(false)
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text("Settings", fontSize = 28.sp, fontWeight = FontWeight.Bold)
         Text("Account", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold,
@@ -50,6 +61,15 @@ fun SettingsScreen(vm: SettingsViewModel = hiltViewModel()) {
             color = MaterialTheme.colorScheme.onSurfaceVariant)
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
         Row("Imperial units", units) { vm.setUnits(it) }
+        HorizontalDivider(Modifier.padding(vertical = 8.dp))
+        Text("Privacy", color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = 4.dp))
+        Row("Send crash reports (Sentry)", crashReports) { vm.setCrashReports(it) }
+        Text(
+            "Off by default. When on, anonymous crash stack traces (no personal data) are sent to Sentry to help fix bugs.",
+            fontSize = 11.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
         Text("Sign in for cloud sync (opens login screen — TODO)",
             color = MaterialTheme.colorScheme.primary, fontSize = 13.sp)

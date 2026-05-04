@@ -19,9 +19,19 @@ android {
         versionName = "1.0"
         vectorDrawables.useSupportLibrary = true
         resourceConfigurations += listOf("en", "es", "fr", "de", "hi")
+        // Sentry DSN — taken from env var or local property at build time.
+        // Empty by default so opt-in stays a real toggle.
+        buildConfigField(
+            "String",
+            "SENTRY_DSN",
+            "\"${System.getenv("SENTRY_DSN") ?: providers.gradleProperty("SENTRY_DSN").getOrElse("")}\""
+        )
     }
 
-    buildFeatures { compose = true }
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
     buildTypes {
         debug {
             enableUnitTestCoverage = true
@@ -114,4 +124,8 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
     androidTestImplementation(composeBom)
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+
+    // Sentry crash reporting (free Developer tier — 5k errors/month).
+    // Wired through CrashReportingService — opt-in via Settings.
+    implementation("io.sentry:sentry-android:7.18.0")
 }

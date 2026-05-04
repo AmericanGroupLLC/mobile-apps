@@ -24,6 +24,11 @@ class MyHealthApp : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        // Crash reporting — opt-in via Settings + DSN must be configured.
+        com.myhealth.app.crash.CrashReportingService.bootstrapIfEnabled(
+            context = this,
+            releaseName = "MyHealth-Android@${BuildConfig.VERSION_NAME ?: "1.0"}"
+        )
         // Re-arm reminders for any active medicine on cold start.
         medicineScheduler.resyncAll()
     }
