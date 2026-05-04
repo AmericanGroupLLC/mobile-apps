@@ -18,11 +18,21 @@ concurrency:
 
 jobs:
   # ─────────────────────────────────────────────────────────────────
-  # 1. Build artefacts in parallel
+  # 0. Required gate: every test suite must pass before any binary
+  #    is built or uploaded.
+  # ─────────────────────────────────────────────────────────────────
+
+  pre-release-tests:
+    name: Pre-Release Tests
+    uses: ./.github/workflows/pre-release-tests.yml
+
+  # ─────────────────────────────────────────────────────────────────
+  # 1. Build artefacts in parallel (gated on tests above)
   # ─────────────────────────────────────────────────────────────────
 
   build-android:
     name: Build Android phone + Wear (release)
+    needs: [pre-release-tests]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -60,23 +70,25 @@ jobs:
         run: |
           mkdir -p staging
           VERSION=${GITHUB_REF_NAME}
+          # Android phone
           cp android/app/build/outputs/apk/release/app-release-unsigned.apk \
-             staging/MyHealth-${VERSION}-unsigned.apk 2>/dev/null || \
+             staging/MyHealth-Android-Phone-${VERSION}-unsigned.apk 2>/dev/null || \
              cp android/app/build/outputs/apk/release/app-release.apk \
-             staging/MyHealth-${VERSION}.apk 2>/dev/null || true
+             staging/MyHealth-Android-Phone-${VERSION}.apk 2>/dev/null || true
           cp android/app/build/outputs/bundle/release/app-release.aab \
-             staging/MyHealth-${VERSION}.aab 2>/dev/null || true
+             staging/MyHealth-Android-Phone-${VERSION}.aab 2>/dev/null || true
+          # Android Wear
           cp android/wear/build/outputs/apk/release/wear-release-unsigned.apk \
-             staging/MyHealth-Wear-${VERSION}-unsigned.apk 2>/dev/null || \
+             staging/MyHealth-Android-Watch-${VERSION}-unsigned.apk 2>/dev/null || \
              cp android/wear/build/outputs/apk/release/wear-release.apk \
-             staging/MyHealth-Wear-${VERSION}.apk 2>/dev/null || true
+             staging/MyHealth-Android-Watch-${VERSION}.apk 2>/dev/null || true
           # Fall back to debug APKs if the release ones never produced.
           if [ ! "$(ls staging 2>/dev/null)" ]; then
             ./gradlew -p android :app:assembleDebug :wear:assembleDebug || true
             cp android/app/build/outputs/apk/debug/app-debug.apk \
-               staging/MyHealth-${VERSION}-debug.apk 2>/dev/null || true
+               staging/MyHealth-Android-Phone-${VERSION}-debug.apk 2>/dev/null || true
             cp android/wear/build/outputs/apk/debug/wear-debug.apk \
-               staging/MyHealth-Wear-${VERSION}-debug.apk 2>/dev/null || true
+               staging/MyHealth-Android-Watch-${VERSION}-debug.apk 2>/dev/null || true
           fi
           echo "--- staged Android binaries ---"
           ls -la staging/ || true
@@ -87,7 +99,8 @@ jobs:
           if-no-files-found: warn
 
   build-ios:
-    name: Build iOS .app (simulator binary)
+    name: Build iOS .app (iPhone Simulator binary)
+    needs: [pre-release-tests]
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
@@ -117,11 +130,11 @@ jobs:
                   -name '*.app' -type d 2>/dev/null | head -n1)
           if [ -n "$APP" ]; then
             (cd "$(dirname "$APP")" && \
-             zip -qr "$GITHUB_WORKSPACE/staging/MyHealth-${VERSION}-iOS-Simulator.app.zip" \
+             zip -qr "$GITHUB_WORKSPACE/staging/MyHealth-iOS-iPhone-${VERSION}-Simulator.app.zip" \
                "$(basename "$APP")")
             echo "Packaged $APP"
           else
-            echo "::warning::No .app product was produced; iOS binary will be missing."
+            echo "::warning::No iPhone .app product was produced; iOS binary will be missing."
           fi
           echo "--- staged iOS binaries ---"
           ls -la staging/ || true
@@ -131,8 +144,55 @@ jobs:
           path: staging/*
           if-no-files-found: warn
 
+  build-watchos:
+    name: Build Apple Watch .app (watchOS Simulator binary)
+    needs: [pre-release-tests]
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install xcodegen
+        run: brew install xcodegen
+      - name: Generate watchOS project
+        working-directory: watch
+        run: xcodegen generate
+      - name: Build HealthAppWatch.app for watchOS Simulator
+        working-directory: watch
+        continue-on-error: true
+        run: |
+          mkdir -p build
+          xcodebuild -project HealthAppWatch.xcodeproj \
+            -scheme HealthAppWatch \
+            -sdk watchsimulator \
+            -configuration Release \
+            -destination 'generic/platform=watchOS Simulator' \
+            -derivedDataPath build/derivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            build | xcpretty --simple || true
+      - name: Stage outputs
+        run: |
+          mkdir -p staging
+          VERSION=${GITHUB_REF_NAME}
+          APP=$(find watch/build/derivedData/Build/Products -maxdepth 3 \
+                  -name '*.app' -type d 2>/dev/null | head -n1)
+          if [ -n "$APP" ]; then
+            (cd "$(dirname "$APP")" && \
+             zip -qr "$GITHUB_WORKSPACE/staging/MyHealth-Apple-Watch-${VERSION}-Simulator.app.zip" \
+               "$(basename "$APP")")
+            echo "Packaged $APP"
+          else
+            echo "::warning::No watchOS .app product was produced; Apple Watch binary will be missing."
+          fi
+          echo "--- staged Apple Watch binaries ---"
+          ls -la staging/ || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: watchos-release
+          path: staging/*
+          if-no-files-found: warn
+
   build-server:
     name: Build server tarball
+    needs: [pre-release-tests]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -147,7 +207,7 @@ jobs:
           mkdir -p staging
           VERSION=${GITHUB_REF_NAME}
           tar --exclude='node_modules/.cache' \
-              -czf staging/myhealth-server-${VERSION}.tgz \
+              -czf staging/MyHealth-Server-${VERSION}.tgz \
               -C server .
       - uses: actions/upload-artifact@v4
         with:
@@ -156,6 +216,7 @@ jobs:
 
   build-web:
     name: Build web (marketing site) zip
+    needs: [pre-release-tests]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -163,7 +224,7 @@ jobs:
         run: |
           mkdir -p staging
           VERSION=${GITHUB_REF_NAME}
-          zip -r staging/myhealth-web-${VERSION}.zip \
+          zip -r staging/MyHealth-Web-${VERSION}.zip \
             index.html styles.css script.js
       - uses: actions/upload-artifact@v4
         with:
@@ -176,7 +237,7 @@ jobs:
 
   publish-github-release:
     name: Create GitHub Release
-    needs: [build-android, build-ios, build-server, build-web]
+    needs: [build-android, build-ios, build-watchos, build-server, build-web]
     if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     outputs:
