@@ -21,12 +21,18 @@ and what the current MyHealth repo does vs. what each store requires.
 ## 1. Apple Watch — must be embedded in the iPhone `.ipa`
 
 ### What Apple requires
-> A watchOS app is shipped as a **watch2-app extension target inside the iOS
-> app's bundle**. App Store Connect accepts ONE `.ipa` per app, and that `.ipa`
-> contains the iPhone executable + all its embedded extensions including the
-> watchOS app. Users install the iPhone app, and the Watch app appears
-> automatically on the paired Apple Watch.
+> A watchOS app is shipped as a **single-target watchOS application embedded
+> inside the iPhone app's bundle**. App Store Connect accepts ONE `.ipa` per
+> app, and that `.ipa` contains the iPhone executable + all its embedded
+> extensions including the watchOS app. Users install the iPhone app, and
+> the Watch app appears automatically on the paired Apple Watch.
 > [HIG · Distribute watchOS](https://developer.apple.com/documentation/xcode/distributing-your-app-for-beta-testing-and-releases)
+
+> **Note (watchOS 7+):** the legacy two-target structure (WatchKit App +
+> WatchKit Extension) is deprecated. Modern watchOS apps are a **single
+> SwiftUI target** with `WKApplication` declared in `Info.plist`. The
+> `watchapp2` product type from earlier xcodegen docs is for the legacy
+> structure and will produce build warnings on Xcode 15+.
 
 ### What this repo does today
 Two **separate** xcodegen projects:
@@ -37,40 +43,106 @@ watch/project.yml    → produces HealthAppWatch.app     (watch app, NOT bundled
 
 Two separate `.app` files. **Apple App Store will reject this.**
 
-### The fix path
-Migrate the watchOS target into `ios/project.yml` as an embedded
-`watch2-app` extension. Concretely:
+### The fix path (modern single-target watchOS app, Xcode 15+)
 
-1. Move `watch/HealthAppWatch/Sources/**` → `ios/HealthAppWatch/`
-2. Edit `ios/project.yml`:
+Migrate the watchOS target into `ios/project.yml` as an **embedded watchOS
+application** of the iPhone target. Concretely:
+
+1. Move `watch/HealthAppWatch/Sources/**` → `ios/HealthAppWatch/`. Make sure
+   `Info.plist` lives at `ios/HealthAppWatch/Info.plist` and contains:
+   ```xml
+   <key>WKApplication</key><true/>
+   <key>WKWatchOnly</key><false/>
+   <key>WKCompanionAppBundleIdentifier</key>
+   <string>com.fitfusion.ios</string>
+   ```
+
+2. Edit `ios/project.yml` (xcodegen 2.42+ syntax — verified against
+   Apple-sample-code template):
    ```yaml
    targets:
-     FitFusion:
-       …
+
+     FitFusion:                           # existing iPhone app
+       type: application
+       platform: iOS
+       deploymentTarget: "17.0"
+       sources:
+         - path: FitFusion
        dependencies:
-         - target: HealthAppWatch          # ← add
-     HealthAppWatch:
-       type: application.watchapp2         # ← watch2-app
+         - target: HealthAppWatch         # ← NEW: embed the watch app
+           embed: true
+           codeSign: true
+       settings:
+         base:
+           PRODUCT_BUNDLE_IDENTIFIER: com.fitfusion.ios
+
+     HealthAppWatch:                      # NEW: single-target watchOS app
+       type: application                  # (NOT application.watchapp2)
        platform: watchOS
        deploymentTarget: "10.0"
        sources:
          - path: HealthAppWatch
        info:
          path: HealthAppWatch/Info.plist
+         properties:
+           WKApplication: true
+           WKWatchOnly: false
+           WKCompanionAppBundleIdentifier: com.fitfusion.ios
        settings:
          base:
+           # Bundle identifier MUST be the iPhone bundle id + ".watchkitapp"
+           # for App Store Connect to recognise it as a paired watch app.
            PRODUCT_BUNDLE_IDENTIFIER: com.fitfusion.ios.watchkitapp
-           WATCHOS_DEPLOYMENT_TARGET: "10.0"
-           SDKROOT: watchos
+           TARGETED_DEVICE_FAMILY: "4"    # 4 = Apple Watch
+           SUPPORTED_PLATFORMS: watchsimulator watchos
+           SDKROOT: watchos               # forces the watchOS SDK
    ```
-3. Delete the separate `watch/project.yml` (or leave it for stand-alone QA)
-4. Run `xcodegen generate` inside `ios/`
-5. Now `xcodebuild archive` for the iOS scheme produces a single `.ipa` with
-   the watch app inside
+
+   Key rules the original snippet got wrong:
+
+   * `type: application.watchapp2` is the legacy product type — use plain
+     `application` with `platform: watchOS` instead.
+   * Do NOT set both `deploymentTarget: "10.0"` and
+     `WATCHOS_DEPLOYMENT_TARGET` — they collide. Use `deploymentTarget`
+     alone; xcodegen translates it correctly per platform.
+   * Bundle id MUST match the pattern `<iPhone-bundle-id>.watchkitapp`
+     or App Store Connect won't pair the watch app to the iPhone app.
+   * The iPhone target's `dependencies` entry needs `embed: true` AND
+     `codeSign: true` — without them xcodebuild will produce an `.ipa`
+     where the watch app isn't actually bundled.
+   * `TARGETED_DEVICE_FAMILY: "4"` is required (4 = Apple Watch).
+     Without it Xcode silently treats the target as iOS.
+
+3. Delete `watch/project.yml` (or keep it for QA-only standalone builds).
+
+4. Run `xcodegen generate` inside `ios/`.
+
+5. Verify the embed worked:
+   ```bash
+   xcodebuild -project ios/FitFusion.xcodeproj -list
+   xcodebuild -project ios/FitFusion.xcodeproj \
+     -scheme FitFusion \
+     -destination 'generic/platform=iOS' \
+     -archivePath build/MyHealth.xcarchive archive
+
+   # The watch app should appear inside the .xcarchive:
+   ls build/MyHealth.xcarchive/Products/Applications/FitFusion.app/Watch/
+   #  → HealthAppWatch.app
+   ```
+
+6. Export to `.ipa` with the standard `exportOptions.plist` (already in
+   `release.yml`'s `publish-testflight` job). The resulting `.ipa` zipped
+   contains the watch app bundled inside the iPhone app's `Watch/` folder.
+
+7. Verify after export:
+   ```bash
+   unzip -l ios/build/ipa/FitFusion.ipa | grep HealthAppWatch.app
+   # Should list HealthAppWatch.app inside Payload/FitFusion.app/Watch/
+   ```
 
 ### Effort
-~30 min on a Mac with Xcode. **Not done yet** — left as a follow-up because it
-needs hands-on Xcode validation that's hard to do from CI alone.
+~30-45 min on a Mac with Xcode 15+. **Not done yet** — left as a follow-up
+because it needs hands-on Xcode validation that's hard to do from CI alone.
 
 ### Until that's done
 The current `MyHealth-Apple-Watch-vX-Simulator.app.zip` artefact is **only
