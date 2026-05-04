@@ -281,7 +281,14 @@ jobs:
         run: |
           mkdir -p flat
           if [ -d dist ]; then
-            find dist -type f -exec cp {} flat/ \; || true
+            # Only ship release-grade binaries — skip test reports
+            # (HTML/CSS/JS/XML) that get uploaded by the pre-release-tests
+            # workflow's upload-artifact steps.
+            find dist -type f \( \
+                -iname '*.apk' -o -iname '*.aab' -o \
+                -iname '*.app.zip' -o -iname '*.ipa' -o \
+                -iname '*.tgz' -o -iname '*.zip' \
+              \) -exec cp {} flat/ \; || true
           fi
           echo "--- flattened release artefacts ---"
           ls -la flat/ || true
