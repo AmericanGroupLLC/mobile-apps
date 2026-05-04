@@ -148,6 +148,11 @@ jobs:
     name: Build Apple Watch .app (watchOS Simulator binary)
     needs: [pre-release-tests]
     runs-on: macos-14
+    # NOTE: This produces a STANDALONE watchOS .app for QA / Simulator only.
+    # Apple App Store requires the watch app to be embedded inside the iOS
+    # app's .ipa as a watch2-app extension target. See STORE-PACKAGING.md §1
+    # for the migration path. The artefact below is useful for testing but
+    # is not a store-shippable binary.
     steps:
       - uses: actions/checkout@v4
       - name: Install xcodegen
