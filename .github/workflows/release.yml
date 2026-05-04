@@ -61,10 +61,21 @@ jobs:
       - name: Build phone APK + AAB
         working-directory: android
         continue-on-error: true
+        env:
+          # Sentry + PostHog secrets for production builds. When unset
+          # (e.g. from a fork without secrets), the BuildConfig fields land
+          # as empty strings and the SDKs no-op safely.
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN_ANDROID }}
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY_ANDROID }}
+          POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
         run: ./gradlew :app:assembleRelease :app:bundleRelease
       - name: Build Wear APK
         working-directory: android
         continue-on-error: true
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN_WEAR }}
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY_ANDROID }}
+          POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
         run: ./gradlew :wear:assembleRelease
       - name: Stage outputs
         run: |
@@ -112,6 +123,13 @@ jobs:
       - name: Build MyHealth.app for iPhone Simulator
         working-directory: ios
         continue-on-error: true
+        env:
+          # Inject DSN / API key into the build environment. The Swift
+          # services first read ProcessInfo.environment so these flow
+          # through transparently into the simulator binary for QA.
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN_IOS }}
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY_IOS }}
+          POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
         run: |
           mkdir -p build
           xcodebuild -project FitFusion.xcodeproj \
@@ -121,6 +139,7 @@ jobs:
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build/derivedData \
             CODE_SIGNING_ALLOWED=NO \
+            GCC_PREPROCESSOR_DEFINITIONS='$(inherited) SENTRY_DSN=\"'"$SENTRY_DSN"'\" POSTHOG_API_KEY=\"'"$POSTHOG_API_KEY"'\"' \
             build | xcpretty --simple || true
       - name: Stage outputs
         run: |
@@ -163,6 +182,10 @@ jobs:
       - name: Build HealthAppWatch.app for watchOS Simulator
         working-directory: watch
         continue-on-error: true
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN_IOS }}
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY_IOS }}
+          POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
         run: |
           mkdir -p build
           xcodebuild -project HealthAppWatch.xcodeproj \
