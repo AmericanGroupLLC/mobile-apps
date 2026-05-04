@@ -122,9 +122,13 @@ jobs:
       - name: Build MyHealth.app for iPhone Simulator
         working-directory: ios
         env:
-          # Inject DSN / API key into the build environment. The Swift
-          # services first read ProcessInfo.environment so these flow
-          # through transparently into the simulator binary for QA.
+          # Sentry/PostHog DSNs are read at runtime via
+          # ProcessInfo.environment in CrashReportingService /
+          # AnalyticsService. Pass them as plain env vars so the binary
+          # picks them up; do NOT inject via GCC_PREPROCESSOR_DEFINITIONS
+          # (when the secret is unset the shell-quoting splits into
+          # positional args that xcodebuild misinterprets as the project
+          # path → "Unable to read project").
           SENTRY_DSN: ${{ secrets.SENTRY_DSN_IOS }}
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY_IOS }}
           POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
@@ -138,7 +142,6 @@ jobs:
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build/derivedData \
             CODE_SIGNING_ALLOWED=NO \
-            GCC_PREPROCESSOR_DEFINITIONS='$(inherited) SENTRY_DSN=\"'"$SENTRY_DSN"'\" POSTHOG_API_KEY=\"'"$POSTHOG_API_KEY"'\"' \
             build | xcpretty --simple
       - name: Stage outputs
         run: |
