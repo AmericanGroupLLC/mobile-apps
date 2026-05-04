@@ -68,6 +68,15 @@ struct SettingsView: View {
                 }
                 Text("Off by default. When on, anonymous crash stack traces (no personal data) are sent to Sentry to help fix bugs. You can turn this off any time.")
                     .font(.caption2).foregroundStyle(.secondary)
+
+                Toggle(isOn: Binding(
+                    get: { AnalyticsService.shared.isEnabled },
+                    set: { AnalyticsService.shared.setEnabled($0) }
+                )) {
+                    Label("Share anonymous usage analytics", systemImage: "chart.bar.fill")
+                }
+                Text("Off by default. When on, only anonymous feature-usage events (e.g. \u{201C}meal logged\u{201D}) are sent to PostHog so we can see which features are used. No personal data, no health metrics, no contents of meals/medicines/mood entries are ever included.")
+                    .font(.caption2).foregroundStyle(.secondary)
             }
 
             Section("Data") {

@@ -29,6 +29,8 @@ class MyHealthApp : Application(), Configuration.Provider {
             context = this,
             releaseName = "MyHealth-Android@${BuildConfig.VERSION_NAME ?: "1.0"}"
         )
+        // Product analytics — same opt-in pattern, separate API key.
+        com.myhealth.app.analytics.AnalyticsService.bootstrapIfEnabled(this)
         // Re-arm reminders for any active medicine on cold start.
         medicineScheduler.resyncAll()
     }

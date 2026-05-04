@@ -26,6 +26,17 @@ android {
             "SENTRY_DSN",
             "\"${System.getenv("SENTRY_DSN") ?: providers.gradleProperty("SENTRY_DSN").getOrElse("")}\""
         )
+        // PostHog API key + host — same opt-in pattern.
+        buildConfigField(
+            "String",
+            "POSTHOG_API_KEY",
+            "\"${System.getenv("POSTHOG_API_KEY") ?: providers.gradleProperty("POSTHOG_API_KEY").getOrElse("")}\""
+        )
+        buildConfigField(
+            "String",
+            "POSTHOG_HOST",
+            "\"${System.getenv("POSTHOG_HOST") ?: providers.gradleProperty("POSTHOG_HOST").getOrElse("https://eu.i.posthog.com")}\""
+        )
     }
 
     buildFeatures {
@@ -128,4 +139,7 @@ dependencies {
     // Sentry crash reporting (free Developer tier — 5k errors/month).
     // Wired through CrashReportingService — opt-in via Settings.
     implementation("io.sentry:sentry-android:7.18.0")
+    // PostHog product analytics (free tier — 1M events/month, OSS).
+    // Wired through AnalyticsService — opt-in via Settings.
+    implementation("com.posthog:posthog-android:3.13.0")
 }

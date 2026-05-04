@@ -20,12 +20,17 @@ let package = Package(
         // a build-time `SENTRY_DSN` is configured.
         .package(url: "https://github.com/getsentry/sentry-cocoa.git",
                  from: "8.36.0"),
+        // PostHog product analytics (free tier — 1M events/month, OSS).
+        // Wired through AnalyticsService — opt-in via Settings.
+        .package(url: "https://github.com/PostHog/posthog-ios.git",
+                 from: "3.13.0"),
     ],
     targets: [
         .target(
             name: "FitFusionCore",
             dependencies: [
                 .product(name: "Sentry", package: "sentry-cocoa"),
+                .product(name: "PostHog", package: "posthog-ios"),
             ],
             path: "Sources/FitFusionCore",
             resources: [

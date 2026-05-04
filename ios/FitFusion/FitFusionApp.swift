@@ -12,6 +12,7 @@ struct FitFusionApp: App {
     @StateObject private var vitals = VitalsService.shared
     @StateObject private var meds = MedicineReminderService.shared
     @StateObject private var crash = CrashReportingService.shared
+    @StateObject private var analytics = AnalyticsService.shared
 
     init() {
         // UI-test entrypoint: when the bundle is launched with -resetState
@@ -30,6 +31,8 @@ struct FitFusionApp: App {
         CrashReportingService.shared.bootstrapIfEnabled(
             release: "MyHealth-iOS@\(release)"
         )
+        // Product analytics — same opt-in pattern, separate API key.
+        AnalyticsService.shared.bootstrapIfEnabled()
 
         // Register the nightly on-device fine-tune task. Identifier must
         // match `Info.plist`'s `BGTaskSchedulerPermittedIdentifiers`.

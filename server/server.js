@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const Sentry = require('./middleware/sentry');
+const Analytics = require('./middleware/analytics');
 
 const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
@@ -20,6 +21,11 @@ Sentry.init({
   release: `MyHealth-Server@${require('./package.json').version}`,
 });
 Sentry.requestHandler(app);
+
+// PostHog analytics — same opt-in pattern (no-op without POSTHOG_API_KEY).
+Analytics.init({
+  release: `MyHealth-Server@${require('./package.json').version}`,
+});
 
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));

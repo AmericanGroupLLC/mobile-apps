@@ -8,7 +8,24 @@
 [![Marketing site](https://github.com/AmericanGroupLLC/HealthApp/actions/workflows/marketing.yml/badge.svg)](https://github.com/AmericanGroupLLC/HealthApp/actions/workflows/marketing.yml)
 [![codecov](https://codecov.io/gh/AmericanGroupLLC/HealthApp/branch/main/graph/badge.svg)](https://codecov.io/gh/AmericanGroupLLC/HealthApp)
 
-📖 **Docs**: [QUICKSTART.md](./QUICKSTART.md) (5-min setup per platform) · [DESIGN.md](./DESIGN.md) (architecture · features · data flow) · [TESTING.md](./TESTING.md) (sanity-test checklist · CI · simulator/emulator) · [RELEASING.md](./RELEASING.md) (releases · GitHub binaries · Play Store · App Store) · [PRODUCTION.md](./PRODUCTION.md) (production readiness · store deployment · gaps) · [STORE-PACKAGING.md](./STORE-PACKAGING.md) (watch-app bundling reality check) · [SENTRY.md](./SENTRY.md) (crash reporting · privacy · setup)
+📖 **Docs**: [QUICKSTART.md](./QUICKSTART.md) (5-min setup per platform) · [DESIGN.md](./DESIGN.md) (architecture · features · data flow) · [TESTING.md](./TESTING.md) (sanity-test checklist · CI · simulator/emulator) · [RELEASING.md](./RELEASING.md) (releases · GitHub binaries · Play Store · App Store) · [PRODUCTION.md](./PRODUCTION.md) (production readiness · store deployment · gaps) · [STORE-PACKAGING.md](./STORE-PACKAGING.md) (watch-app bundling reality check) · [SENTRY.md](./SENTRY.md) (crash reporting · privacy · setup) · [OBSERVABILITY.md](./OBSERVABILITY.md) (full stack: Sentry + PostHog + Grafana free tier)
+
+---
+
+## 🔭 Observability & analytics (all free tier, all opt-in)
+
+| Concern | Tool | Free tier | Where it's wired |
+|---|---|---|---|
+| Crashes + APM + logs | **Sentry** | 5K errors/mo | iOS · watchOS · Android · Wear · Expo · backend |
+| Product analytics + feature flags + replays | **PostHog** | 1M events/mo (OSS, EU region) | iOS · Android · Expo · backend |
+| Server metrics (optional) | Grafana Cloud Free | 10K series, 50 GB logs | docs only |
+| Uptime monitoring (optional) | UptimeRobot | 50 monitors | docs only |
+
+**Privacy contract**: every SDK is **off by default**. Users opt in via Settings → Privacy. Every wrapper strips `event.user` and never sends health data, meal contents, medicine names, photos, or screen recordings. Self-hostable if you outgrow the free tier. Mixpanel / Amplitude can be swapped in 1-line per platform.
+
+Full setup + alternatives matrix: [`OBSERVABILITY.md`](./OBSERVABILITY.md).
+
+---
 
 ---
 

@@ -40,11 +40,20 @@ class SettingsViewModel @Inject constructor(
     )
     val crashReports: StateFlow<Boolean> = _crashReports
 
+    private val _analytics = kotlinx.coroutines.flow.MutableStateFlow(
+        com.myhealth.app.analytics.AnalyticsService.isEnabled(ctx)
+    )
+    val analytics: StateFlow<Boolean> = _analytics
+
     fun setUnits(v: Boolean) { viewModelScope.launch { settings.setUnitsImperial(v) } }
     fun setGuest(v: Boolean) { viewModelScope.launch { settings.setGuest(v) } }
     fun setCrashReports(v: Boolean) {
         com.myhealth.app.crash.CrashReportingService.setEnabled(ctx, v)
         _crashReports.value = v
+    }
+    fun setAnalytics(v: Boolean) {
+        com.myhealth.app.analytics.AnalyticsService.setEnabled(ctx, v)
+        _analytics.value = v
     }
 }
 
@@ -53,6 +62,7 @@ fun SettingsScreen(vm: SettingsViewModel = hiltViewModel()) {
     val units by vm.units.collectAsStateWithLifecycle(false)
     val guest by vm.isGuest.collectAsStateWithLifecycle(true)
     val crashReports by vm.crashReports.collectAsStateWithLifecycle(false)
+    val analytics by vm.analytics.collectAsStateWithLifecycle(false)
     Column(Modifier.fillMaxSize().padding(16.dp)) {
         Text("Settings", fontSize = 28.sp, fontWeight = FontWeight.Bold)
         Text("Account", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold,
@@ -66,7 +76,13 @@ fun SettingsScreen(vm: SettingsViewModel = hiltViewModel()) {
             fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = 4.dp))
         Row("Send crash reports (Sentry)", crashReports) { vm.setCrashReports(it) }
         Text(
-            "Off by default. When on, anonymous crash stack traces (no personal data) are sent to Sentry to help fix bugs.",
+            "Off by default. Anonymous crash stack traces only.",
+            fontSize = 11.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Row("Share anonymous usage analytics (PostHog)", analytics) { vm.setAnalytics(it) }
+        Text(
+            "Off by default. Anonymous feature-use events only — no health data, meal contents, or medicine names ever leave the device.",
             fontSize = 11.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
