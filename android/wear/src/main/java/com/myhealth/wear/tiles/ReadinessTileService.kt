@@ -2,6 +2,7 @@ package com.myhealth.wear.tiles
 
 import android.content.Context
 import androidx.wear.protolayout.ColorBuilders.argb
+import androidx.wear.protolayout.DimensionBuilders.expand
 import androidx.wear.protolayout.LayoutElementBuilders
 import androidx.wear.protolayout.LayoutElementBuilders.LayoutElement
 import androidx.wear.protolayout.ResourceBuilders
@@ -38,8 +39,8 @@ class ReadinessTileService : TileService() {
 
     private fun layout(score: Int, ctx: Context): LayoutElement {
         return LayoutElementBuilders.Box.Builder()
-            .setWidth(LayoutElementBuilders.expand())
-            .setHeight(LayoutElementBuilders.expand())
+            .setWidth(expand())
+            .setHeight(expand())
             .addContent(
                 Text.Builder(ctx, "Readiness $score")
                     .setTypography(Typography.TYPOGRAPHY_TITLE2)

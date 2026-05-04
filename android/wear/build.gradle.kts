@@ -61,6 +61,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
+    // Tile services use ListenableFuture from Guava for the protolayout API.
+    implementation("com.google.guava:guava:33.3.1-android")
+
     // Tests
     testImplementation("junit:junit:4.13.2")
     testImplementation("com.google.truth:truth:1.4.2")
