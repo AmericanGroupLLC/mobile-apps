@@ -257,3 +257,109 @@ jobs:
           status: completed
           inAppUpdatePriority: 2
           whatsNewDirectory: distribution/whatsnew
+
+  # ─────────────────────────────────────────────────────────────────
+  # 4. Optional: build signed iOS .ipa + push to TestFlight (gated)
+  # ─────────────────────────────────────────────────────────────────
+
+  publish-testflight:
+    name: Build signed .ipa + upload to TestFlight
+    needs: publish-github-release
+    runs-on: macos-14
+    env:
+      APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      APP_STORE_CONNECT_API_KEY_P8_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8_BASE64 }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+    steps:
+      - name: Skip when App Store Connect API key not set
+        id: gate
+        run: |
+          if [ -z "$APP_STORE_CONNECT_API_KEY_P8_BASE64" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "::notice::APP_STORE_CONNECT_API_KEY_P8_BASE64 not set — skipping TestFlight upload."
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.skip != 'true'
+      - name: Install xcodegen + Fastlane
+        if: steps.gate.outputs.skip != 'true'
+        run: |
+          brew install xcodegen
+          gem install fastlane --no-document
+      - name: Generate Xcode project
+        if: steps.gate.outputs.skip != 'true'
+        working-directory: ios
+        run: xcodegen generate
+      - name: Decode App Store Connect .p8 API key
+        if: steps.gate.outputs.skip != 'true'
+        run: |
+          mkdir -p $HOME/.appstoreconnect/private_keys
+          echo "$APP_STORE_CONNECT_API_KEY_P8_BASE64" | base64 -d \
+            > $HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
+
+      # Sync provisioning profile + certificate via Fastlane Match (free, OSS).
+      # Set MATCH_GIT_URL to a private repo that holds your encrypted certs;
+      # MATCH_PASSWORD is the symmetric encryption key for that repo.
+      # If you don't use Match, set DISABLE_MATCH=1 and rely on automatic
+      # signing — works for a single dev account.
+      - name: Sync code-signing assets via Fastlane Match
+        if: steps.gate.outputs.skip != 'true' && env.MATCH_GIT_URL != ''
+        working-directory: ios
+        run: |
+          cat > Matchfile <<EOF
+          git_url("${MATCH_GIT_URL}")
+          storage_mode("git")
+          type("appstore")
+          app_identifier(["com.fitfusion.ios", "com.fitfusion.ios.liveactivity",
+                          "com.fitfusion.ios.widget", "com.fitfusion.ios.messages"])
+          team_id("${APPLE_TEAM_ID}")
+          EOF
+          fastlane match appstore --readonly
+
+      - name: Build signed .ipa
+        if: steps.gate.outputs.skip != 'true'
+        working-directory: ios
+        run: |
+          mkdir -p build
+          xcodebuild -project FitFusion.xcodeproj \
+            -scheme FitFusion \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/MyHealth.xcarchive \
+            DEVELOPMENT_TEAM=${APPLE_TEAM_ID} \
+            archive | xcpretty --simple
+
+          cat > exportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store</string>
+            <key>teamID</key><string>${APPLE_TEAM_ID}</string>
+            <key>uploadBitcode</key><false/>
+            <key>uploadSymbols</key><true/>
+            <key>compileBitcode</key><false/>
+            <key>signingStyle</key><string>automatic</string>
+          </dict>
+          </plist>
+          EOF
+
+          xcodebuild -exportArchive \
+            -archivePath build/MyHealth.xcarchive \
+            -exportPath build/ipa \
+            -exportOptionsPlist exportOptions.plist | xcpretty --simple
+
+      - name: Upload to TestFlight
+        if: steps.gate.outputs.skip != 'true'
+        uses: Apple-Actions/upload-testflight-build@v1
+        with:
+          app-path: ios/build/ipa/FitFusion.ipa
+          issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8_BASE64 }}

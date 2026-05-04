@@ -8,7 +8,7 @@
 [![Marketing site](https://github.com/AmericanGroupLLC/HealthApp/actions/workflows/marketing.yml/badge.svg)](https://github.com/AmericanGroupLLC/HealthApp/actions/workflows/marketing.yml)
 [![codecov](https://codecov.io/gh/AmericanGroupLLC/HealthApp/branch/main/graph/badge.svg)](https://codecov.io/gh/AmericanGroupLLC/HealthApp)
 
-📖 **Docs**: [QUICKSTART.md](./QUICKSTART.md) (5-min setup per platform) · [DESIGN.md](./DESIGN.md) (architecture · features · data flow) · [TESTING.md](./TESTING.md) (sanity-test checklist · CI · simulator/emulator) · [RELEASING.md](./RELEASING.md) (releases · GitHub binaries · Play Store · App Store)
+📖 **Docs**: [QUICKSTART.md](./QUICKSTART.md) (5-min setup per platform) · [DESIGN.md](./DESIGN.md) (architecture · features · data flow) · [TESTING.md](./TESTING.md) (sanity-test checklist · CI · simulator/emulator) · [RELEASING.md](./RELEASING.md) (releases · GitHub binaries · Play Store · App Store) · [PRODUCTION.md](./PRODUCTION.md) (production readiness · store deployment · gaps)
 
 ---
 
