@@ -1,5 +1,6 @@
 package com.myhealth.app.ui.anatomy
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -72,10 +73,6 @@ fun AnatomyScreen() {
         }
     }
 }
-
-@Composable
-private fun Modifier.clickable(onClick: () -> Unit): Modifier =
-    androidx.compose.foundation.clickable(onClick = onClick).then(this)
 
 @Composable
 private fun ExerciseRow(ex: Exercise) {

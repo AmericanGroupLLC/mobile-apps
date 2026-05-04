@@ -1,5 +1,6 @@
 package com.myhealth.app.ui.medicine
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -88,16 +89,14 @@ private fun MedicineRow(m: MedicineEntity) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
             }
             Box(Modifier.size(20.dp).align(Alignment.TopEnd)) {
-                Box(Modifier.size(20.dp).clip()) {} // colour swatch placeholder
+                Box(
+                    Modifier.size(20.dp)
+                        .background(MaterialTheme.colorScheme.primary, CircleShape)
+                ) {} // colour swatch placeholder
             }
         }
     }
 }
-
-@Composable
-private fun Modifier.clip(): Modifier = androidx.compose.foundation.background(
-    MaterialTheme.colorScheme.primary, CircleShape
-).then(this)
 
 @Composable
 private fun AddMedicineDialog(
