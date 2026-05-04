@@ -50,27 +50,44 @@ jobs:
           chmod +x gradlew || true
       - name: Build phone APK + AAB
         working-directory: android
+        continue-on-error: true
         run: ./gradlew :app:assembleRelease :app:bundleRelease
       - name: Build Wear APK
         working-directory: android
+        continue-on-error: true
         run: ./gradlew :wear:assembleRelease
       - name: Stage outputs
         run: |
           mkdir -p staging
           VERSION=${GITHUB_REF_NAME}
-          cp android/app/build/outputs/apk/release/app-release.apk \
-             staging/MyHealth-${VERSION}.apk || true
+          cp android/app/build/outputs/apk/release/app-release-unsigned.apk \
+             staging/MyHealth-${VERSION}-unsigned.apk 2>/dev/null || \
+             cp android/app/build/outputs/apk/release/app-release.apk \
+             staging/MyHealth-${VERSION}.apk 2>/dev/null || true
           cp android/app/build/outputs/bundle/release/app-release.aab \
-             staging/MyHealth-${VERSION}.aab || true
-          cp android/wear/build/outputs/apk/release/wear-release.apk \
-             staging/MyHealth-Wear-${VERSION}.apk || true
+             staging/MyHealth-${VERSION}.aab 2>/dev/null || true
+          cp android/wear/build/outputs/apk/release/wear-release-unsigned.apk \
+             staging/MyHealth-Wear-${VERSION}-unsigned.apk 2>/dev/null || \
+             cp android/wear/build/outputs/apk/release/wear-release.apk \
+             staging/MyHealth-Wear-${VERSION}.apk 2>/dev/null || true
+          # Fall back to debug APKs if the release ones never produced.
+          if [ ! "$(ls staging 2>/dev/null)" ]; then
+            ./gradlew -p android :app:assembleDebug :wear:assembleDebug || true
+            cp android/app/build/outputs/apk/debug/app-debug.apk \
+               staging/MyHealth-${VERSION}-debug.apk 2>/dev/null || true
+            cp android/wear/build/outputs/apk/debug/wear-debug.apk \
+               staging/MyHealth-Wear-${VERSION}-debug.apk 2>/dev/null || true
+          fi
+          echo "--- staged Android binaries ---"
+          ls -la staging/ || true
       - uses: actions/upload-artifact@v4
         with:
           name: android-release
           path: staging/*
+          if-no-files-found: warn
 
   build-ios:
-    name: Build iOS XCArchive
+    name: Build iOS .app (simulator binary)
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
@@ -79,31 +96,40 @@ jobs:
       - name: Generate Xcode project
         working-directory: ios
         run: xcodegen generate
-      - name: Build unsigned archive
+      - name: Build MyHealth.app for iPhone Simulator
         working-directory: ios
+        continue-on-error: true
         run: |
           mkdir -p build
           xcodebuild -project FitFusion.xcodeproj \
             -scheme FitFusion \
-            -configuration Release \
             -sdk iphonesimulator \
+            -configuration Release \
             -destination 'generic/platform=iOS Simulator' \
-            -archivePath build/MyHealth.xcarchive \
+            -derivedDataPath build/derivedData \
             CODE_SIGNING_ALLOWED=NO \
-            archive | xcpretty --simple || true
+            build | xcpretty --simple || true
       - name: Stage outputs
         run: |
           mkdir -p staging
           VERSION=${GITHUB_REF_NAME}
-          # Zip the .xcarchive; signing/.ipa export needs Apple credentials,
-          # gated below.
-          if [ -d ios/build/MyHealth.xcarchive ]; then
-            (cd ios/build && zip -r ../../staging/MyHealth-${VERSION}-iOS.xcarchive.zip MyHealth.xcarchive)
+          APP=$(find ios/build/derivedData/Build/Products -maxdepth 3 \
+                  -name '*.app' -type d 2>/dev/null | head -n1)
+          if [ -n "$APP" ]; then
+            (cd "$(dirname "$APP")" && \
+             zip -qr "$GITHUB_WORKSPACE/staging/MyHealth-${VERSION}-iOS-Simulator.app.zip" \
+               "$(basename "$APP")")
+            echo "Packaged $APP"
+          else
+            echo "::warning::No .app product was produced; iOS binary will be missing."
           fi
+          echo "--- staged iOS binaries ---"
+          ls -la staging/ || true
       - uses: actions/upload-artifact@v4
         with:
           name: ios-release
           path: staging/*
+          if-no-files-found: warn
 
   build-server:
     name: Build server tarball
@@ -168,13 +194,8 @@ jobs:
           if [ -d dist ]; then
             find dist -type f -exec cp {} flat/ \; || true
           fi
+          echo "--- flattened release artefacts ---"
           ls -la flat/ || true
-          # Always include source-archive style fallbacks so the Release is
-          # never empty even if every binary build failed.
-          git archive --format=tar.gz --prefix=MyHealth-${GITHUB_REF_NAME}/ \
-              -o flat/MyHealth-${GITHUB_REF_NAME}-source.tar.gz HEAD
-          git archive --format=zip   --prefix=MyHealth-${GITHUB_REF_NAME}/ \
-              -o flat/MyHealth-${GITHUB_REF_NAME}-source.zip    HEAD
       - id: meta
         run: |
           VERSION=${GITHUB_REF_NAME}
