@@ -151,6 +151,7 @@ jobs:
   publish-github-release:
     name: Create GitHub Release
     needs: [build-android, build-ios, build-server, build-web]
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.meta.outputs.version }}
@@ -160,11 +161,20 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: dist
+        continue-on-error: true
       - name: Flatten dist directory
         run: |
           mkdir -p flat
-          find dist -type f -exec cp {} flat/ \;
-          ls -la flat/
+          if [ -d dist ]; then
+            find dist -type f -exec cp {} flat/ \; || true
+          fi
+          ls -la flat/ || true
+          # Always include source-archive style fallbacks so the Release is
+          # never empty even if every binary build failed.
+          git archive --format=tar.gz --prefix=MyHealth-${GITHUB_REF_NAME}/ \
+              -o flat/MyHealth-${GITHUB_REF_NAME}-source.tar.gz HEAD
+          git archive --format=zip   --prefix=MyHealth-${GITHUB_REF_NAME}/ \
+              -o flat/MyHealth-${GITHUB_REF_NAME}-source.zip    HEAD
       - id: meta
         run: |
           VERSION=${GITHUB_REF_NAME}
