@@ -1,0 +1,48 @@
+# --- macOS / Xcode ---
+.DS_Store
+xcuserdata/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+DerivedData/
+build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+Pods/
+Carthage/Build/
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# --- Swift Package Manager ---
+.swiftpm/
+.build/
+Packages/
+Package.resolved
+
+# --- Android / Gradle ---
+.gradle/
+local.properties
+**/build/
+*.iml
+.idea/
+.cxx/
+captures/
+*.apk
+*.aab
+*.keystore
+*.jks
+proguard/
+
+# --- Kotlin / IntelliJ ---
+*.kt~
+out/
+
+# --- General ---
+*.log
+*.tmp
+.env
+.vscode/
+.history/
+node_modules/
