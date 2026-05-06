@@ -82,9 +82,9 @@ vendor/llama.cpp/build/
 vendor/llama.cpp/CMakeFiles/
 vendor/llama.cpp/.cache/
 *.gguf
-models/
 ios/OfflineAIBuddy/Resources/models/
 android/app/src/main/assets/models/
+/models/
 
 # ── CI / scratch ──────────────────────────────────────────────────
 distribution/staging-*/
