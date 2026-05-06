@@ -23,6 +23,12 @@
 
     <!-- BIND_INPUT_METHOD is declared on the IME service below; not a runtime perm. -->
 
+    <!-- Signature-protected permission for the keyboard ↔ main-app inference
+         ContentProvider IPC. Declared at <manifest> scope per AAPT rules. -->
+    <permission
+        android:name="${applicationId}.permission.INFERENCE"
+        android:protectionLevel="signature" />
+
     <!-- We do NOT request: camera, bluetooth, location, calendar, contacts. -->
 
     <application
@@ -75,10 +81,6 @@
             android:exported="true"
             android:grantUriPermissions="false"
             android:permission="${applicationId}.permission.INFERENCE" />
-
-        <permission
-            android:name="${applicationId}.permission.INFERENCE"
-            android:protectionLevel="signature" />
 
         <!-- WorkManager Hilt initializer. -->
         <provider
