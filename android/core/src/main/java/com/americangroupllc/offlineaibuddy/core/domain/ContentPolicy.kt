@@ -36,7 +36,7 @@ class ContentPolicy(val language: Language, val isKidSafe: Boolean) {
 
     private fun denylist(lang: Language): List<String> = when (lang) {
         Language.EN -> listOf(
-            "\\b(kill|murder|attack|weapon|gun|knife|bomb|blood)\\b",
+            "\\b(kill|murder|attack|weapons?|gun|knife|bomb|blood)\\b",
             "\\b(sex|naked|porn|kiss\\s+me)\\b",
             "\\b(fuck|shit|bitch|asshole|bastard)\\b",
             "\\b(drug|cocaine|heroin|meth|weed|marijuana)\\b",
