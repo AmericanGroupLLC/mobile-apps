@@ -17,6 +17,6 @@ data class GameSession(
 ) {
     fun isLocalHost(localPeerId: String): Boolean = host.id == localPeerId
 
-    fun opponent(of localPeerId: String): Peer =
+    fun opponent(localPeerId: String): Peer =
         if (host.id == localPeerId) guest else host
 }
