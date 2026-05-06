@@ -9,7 +9,8 @@ import com.americangroupllc.buddyplay.core.observability.NoopCrashReportingServi
 import com.americangroupllc.buddyplay.core.storage.DeviceIdProvider
 import com.americangroupllc.buddyplay.core.storage.LocalRivalryStore
 import com.americangroupllc.buddyplay.connectivity.AndroidDeviceIdProvider
-import com.americangroupllc.buddyplay.connectivity.NoopBuddyTransport
+import com.americangroupllc.buddyplay.connectivity.BleTransport
+import com.americangroupllc.buddyplay.connectivity.WifiTcpTransport
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,6 +43,6 @@ object AppModule {
     fun provideCrashReporting(): CrashReportingService = NoopCrashReportingService()
 
     @Provides @Singleton
-    fun provideConnectivityBridge(): ConnectivityBridge =
-        ConnectivityBridge(wifi = NoopBuddyTransport(), ble = NoopBuddyTransport())
+    fun provideConnectivityBridge(@ApplicationContext ctx: Context): ConnectivityBridge =
+        ConnectivityBridge(wifi = WifiTcpTransport(ctx), ble = BleTransport(ctx))
 }
