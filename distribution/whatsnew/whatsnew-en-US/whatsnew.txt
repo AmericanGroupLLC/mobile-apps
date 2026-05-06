@@ -1,0 +1,12 @@
+Pocket — five Apple-style native utilities in one app.
+
+This release combines five hand-built tools across iPhone, Apple Watch,
+Android, and Wear OS:
+
+  • Clock — alarms, world clock, stopwatch, timer, bedtime
+  • Calculator — basic + scientific (rotate to landscape)
+  • Measure — ARKit / ARCore, with on-screen ruler fallback
+  • Compass — magnetic + true heading, lat/lon, accuracy
+  • Level — flat-surface bullseye + tilted-surface bubble
+
+No account. No tracking by default. Crash reporting opt-in.

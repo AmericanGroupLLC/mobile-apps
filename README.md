@@ -1,86 +1,141 @@
-# ClockApp — A Cross-Platform Clock (iOS, watchOS, Android, Wear OS)
+# Pocket 🪶 — Five Native Utilities, Four Platforms
 
-A Clock app inspired by the iPhone's stock Clock app, scaffolded as **four native projects** for maximum platform fidelity.
+[![CI](https://github.com/AmericanGroupLLC/Pocket/actions/workflows/ci.yml/badge.svg)](https://github.com/AmericanGroupLLC/Pocket/actions/workflows/ci.yml)
+[![iOS](https://github.com/AmericanGroupLLC/Pocket/actions/workflows/ios.yml/badge.svg)](https://github.com/AmericanGroupLLC/Pocket/actions/workflows/ios.yml)
+[![Android](https://github.com/AmericanGroupLLC/Pocket/actions/workflows/android.yml/badge.svg)](https://github.com/AmericanGroupLLC/Pocket/actions/workflows/android.yml)
+[![Marketing site](https://github.com/AmericanGroupLLC/Pocket/actions/workflows/marketing.yml/badge.svg)](https://github.com/AmericanGroupLLC/Pocket/actions/workflows/marketing.yml)
+[![codecov](https://codecov.io/gh/AmericanGroupLLC/Pocket/branch/main/graph/badge.svg)](https://codecov.io/gh/AmericanGroupLLC/Pocket)
 
-| Platform        | Folder       | Stack                              |
-| --------------- | ------------ | ---------------------------------- |
-| iPhone          | `ios/`       | Swift + SwiftUI (iOS 17+)          |
-| Apple Watch     | `watchos/`   | Swift + SwiftUI (watchOS 10+)      |
-| Android phone   | `android/`   | Kotlin + Jetpack Compose (API 24+) |
-| Android watch   | `wearos/`    | Kotlin + Wear Compose (API 30+)    |
+📖 **Docs**: [QUICKSTART](./QUICKSTART.md) · [DESIGN](./DESIGN.md) · [TESTING](./TESTING.md) · [RELEASING](./RELEASING.md) · [PRODUCTION](./PRODUCTION.md) · [STORE-PACKAGING](./STORE-PACKAGING.md) · [SENTRY](./SENTRY.md) · [OBSERVABILITY](./OBSERVABILITY.md) · [TOOLS-FEATURES](./TOOLS-FEATURES.md) · [PRIVACY](./PRIVACY.md)
 
-## Features (per platform)
+---
 
-|                | Clock | Alarm | Stopwatch | Timer |
-| -------------- | :---: | :---: | :-------: | :---: |
-| iOS (iPhone)   |  ✅   |  ✅   |    ✅     |  ✅   |
-| watchOS        |  ✅   |  —    |    ✅     |  ✅   |
-| Android phone  |  ✅   |  ✅   |    ✅     |  ✅   |
-| Wear OS        |  ✅   |  —    |    ✅     |  ✅   |
+> *Five tools that disappear into the OS. Clock · Calculator · Measure · Compass · Level — one app, four native UIs, zero account, no tracking by default.*
 
-> Alarms are intentionally simplified (in-memory, no system scheduling). Wiring system alarms is a follow-up — see "Roadmap" below.
+---
+
+## The five tools
+
+1. **Clock** — alarms, world clock, stopwatch, timer, bedtime. Real OS-scheduled alarms.
+2. **Calculator** — basic + scientific (rotate to landscape on iPhone).
+3. **Measure** — ARKit on iOS, ARCore on Android, on-screen ruler fallback.
+4. **Compass** — magnetic + true heading, lat/lon, accuracy ring.
+5. **Level** — flat-surface bullseye + tilted-surface bubble.
+
+## Platforms
+
+| Platform | Folder | Stack | Bundle ID |
+|---|---|---|---|
+| 📱 **iPhone** | [`ios/`](./ios/) | Swift + SwiftUI + ARKit (iOS 17+) | `com.americangroupllc.pocket` |
+| ⌚ **Apple Watch** | [`watchos/`](./watchos/) | Swift + SwiftUI + WidgetKit (watchOS 10+) | `com.americangroupllc.pocket` (`.complication` for widget) |
+| 🤖 **Android phone** | [`android/app/`](./android/app/) | Kotlin + Compose + Hilt + Room + ARCore (API 24+) | `com.americangroupllc.pocket` |
+| ⌚ **Wear OS** | [`android/wear/`](./android/wear/) | Kotlin + Wear Compose + Tile + Complication (API 30+) | `com.americangroupllc.pocketwear` |
+
+> After renaming the GitHub repo to `Pocket`, update `index.html` canonical + OG URLs and `sitemap.xml`. The marketing site will continue to be served from `/ClockApp/` until the repo rename.
+
+Plus the public-facing **marketing site** (`index.html` / `styles.css` / `script.js`) at the repo root.
+
+---
+
+## Tool × Platform matrix
+
+|  | Clock | Calculator | Measure | Compass | Level |
+|---|:---:|:---:|:---:|:---:|:---:|
+| iPhone | ✅ | ✅ basic + scientific | ✅ ARKit | ✅ + lat/lon | ✅ flat + tilted |
+| Apple Watch | ✅ | ✅ basic | — | ✅ heading-only | ✅ flat |
+| Android phone | ✅ | ✅ basic + scientific | ✅ ARCore | ✅ + lat/lon | ✅ flat + tilted |
+| Wear OS | ✅ (no on-device alarms) | ✅ basic | — | ✅ heading-only | ✅ flat |
+
+> Wear OS skips on-device alarms by design — phone alarms surface on the watch via the standard companion bridge. Measure is phone-only (no AR on watches).
+
+Per-tool capabilities, sensor stacks, and data flows: [`TOOLS-FEATURES.md`](./TOOLS-FEATURES.md).
+
+---
 
 ## Architecture at a glance
 
 ```
-ClockApp/
-├── ios/        SwiftUI – TabView with Clock / Alarm / Stopwatch / Timer
-├── watchos/    SwiftUI – Page-style TabView with Clock / Stopwatch / Timer
-├── android/    Compose Material 3 – NavigationBar with 4 tabs
-└── wearos/     Wear Compose Material – HorizontalPager with 3 screens
+Pocket/
+├── shared/PocketCore/   Swift Package (iOS + watchOS): Clock + Calculator +
+│                        Compass + Level domain logic + Analytics/Crash stubs.
+├── ios/                 SwiftUI iPhone app (XcodeGen) — 5 tools.
+├── watchos/             SwiftUI Apple Watch app (XcodeGen) — 4 tools +
+│                        WidgetKit complication.
+└── android/             Multi-module Gradle project:
+    ├── core/   :core    Kotlin library: same 5-tool domain logic,
+    │                    obs stubs, mirrored tests.
+    ├── app/    :app     Phone Compose app + Hilt + Room + AlarmManager +
+    │                    BootReceiver + ARCore (Measure) + sensor wrappers.
+    └── wear/   :wear    Wear Compose app + Tile + Complication services.
 ```
 
-Each platform uses its idiomatic UI framework, language, and package manager — no shared codebase. This keeps every app feeling truly native and lets each evolve independently.
+Each platform uses its idiomatic UI framework and language. Apple platforms share a Swift Package (`PocketCore`); Android phone + wear share a Gradle module (`:core`).
 
-If/when shared logic (e.g. timezones, alarm storage) becomes valuable, candidates to consider later:
+---
 
-- **Kotlin Multiplatform Mobile (KMM)** for shared business logic across Android + iOS.
-- **A small Swift package** that both `ios/` and `watchos/` link.
+## 🔭 Observability (free tier, off-by-default)
 
-## Build & run
+| Concern | Tool | Free tier | Wired in |
+|---|---|---|---|
+| Crashes / APM | **Sentry** | 5K errors/mo | iOS · watchOS · Android · Wear |
+| Product analytics | **PostHog** | 1M events/mo (OSS, EU) | iOS · Android |
+
+**Privacy contract**: every SDK is **off by default**. Users opt in via Settings → Privacy. Wrappers strip user identifiers and never send tool inputs (no calculator history, no headings, no AR measurements, no alarm names). Real install steps in [`OBSERVABILITY.md`](./OBSERVABILITY.md) and [`SENTRY.md`](./SENTRY.md).
+
+---
+
+## 🚀 Run It
 
 ### iOS (iPhone)
 
-See [`ios/README.md`](ios/README.md). TL;DR — open Xcode, create a new SwiftUI app named `ClockApp`, drop in the source files, run on an iPhone simulator.
+```bash
+brew install xcodegen
+cd ios && xcodegen generate && open Pocket.xcodeproj
+```
+
+Pick an iPhone 15 simulator + ▶️. See [`ios/README.md`](./ios/README.md) and [`ios/SIGNING.md`](./ios/SIGNING.md).
 
 ### watchOS (Apple Watch)
 
-See [`watchos/README.md`](watchos/README.md). TL;DR — Xcode → new watchOS App, drop in the source files, run on an Apple Watch simulator.
+```bash
+brew install xcodegen
+cd watchos && xcodegen generate && open PocketWatch.xcodeproj
+```
 
 ### Android (phone)
 
-See [`android/README.md`](android/README.md). TL;DR —
+```bash
+cd android
+gradle wrapper --gradle-version 8.10   # one-time
+./gradlew :app:installDebug
+```
+
+### Wear OS
 
 ```bash
 cd android
-gradle wrapper --gradle-version 8.7      # one-time, if no gradlew yet
-./gradlew assembleDebug
+./gradlew :wear:installDebug
 ```
 
-Then open the `android/` folder in Android Studio and Run.
-
-### Wear OS (Android Watch)
-
-See [`wearos/README.md`](wearos/README.md). TL;DR —
+### One-line: run every test on the current OS
 
 ```bash
-cd wearos
-gradle wrapper --gradle-version 8.7      # one-time
-./gradlew assembleDebug
+./scripts/test-all.sh
 ```
 
-Then open the `wearos/` folder in Android Studio and Run on a Wear OS emulator.
+---
 
-## Roadmap
+## Roadmap (post-v1)
 
-- [ ] Real alarm scheduling (iOS `UNUserNotificationCenter`, Android `AlarmManager`).
-- [ ] World clock with multiple timezones.
-- [ ] Bedtime/Sleep schedule.
-- [ ] Watch complications (watchOS `WidgetKit`, Wear OS `Tiles`/`Complications`).
-- [ ] Phone ↔ Watch sync (WatchConnectivity, Wear Data Layer).
-- [ ] Persistent storage (SwiftData / Room).
-- [ ] CI: GitHub Actions (Xcode build for iOS/watchOS, Gradle build for Android/Wear).
+- [ ] Phone ↔ Watch sync (alarms, calculator history, level calibration)
+- [ ] Apple WidgetKit lock-screen widgets + Android Glance widgets
+- [ ] Custom alarm sound packs
+- [ ] Optional iCloud / Google Drive backup of settings
+- [ ] CarPlay & Android Auto next-alarm card
+- [ ] Multi-segment AR Measure (area, volume) — explicitly deferred from v1
+
+---
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](./LICENSE).

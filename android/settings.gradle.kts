@@ -13,5 +13,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ClockApp"
+rootProject.name = "Pocket"
+include(":core")
 include(":app")
+include(":wear")

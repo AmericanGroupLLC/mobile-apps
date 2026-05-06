@@ -20,9 +20,9 @@ gradle wrapper --gradle-version 8.7
 
 ## Files
 
-- `app/src/main/java/com/americangroupllc/clockapp/MainActivity.kt`
-- `app/src/main/java/com/americangroupllc/clockapp/ClockTabs.kt`
-- `app/src/main/java/com/americangroupllc/clockapp/ClockScreen.kt`
-- `app/src/main/java/com/americangroupllc/clockapp/AlarmScreen.kt`
-- `app/src/main/java/com/americangroupllc/clockapp/StopwatchScreen.kt`
-- `app/src/main/java/com/americangroupllc/clockapp/TimerScreen.kt`
+- `app/src/main/java/com/americangroupllc/pocket/MainActivity.kt`
+- `app/src/main/java/com/americangroupllc/pocket/ClockTabs.kt`
+- `app/src/main/java/com/americangroupllc/pocket/ClockScreen.kt`
+- `app/src/main/java/com/americangroupllc/pocket/AlarmScreen.kt`
+- `app/src/main/java/com/americangroupllc/pocket/StopwatchScreen.kt`
+- `app/src/main/java/com/americangroupllc/pocket/TimerScreen.kt`
