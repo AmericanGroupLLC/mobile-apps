@@ -1,0 +1,471 @@
+name: Release
+
+# Triggered when you push a tag like v1.2.0 or v1.2.0-rc1.
+# Builds every binary, attaches to a GitHub Release, optionally
+# uploads the Android AAB to Google Play and the iOS .ipa to TestFlight.
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write   # required to create a Release
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────
+  # 0. Required gate: every test suite must pass before any binary
+  #    is built or uploaded.
+  # ─────────────────────────────────────────────────────────────────
+
+  pre-release-tests:
+    name: Pre-Release Tests
+    uses: ./.github/workflows/pre-release-tests.yml
+
+  # ─────────────────────────────────────────────────────────────────
+  # 1. Build artefacts in parallel (gated on tests above)
+  # ─────────────────────────────────────────────────────────────────
+
+  build-android:
+    name: Build Android phone + Wear (release)
+    needs: [pre-release-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Decode keystore
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          mkdir -p android/keystore
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/keystore/upload.jks
+          cat > android/keystore.properties <<EOF
+          storeFile=keystore/upload.jks
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          EOF
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.10'
+      - name: Setup Gradle Wrapper
+        working-directory: android
+        run: |
+          gradle wrapper --gradle-version 8.10 || true
+          chmod +x gradlew || true
+      - name: Build phone APK + AAB
+        working-directory: android
+        env:
+          # Sentry + PostHog secrets for production builds. When unset
+          # (e.g. from a fork without secrets), the BuildConfig fields land
+          # as empty strings and the SDKs no-op safely.
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN_ANDROID }}
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY_ANDROID }}
+          POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
+        run: ./gradlew :app:assembleRelease :app:bundleRelease
+      - name: Build Wear APK
+        working-directory: android
+        continue-on-error: true
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN_WEAR }}
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY_ANDROID }}
+          POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
+        run: ./gradlew :wear:assembleRelease
+      - name: Stage outputs
+        run: |
+          mkdir -p staging
+          VERSION=${GITHUB_REF_NAME}
+          # Android phone
+          cp android/app/build/outputs/apk/release/app-release-unsigned.apk \
+             staging/Card-Android-Phone-${VERSION}-unsigned.apk 2>/dev/null || \
+             cp android/app/build/outputs/apk/release/app-release.apk \
+             staging/Card-Android-Phone-${VERSION}.apk 2>/dev/null || true
+          cp android/app/build/outputs/bundle/release/app-release.aab \
+             staging/Card-Android-Phone-${VERSION}.aab 2>/dev/null || true
+          # Android Wear
+          cp android/wear/build/outputs/apk/release/wear-release-unsigned.apk \
+             staging/Card-Android-Watch-${VERSION}-unsigned.apk 2>/dev/null || \
+             cp android/wear/build/outputs/apk/release/wear-release.apk \
+             staging/Card-Android-Watch-${VERSION}.apk 2>/dev/null || true
+          # Fall back to debug APKs if release ones never produced.
+          if [ ! "$(ls staging 2>/dev/null)" ]; then
+            ./gradlew -p android :app:assembleDebug :wear:assembleDebug || true
+            cp android/app/build/outputs/apk/debug/app-debug.apk \
+               staging/Card-Android-Phone-${VERSION}-debug.apk 2>/dev/null || true
+            cp android/wear/build/outputs/apk/debug/wear-debug.apk \
+               staging/Card-Android-Watch-${VERSION}-debug.apk 2>/dev/null || true
+          fi
+          echo "--- staged Android binaries ---"
+          ls -la staging/ || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          path: staging/*
+          if-no-files-found: warn
+
+  build-ios:
+    name: Build iOS .app (iPhone Simulator binary)
+    needs: [pre-release-tests]
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select latest Xcode
+        run: |
+          XCODE=$(ls -d /Applications/Xcode_16*.app /Applications/Xcode_15*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$XCODE" ]; then sudo xcode-select -s "$XCODE/Contents/Developer"; fi
+          xcodebuild -version
+      - name: Install xcodegen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+      - name: Build Card.app for iPhone Simulator
+        working-directory: ios
+        env:
+          # Sentry/PostHog DSNs are read at runtime via
+          # ProcessInfo.environment in CrashReportingService /
+          # AnalyticsService. Pass them as plain env vars so the binary
+          # picks them up.
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN_IOS }}
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY_IOS }}
+          POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
+        run: |
+          mkdir -p build
+          set -o pipefail
+          xcodebuild -project Card.xcodeproj \
+            -scheme Card \
+            -sdk iphonesimulator \
+            -configuration Release \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/derivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            build | xcpretty --simple
+      - name: Stage outputs
+        run: |
+          mkdir -p staging
+          VERSION=${GITHUB_REF_NAME}
+          APP=$(find ios/build/derivedData/Build/Products -maxdepth 3 \
+                  -name '*.app' -type d 2>/dev/null | head -n1)
+          if [ -n "$APP" ]; then
+            (cd "$(dirname "$APP")" && \
+             zip -qr "$GITHUB_WORKSPACE/staging/Card-iOS-iPhone-${VERSION}-Simulator.app.zip" \
+               "$(basename "$APP")")
+            echo "Packaged $APP"
+          else
+            echo "::warning::No iPhone .app product was produced; iOS binary will be missing."
+          fi
+          ls -la staging/ || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-release
+          path: staging/*
+          if-no-files-found: warn
+
+  build-watchos:
+    name: Build Apple Watch .app (watchOS Simulator binary)
+    needs: [pre-release-tests]
+    runs-on: macos-14
+    # NOTE: This produces a STANDALONE watchOS .app for QA / Simulator only.
+    # Apple App Store requires the watch app to be embedded inside the iOS
+    # app's .ipa as a watch2-app extension target. See STORE-PACKAGING.md §1
+    # for the migration path.
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select latest Xcode
+        run: |
+          XCODE=$(ls -d /Applications/Xcode_16*.app /Applications/Xcode_15*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$XCODE" ]; then sudo xcode-select -s "$XCODE/Contents/Developer"; fi
+          xcodebuild -version
+      - name: Install xcodegen
+        run: brew install xcodegen
+      - name: Generate watchOS project
+        working-directory: watchos
+        run: xcodegen generate
+      - name: Build CardWatch.app for watchOS Simulator
+        working-directory: watchos
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN_IOS }}
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY_IOS }}
+          POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
+        run: |
+          mkdir -p build
+          set -o pipefail
+          xcodebuild -project CardWatch.xcodeproj \
+            -scheme CardWatch \
+            -sdk watchsimulator \
+            -configuration Release \
+            -destination 'generic/platform=watchOS Simulator' \
+            -derivedDataPath build/derivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            build | xcpretty --simple
+      - name: Stage outputs
+        run: |
+          mkdir -p staging
+          VERSION=${GITHUB_REF_NAME}
+          APP=$(find watchos/build/derivedData/Build/Products -maxdepth 3 \
+                  -name '*.app' -type d 2>/dev/null | head -n1)
+          if [ -n "$APP" ]; then
+            (cd "$(dirname "$APP")" && \
+             zip -qr "$GITHUB_WORKSPACE/staging/Card-Apple-Watch-${VERSION}-Simulator.app.zip" \
+               "$(basename "$APP")")
+          else
+            echo "::warning::No watchOS .app product was produced; Apple Watch binary will be missing."
+          fi
+          ls -la staging/ || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: watchos-release
+          path: staging/*
+          if-no-files-found: warn
+
+  build-web:
+    name: Build web (marketing site) zip
+    needs: [pre-release-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Stage zip
+        run: |
+          mkdir -p staging
+          VERSION=${GITHUB_REF_NAME}
+          zip -r staging/Card-Web-${VERSION}.zip \
+            index.html styles.css script.js robots.txt sitemap.xml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-release
+          path: staging/*
+
+  # ─────────────────────────────────────────────────────────────────
+  # 2. Aggregate + create GitHub Release
+  # ─────────────────────────────────────────────────────────────────
+
+  publish-github-release:
+    name: Create GitHub Release
+    needs: [build-android, build-ios, build-watchos, build-web]
+    if: ${{ always() && !cancelled() }}
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      is_prerelease: ${{ steps.meta.outputs.is_prerelease }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+        continue-on-error: true
+      - name: Flatten dist directory
+        run: |
+          mkdir -p flat
+          if [ -d dist ]; then
+            find dist -type f \( \
+                -iname '*.apk' -o -iname '*.aab' -o \
+                -iname '*.app.zip' -o -iname '*.ipa' -o \
+                -iname '*.tgz' -o -iname '*.zip' \
+              \) -exec cp {} flat/ \; || true
+          fi
+          ls -la flat/ || true
+      - id: meta
+        run: |
+          VERSION=${GITHUB_REF_NAME}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          if [[ "$VERSION" == *-rc* || "$VERSION" == *-beta* || "$VERSION" == *-alpha* ]]; then
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Generate release notes
+        id: notes
+        run: |
+          echo "# Card ${GITHUB_REF_NAME}" > NOTES.md
+          echo "" >> NOTES.md
+          PREV=$(git tag --sort=-creatordate | grep -A1 "^${GITHUB_REF_NAME}$" | tail -n1 || true)
+          if [ -n "$PREV" ] && [ "$PREV" != "$GITHUB_REF_NAME" ]; then
+            echo "## Changes since $PREV" >> NOTES.md
+            git log --pretty=format:'- %s (%h)' "$PREV..HEAD" >> NOTES.md
+          else
+            echo "## Changes" >> NOTES.md
+            git log --pretty=format:'- %s (%h)' -n 50 >> NOTES.md
+          fi
+          echo "" >> NOTES.md
+          echo "## Artefacts" >> NOTES.md
+          ls flat | sed 's/^/- /' >> NOTES.md
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Card ${{ github.ref_name }}
+          body_path: NOTES.md
+          draft: false
+          prerelease: ${{ steps.meta.outputs.is_prerelease }}
+          generate_release_notes: false
+          files: flat/*
+
+  # ─────────────────────────────────────────────────────────────────
+  # 3. Optional: upload to Google Play (gated by secret)
+  # ─────────────────────────────────────────────────────────────────
+
+  publish-play-store:
+    name: Upload AAB to Google Play
+    needs: publish-github-release
+    runs-on: ubuntu-latest
+    env:
+      PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+      PLAY_STORE_PACKAGE_NAME: ${{ secrets.PLAY_STORE_PACKAGE_NAME }}
+    steps:
+      - name: Skip when secret not configured
+        id: gate
+        run: |
+          if [ -z "$PLAY_STORE_SERVICE_ACCOUNT_JSON" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "::notice::PLAY_STORE_SERVICE_ACCOUNT_JSON not set — skipping Play upload."
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.skip != 'true'
+      - uses: actions/download-artifact@v4
+        if: steps.gate.outputs.skip != 'true'
+        with:
+          name: android-release
+          path: dist
+      - name: Pick AAB
+        if: steps.gate.outputs.skip != 'true'
+        id: pick
+        run: |
+          AAB=$(ls dist/*.aab | head -n1)
+          echo "aab=$AAB" >> $GITHUB_OUTPUT
+      - name: Determine track
+        if: steps.gate.outputs.skip != 'true'
+        id: track
+        run: |
+          VERSION=${GITHUB_REF_NAME}
+          case "$VERSION" in
+            *-internal*) echo "track=internal"  >> $GITHUB_OUTPUT ;;
+            *-alpha*)    echo "track=alpha"     >> $GITHUB_OUTPUT ;;
+            *-beta*|*-rc*) echo "track=beta"    >> $GITHUB_OUTPUT ;;
+            *)           echo "track=production">> $GITHUB_OUTPUT ;;
+          esac
+      - name: Upload to Play Console
+        if: steps.gate.outputs.skip != 'true'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+          packageName: ${{ secrets.PLAY_STORE_PACKAGE_NAME }}
+          releaseFiles: ${{ steps.pick.outputs.aab }}
+          track: ${{ steps.track.outputs.track }}
+          status: completed
+          inAppUpdatePriority: 2
+          whatsNewDirectory: distribution/whatsnew
+
+  # ─────────────────────────────────────────────────────────────────
+  # 4. Optional: build signed iOS .ipa + push to TestFlight (gated)
+  # ─────────────────────────────────────────────────────────────────
+
+  publish-testflight:
+    name: Build signed .ipa + upload to TestFlight
+    needs: publish-github-release
+    runs-on: macos-14
+    env:
+      APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      APP_STORE_CONNECT_API_KEY_P8_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8_BASE64 }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+    steps:
+      - name: Skip when App Store Connect API key not set
+        id: gate
+        run: |
+          if [ -z "$APP_STORE_CONNECT_API_KEY_P8_BASE64" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "::notice::APP_STORE_CONNECT_API_KEY_P8_BASE64 not set — skipping TestFlight upload."
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.skip != 'true'
+      - name: Install xcodegen + Fastlane
+        if: steps.gate.outputs.skip != 'true'
+        run: |
+          brew install xcodegen
+          gem install fastlane --no-document
+      - name: Generate Xcode project
+        if: steps.gate.outputs.skip != 'true'
+        working-directory: ios
+        run: xcodegen generate
+      - name: Decode App Store Connect .p8 API key
+        if: steps.gate.outputs.skip != 'true'
+        run: |
+          mkdir -p $HOME/.appstoreconnect/private_keys
+          echo "$APP_STORE_CONNECT_API_KEY_P8_BASE64" | base64 -d \
+            > $HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
+
+      # Sync provisioning profile + certificate via Fastlane Match (free, OSS).
+      - name: Sync code-signing assets via Fastlane Match
+        if: steps.gate.outputs.skip != 'true' && env.MATCH_GIT_URL != ''
+        working-directory: ios
+        run: |
+          cat > Matchfile <<EOF
+          git_url("${MATCH_GIT_URL}")
+          storage_mode("git")
+          type("appstore")
+          app_identifier(["com.americangroupllc.card",
+                          "com.americangroupllc.card.share",
+                          "com.americangroupllc.card.watchkitapp",
+                          "com.americangroupllc.card.complication"])
+          team_id("${APPLE_TEAM_ID}")
+          EOF
+          fastlane match appstore --readonly
+
+      - name: Build signed .ipa
+        if: steps.gate.outputs.skip != 'true'
+        working-directory: ios
+        run: |
+          mkdir -p build
+          xcodebuild -project Card.xcodeproj \
+            -scheme Card \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/Card.xcarchive \
+            DEVELOPMENT_TEAM=${APPLE_TEAM_ID} \
+            archive | xcpretty --simple
+
+          cat > exportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store</string>
+            <key>teamID</key><string>${APPLE_TEAM_ID}</string>
+            <key>uploadBitcode</key><false/>
+            <key>uploadSymbols</key><true/>
+            <key>compileBitcode</key><false/>
+            <key>signingStyle</key><string>automatic</string>
+          </dict>
+          </plist>
+          EOF
+
+          xcodebuild -exportArchive \
+            -archivePath build/Card.xcarchive \
+            -exportPath build/ipa \
+            -exportOptionsPlist exportOptions.plist | xcpretty --simple
+
+      - name: Upload to TestFlight
+        if: steps.gate.outputs.skip != 'true'
+        uses: Apple-Actions/upload-testflight-build@v1
+        with:
+          app-path: ios/build/ipa/Card.ipa
+          issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8_BASE64 }}

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Card — Instant Action Capture · iPhone · Apple Watch · Android · Wear OS</title>
+  <meta name="description" content="Card is one open-source app where every thought becomes a Card. One feed. Tap to convert any Card into a Note, Task, or Reminder. Local storage only. Quick capture from share sheets, watch complications, and Quick Settings tiles." />
+  <meta name="theme-color" content="#0b0d12" />
+  <link rel="canonical" href="https://americangroupllc.github.io/Card/" />
+  <meta property="og:title" content="Card — Instant Action Capture" />
+  <meta property="og:description" content="Nothing you write gets forgotten or ignored. One feed. Tap to convert. Sub-3-second capture on every device you own." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://americangroupllc.github.io/Card/" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a class="logo" href="./">
+        <span class="logo-mark">▦</span>
+        <span class="logo-text">Card</span>
+      </a>
+      <div class="nav-links">
+        <a href="#capture">Capture</a>
+        <a href="#matrix">Platforms</a>
+        <a href="#privacy">Privacy</a>
+        <a href="https://github.com/AmericanGroupLLC/Card" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <span class="hero-eyebrow">INSTANT ACTION CAPTURE</span>
+      <h1 class="hero-title">Nothing you write gets <span class="accent">forgotten</span> or ignored.</h1>
+      <p class="hero-sub">
+        One feed. Every entry is a <strong>Card</strong>. Tap once to turn any Card into a
+        Note, Task, or Reminder. No folders. No categories. No search to fall back on.
+        Sub-three-seconds from thought to stored, on every device you own.
+      </p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="https://github.com/AmericanGroupLLC/Card" target="_blank" rel="noopener">View on GitHub</a>
+        <a class="btn btn-ghost" href="#capture">See the capture surfaces</a>
+      </div>
+      <div class="hero-clock" id="hero-time">00:00:00</div>
+    </div>
+  </header>
+
+  <section id="capture" class="section">
+    <h2 class="section-title">Four quick-capture surfaces</h2>
+    <div class="card-grid">
+      <article class="card">
+        <h3>📱 In-app composer</h3>
+        <p>Open Card. The text field already has focus. Type, hit return, it's saved. No screen between you and the field.</p>
+      </article>
+      <article class="card">
+        <h3>📤 iOS Share Extension</h3>
+        <p>Select text in any app → Share → <em>Card – Save</em>. The text becomes a Card without ever launching Card itself.</p>
+      </article>
+      <article class="card">
+        <h3>⌚ Watch complication</h3>
+        <p>Add the "Quick capture" complication to any watch face. Tap → dictate → done. Rolls into the same feed on your phone.</p>
+      </article>
+      <article class="card">
+        <h3>⚡ Android Quick Settings tile</h3>
+        <p>Drag the Card tile into Quick Settings. Two-finger swipe → tap → voice composer is up. No home-screen widget required.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="matrix" class="section section-alt">
+    <h2 class="section-title">Built for every screen you wear or carry</h2>
+    <div class="matrix">
+      <table>
+        <thead>
+          <tr><th></th><th>iPhone</th><th>Apple Watch</th><th>Android</th><th>Wear OS</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>Single feed</th>            <td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+          <tr><th>Inline composer</th>        <td>✅</td><td>✅ voice-first</td><td>✅</td><td>✅ voice-first</td></tr>
+          <tr><th>Convert → Task</th>         <td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+          <tr><th>Set Reminder (OS)</th>      <td>UNUserNotifications</td><td>UNUserNotifications</td><td>AlarmManager</td><td>AlarmManager</td></tr>
+          <tr><th>Quick-capture surface</th>  <td>Share Extension</td><td>Complication</td><td>Quick Settings tile</td><td>Tile</td></tr>
+          <tr><th>Storage</th>                <td>JSON · App Group</td><td>JSON · shared</td><td>Room (SQLite)</td><td>Room (SQLite)</td></tr>
+        </tbody>
+      </table>
+      <p class="matrix-note">Domain logic lives in a single shared core (<code>CardCore</code> Swift Package on Apple, <code>:core</code> Kotlin/JVM module on Android). Tests are mirrored case-for-case across both stacks.</p>
+    </div>
+  </section>
+
+  <section id="privacy" class="section">
+    <h2 class="section-title">Private by design</h2>
+    <div class="privacy-grid">
+      <article class="privacy-card">
+        <h3>No account. No login.</h3>
+        <p>Card never asks who you are. There is no server it could ask.</p>
+      </article>
+      <article class="privacy-card">
+        <h3>Local storage only</h3>
+        <p>Every Card stays on the device it was written on. No cloud sync, no backup beacons, no telemetry by default.</p>
+      </article>
+      <article class="privacy-card">
+        <h3>Crash + analytics opt-in</h3>
+        <p>Sentry and PostHog wrappers are <strong>off by default</strong>. Toggle in Settings if you want to help.</p>
+      </article>
+      <article class="privacy-card">
+        <h3>Zero camera, zero location</h3>
+        <p>The only sensitive permission is <em>microphone</em>, requested only when you tap the watch's voice composer.</p>
+      </article>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>© <span id="copyright-year">2026</span> American Group LLC · MIT licensed</span>
+      <div class="footer-links">
+        <a href="https://github.com/AmericanGroupLLC/Card" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/AmericanGroupLLC/Card/blob/main/PRIVACY.md" target="_blank" rel="noopener">Privacy</a>
+        <a href="https://github.com/AmericanGroupLLC/Card/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+      </div>
+    </div>
+  </footer>
+  <script src="./script.js" defer></script>
+</body>
+</html>

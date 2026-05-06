@@ -1,0 +1,15 @@
+Card — instant action capture across all your devices.
+
+This release ships the brutally simple v1:
+
+  • One feed of Cards on iPhone, Apple Watch, Android, Wear OS
+  • One-tap convert: Note → Task → Reminder
+  • Real OS-scheduled reminders (Notification Center / AlarmManager)
+  • Four quick-capture surfaces:
+      – iOS Share Extension
+      – Apple Watch "Quick capture" complication
+      – Android Quick Settings tile
+      – Wear OS tile
+
+No account. No cloud sync. No tracking by default.
+Crash reporting + analytics are opt-in from Settings.
