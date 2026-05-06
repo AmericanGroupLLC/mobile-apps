@@ -21,7 +21,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.americangroupllc.card.HiltTestRunner"
 
         // Sentry / PostHog secrets land here at build time; empty when unset.
         buildConfigField("String", "SENTRY_DSN",       "\"${System.getenv("SENTRY_DSN") ?: ""}\"")
