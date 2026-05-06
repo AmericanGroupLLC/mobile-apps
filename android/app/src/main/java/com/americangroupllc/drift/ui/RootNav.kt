@@ -32,13 +32,15 @@ fun RootNav(nav: NavHostController) {
     Scaffold(
         bottomBar = {
             NavigationBar {
-                fun item(route: String, label: String, icon: androidx.compose.ui.graphics.vector.ImageVector) =
+                @Composable
+                fun item(route: String, label: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
                     NavigationBarItem(
                         selected = current == route,
                         onClick = { nav.navigate(route) { launchSingleTop = true } },
                         icon = { Icon(icon, contentDescription = label) },
                         label = { Text(label) },
                     )
+                }
                 item("discover", "Discover", Icons.Filled.Search)
                 item("matches",  "Matches",  Icons.Filled.Favorite)
                 item("chat",     "Chats",    Icons.Outlined.MailOutline)
