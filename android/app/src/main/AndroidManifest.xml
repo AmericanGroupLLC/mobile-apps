@@ -40,6 +40,16 @@
         android:supportsRtl="true"
         android:allowBackup="false">
 
+        <!-- AdMob APPLICATION_ID. Required by play-services-ads's
+             MobileAdsInitProvider — otherwise the process crashes at
+             startup with IllegalStateException. The value below is
+             Google's official sample/test app ID; replace with the real
+             AdMob app id (or wire via manifestPlaceholders driven by the
+             ADMOB_APP_ID_ANDROID env var) before store submission. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
