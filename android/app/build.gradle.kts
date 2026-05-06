@@ -15,8 +15,8 @@ android {
         applicationId = "com.myhealth.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.3.3"
         vectorDrawables.useSupportLibrary = true
         resourceConfigurations += listOf("en", "es", "fr", "de", "hi")
         // Sentry DSN — taken from env var or local property at build time.
