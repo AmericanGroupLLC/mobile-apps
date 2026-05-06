@@ -47,7 +47,7 @@ jobs:
       - name: Lint
         run: ./gradlew :app:lintDebug --warning-mode all || true
       - name: Unit tests (core)
-        run: ./gradlew :core:testDebugUnitTest
+        run: ./gradlew :core:test
       - name: Unit tests (app)
         run: ./gradlew :app:testDebugUnitTest
       - name: Unit tests (wear)
