@@ -15,7 +15,6 @@ import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
-import androidx.wear.compose.material.TextField
 import com.americangroupllc.cardwear.feed.FeedScreen
 import com.americangroupllc.cardwear.composer.ComposerScreen
 
