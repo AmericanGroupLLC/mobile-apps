@@ -21,7 +21,7 @@ android {
         versionCode = 1
         versionName = "1.0.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.americangroupllc.buddyplay.HiltTestRunner"
 
         // Telemetry slot — empty in v1 (no SDKs pulled). Kept so v1.1 can
         // opt in by setting these env vars at build time.
@@ -98,5 +98,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.51.1")
+    kaptAndroidTest("com.google.dagger:hilt-android-compiler:2.51.1")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
