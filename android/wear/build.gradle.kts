@@ -64,5 +64,6 @@ dependencies {
     implementation("androidx.wear.protolayout:protolayout-material:1.1.0")
     implementation("androidx.wear.protolayout:protolayout-expression:1.1.0")
     implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("com.google.guava:guava:33.2.1-android")
     debugImplementation("androidx.compose.ui:ui-tooling")
 }
