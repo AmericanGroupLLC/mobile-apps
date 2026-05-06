@@ -37,7 +37,7 @@ fun SettingsScreen() {
         SectionTitle("Profile")
         OutlinedTextField(
             value = vm.displayName,
-            onValueChange = vm::setDisplayName,
+            onValueChange = vm::updateDisplayName,
             label = { Text("Display name") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
@@ -46,10 +46,10 @@ fun SettingsScreen() {
         SectionTitle("Connectivity")
         ConnectivityBridge.Preference.values().forEach { p ->
             Row(
-                Modifier.fillMaxWidth().clickable { vm.setConnectivityPref(p) }.padding(vertical = 4.dp),
+                Modifier.fillMaxWidth().clickable { vm.updateConnectivityPref(p) }.padding(vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                RadioButton(selected = vm.connectivityPref == p, onClick = { vm.setConnectivityPref(p) })
+                RadioButton(selected = vm.connectivityPref == p, onClick = { vm.updateConnectivityPref(p) })
                 Text(when (p) {
                     ConnectivityBridge.Preference.AUTO     -> "Auto"
                     ConnectivityBridge.Preference.WIFI_ONLY -> "Wi-Fi only"
@@ -61,17 +61,17 @@ fun SettingsScreen() {
         SectionTitle("Game")
         GameKind.values().forEach { kind ->
             Row(
-                Modifier.fillMaxWidth().clickable { vm.setDefaultGame(kind) }.padding(vertical = 4.dp),
+                Modifier.fillMaxWidth().clickable { vm.updateDefaultGame(kind) }.padding(vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                RadioButton(selected = vm.defaultGame == kind, onClick = { vm.setDefaultGame(kind) })
+                RadioButton(selected = vm.defaultGame == kind, onClick = { vm.updateDefaultGame(kind) })
                 Text(kind.displayName)
             }
         }
 
         SectionTitle("Feedback")
-        SwitchRow("Sound", vm.soundEnabled, vm::setSoundEnabled)
-        SwitchRow("Haptics", vm.hapticsEnabled, vm::setHapticsEnabled)
+        SwitchRow("Sound", vm.soundEnabled, vm::updateSoundEnabled)
+        SwitchRow("Haptics", vm.hapticsEnabled, vm::updateHapticsEnabled)
 
         SectionTitle("Privacy")
         Text("BuddyPlay does not send any data.", style = MaterialTheme.typography.bodyMedium)
@@ -147,11 +147,11 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch { repo.hapticsEnabled.collectLatest { hapticsEnabled = it } }
     }
 
-    fun setDisplayName(name: String) { displayName = name; viewModelScope.launch { repo.setDisplayName(name) } }
-    fun setConnectivityPref(p: ConnectivityBridge.Preference) { connectivityPref = p; viewModelScope.launch { repo.setConnectivityPreference(p) } }
-    fun setDefaultGame(k: GameKind) { defaultGame = k; viewModelScope.launch { repo.setDefaultGame(k) } }
-    fun setSoundEnabled(v: Boolean) { soundEnabled = v; viewModelScope.launch { repo.setSoundEnabled(v) } }
-    fun setHapticsEnabled(v: Boolean) { hapticsEnabled = v; viewModelScope.launch { repo.setHapticsEnabled(v) } }
+    fun updateDisplayName(name: String) { displayName = name; viewModelScope.launch { repo.setDisplayName(name) } }
+    fun updateConnectivityPref(p: ConnectivityBridge.Preference) { connectivityPref = p; viewModelScope.launch { repo.setConnectivityPreference(p) } }
+    fun updateDefaultGame(k: GameKind) { defaultGame = k; viewModelScope.launch { repo.setDefaultGame(k) } }
+    fun updateSoundEnabled(v: Boolean) { soundEnabled = v; viewModelScope.launch { repo.setSoundEnabled(v) } }
+    fun updateHapticsEnabled(v: Boolean) { hapticsEnabled = v; viewModelScope.launch { repo.setHapticsEnabled(v) } }
 
     fun eraseAllRivalries() = rivalryStore.eraseAll()
     fun resetDeviceId() { deviceIds.reset() }
