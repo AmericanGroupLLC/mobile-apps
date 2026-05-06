@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Connectivity: Wi-Fi + Bluetooth only. NO camera, NO microphone,
+         NO foreground service, NO notifications, NO location on modern Android. -->
+
+    <!-- BLE peripheral SDK sometimes wants this during pairing; ad SDK lands later. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Bluetooth (modern API 31+). -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="s" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"
+        tools:targetApi="s" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE"
+        tools:targetApi="s" />
+
+    <!-- Bluetooth (legacy API ≤30 fallback). -->
+    <uses-permission android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30" />
+
+    <!-- Required by legacy BLE scan on API ≤30 only. We do NOT request location on 31+. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
+        android:maxSdkVersion="30" />
+
+    <!-- Modern (API 33+) Wi-Fi peer discovery without the location prompt. -->
+    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="tiramisu" />
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
+    <!-- Push notifications NOT requested in v1; declared with tools:node="remove"
+         in case something pulls it in transitively. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"
+        tools:node="remove" />
+
+    <!-- Bluetooth feature (not required so phones without BLE can still use Wi-Fi only). -->
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
+    <uses-feature android:name="android.hardware.wifi" android:required="false" />
+
+    <application
+        android:name=".BuddyApplication"
+        android:label="BuddyPlay"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@style/Theme.BuddyPlay"
+        android:supportsRtl="true"
+        android:allowBackup="false">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="BuddyPlay"
+            android:theme="@style/Theme.BuddyPlay">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Coral "BP" wordmark. -->
+    <group android:scaleX="1" android:scaleY="1">
+        <path
+            android:fillColor="#FF6F61"
+            android:pathData="M40,40 L40,68 M40,40 L52,40 C58,40 58,52 52,52 L40,52 M40,52 L54,52 C60,52 60,68 54,68 L40,68 Z" />
+        <path
+            android:fillColor="#FF6F61"
+            android:pathData="M64,40 L64,68 M64,40 L76,40 C82,40 82,56 76,56 L64,56" />
+    </group>
+</vector>
