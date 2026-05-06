@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleDisplayName</key>
+    <string>Drift</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>LSRequiresIPhoneOS</key>
+    <true/>
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
+    <key>UIRequiresFullScreen</key>
+    <false/>
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>remote-notification</string>
+    </array>
+    <key>NSUserNotificationsUsageDescription</key>
+    <string>Drift notifies you when someone waves at you or sends a message.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Drift uses the camera so you can take a live verification selfie and add photos to your profile. Photos and the selfie are uploaded only when you confirm the upload.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Drift lets you pick existing photos for your profile.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Drift records a 30-second voice prompt for your profile so people can hear your voice before they wave.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Drift uses your location only to fuzz it to a ZIP-prefix on your device. Drift's servers never see your precise location.</string>
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+        <string>arm64</string>
+    </array>
+    <key>SUPABASE_URL</key>
+    <string>$(SUPABASE_URL)</string>
+    <key>SUPABASE_ANON_KEY</key>
+    <string>$(SUPABASE_ANON_KEY)</string>
+</dict>
+</plist>

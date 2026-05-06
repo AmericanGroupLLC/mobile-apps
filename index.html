@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Drift — Meet people at your pace, in your orbit.</title>
+  <meta name="description" content="A layered dating platform. Choose how you want to be discovered: server, state, county, or ZIP. Every chat opens with three smart reply suggestions. Verification before chat unlocks. Public-meetup framing." />
+  <meta name="theme-color" content="#0a0e1c" />
+  <link rel="canonical" href="https://americangroupllc.github.io/DriftDate/" />
+  <meta property="og:title" content="Drift — Meet people at your pace, in your orbit." />
+  <meta property="og:description" content="Layered discovery. Smart-reply chat. Verified profiles. Calm, human design." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://americangroupllc.github.io/DriftDate/" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a class="logo" href="./">
+        <span class="logo-mark">◐</span>
+        <span class="logo-text">Drift</span>
+      </a>
+      <div class="nav-links">
+        <a href="#layers">Layers</a>
+        <a href="#chat">Smart replies</a>
+        <a href="#safety">Safety</a>
+        <a href="https://github.com/AmericanGroupLLC/DriftDate" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <span class="hero-eyebrow">PROXIMITY · INTENT · CALM</span>
+      <h1 class="hero-title">Meet people at your <span class="accent">pace</span>, in your <span class="accent">orbit</span>.</h1>
+      <p class="hero-sub">
+        Drift lets you choose how you want to be discovered — same ZIP, same
+        county, same state, or the whole server. Every chat opens with three
+        suggested first messages so nobody stalls in a blank textbox.
+        Verification before chat unlocks. Public-meetup framing instead of
+        private location sharing.
+      </p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="https://github.com/AmericanGroupLLC/DriftDate" target="_blank" rel="noopener">View on GitHub</a>
+        <a class="btn btn-ghost" href="#layers">See the layers</a>
+      </div>
+    </div>
+  </header>
+
+  <section id="layers" class="section">
+    <h2 class="section-title">Four discovery layers</h2>
+    <div class="drift-grid">
+      <article class="drift">
+        <h3>📍 ZIP</h3>
+        <p>Same ZIP-prefix as you. Tens of people, the people who already share your coffee shop.</p>
+      </article>
+      <article class="drift">
+        <h3>🏘 County</h3>
+        <p>Same county. Hundreds — close enough to actually meet, wide enough to pick.</p>
+      </article>
+      <article class="drift">
+        <h3>🗺 State</h3>
+        <p>Same state. Thousands — for road trips, transplants, weekend escapes.</p>
+      </article>
+      <article class="drift">
+        <h3>🌐 Server</h3>
+        <p>Everyone. Like a prompt instead of a wave; chat unlocks the same way.</p>
+      </article>
+    </div>
+    <p class="matrix-note">The client never sees a precise location — coordinates are fuzzed to ZIP-3 / county / state on-device before any network call.</p>
+  </section>
+
+  <section id="chat" class="section section-alt">
+    <h2 class="section-title">Three replies, every time you open a chat</h2>
+    <div class="reply-row">
+      <div class="reply"><span class="reply-tag">CASUAL</span> "Hey — your bookshelf gave it away. What are you reading right now?"</div>
+      <div class="reply"><span class="reply-tag">CONTEXT</span> "Saw you're in Santa Clara County too — favorite spot to actually slow down?"</div>
+      <div class="reply"><span class="reply-tag">PLAYFUL</span> "Picking the third photo: bold strategy. Tell me more."</div>
+    </div>
+    <p class="matrix-note">A server-side LLM call (provider-agnostic, env-keyed) reads both profiles and the last 5 messages, then returns three suggestions. Tone evolves: slow chat → light prompts; good energy → playful escalation; deep convo → thoughtful follow-up; meetup-ready → public-date suggestions.</p>
+  </section>
+
+  <section id="safety" class="section">
+    <h2 class="section-title">Safety, by design</h2>
+    <div class="privacy-grid">
+      <article class="privacy-drift">
+        <h3>Verified before chat</h3>
+        <p>Live-selfie matched against your reference photo via AWS Rekognition. Only the boolean result is stored — no facial-feature embeddings.</p>
+      </article>
+      <article class="privacy-drift">
+        <h3>No precise location</h3>
+        <p>Coordinates are truncated to ZIP-3 / county / state on your device. The server has no <code>lat</code> or <code>lon</code> column.</p>
+      </article>
+      <article class="privacy-drift">
+        <h3>Public-meetup framing</h3>
+        <p>When the conversation reaches meetup-ready, suggestions point at coffee shops and public events — never "send me your address."</p>
+      </article>
+      <article class="privacy-drift">
+        <h3>Report + block on every screen</h3>
+        <p>One tap from any profile or chat. Blocked users disappear from your discovery, mutual or not.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="matrix" class="section section-alt">
+    <h2 class="section-title">Built for every screen you wear or carry</h2>
+    <div class="matrix">
+      <table>
+        <thead>
+          <tr><th></th><th>iPhone</th><th>Apple Watch</th><th>Android</th><th>Wear OS</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>Layer-switched discovery</th>   <td>✅</td><td>indicator</td><td>✅</td><td>indicator</td></tr>
+          <tr><th>Wave / Pass</th>                <td>✅</td><td>wave-back tile</td><td>✅</td><td>wave-back tile</td></tr>
+          <tr><th>Smart-reply chat</th>           <td>✅</td><td>quick-reply</td><td>✅</td><td>quick-reply</td></tr>
+          <tr><th>Selfie verification</th>        <td>Vision + Rekognition</td><td>—</td><td>MLKit + Rekognition</td><td>—</td></tr>
+          <tr><th>Voice-prompt 30s clip</th>      <td>AVAudioRecorder</td><td>—</td><td>MediaRecorder</td><td>—</td></tr>
+          <tr><th>Push surface</th>               <td>Notification Service Ext.</td><td>WidgetKit complication</td><td>FCM</td><td>Wear tile</td></tr>
+        </tbody>
+      </table>
+      <p class="matrix-note">Domain logic lives in a single shared core (<code>DriftCore</code> Swift Package on Apple, <code>:core</code> Kotlin/JVM module on Android). The keystone tests — <code>LayerScorer</code>, <code>ToneClassifier</code>, <code>LocationFuzzer</code>, <code>ReplyPromptBuilder</code> — are mirrored case-for-case across both stacks.</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>© <span id="copyright-year">2026</span> American Group LLC · MIT licensed</span>
+      <div class="footer-links">
+        <a href="https://github.com/AmericanGroupLLC/DriftDate" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/AmericanGroupLLC/DriftDate/blob/main/PRIVACY.md" target="_blank" rel="noopener">Privacy</a>
+        <a href="https://github.com/AmericanGroupLLC/DriftDate/blob/main/SAFETY.md" target="_blank" rel="noopener">Safety</a>
+        <a href="https://github.com/AmericanGroupLLC/DriftDate/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+      </div>
+    </div>
+  </footer>
+  <script src="./script.js" defer></script>
+</body>
+</html>

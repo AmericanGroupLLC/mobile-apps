@@ -1,0 +1,185 @@
+/* ─── Drift marketing site ──────────────────────────────────────────
+   Palette: deep navy background + soft amber accent. Calm, human,
+   not loud. */
+
+:root {
+  --bg: #0a0e1c;
+  --bg-alt: #10162a;
+  --surface: #161d35;
+  --border: #243154;
+  --text: #e8ebf3;
+  --text-dim: #9aa3c0;
+  --accent: #f5b66c;       /* soft amber */
+  --accent-soft: #f5b66c33;
+  --maxw: 1080px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter",
+    Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code { background: var(--surface); padding: 0.1em 0.35em; border-radius: 4px;
+  font-size: 0.9em; }
+
+/* ── Nav ────────────────────────────────────────────────────────── */
+
+.navbar {
+  position: sticky; top: 0; z-index: 10;
+  background: rgba(10, 14, 28, 0.85);
+  backdrop-filter: saturate(150%) blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-container {
+  display: flex; align-items: center; justify-content: space-between;
+  max-width: var(--maxw); margin: 0 auto; padding: 14px 24px;
+}
+.logo {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--text); font-weight: 700; font-size: 1.1rem;
+}
+.logo-mark { color: var(--accent); font-size: 1.3rem; }
+.nav-links { display: flex; gap: 22px; }
+.nav-links a { color: var(--text-dim); }
+.nav-links a:hover { color: var(--text); text-decoration: none; }
+
+/* ── Hero ───────────────────────────────────────────────────────── */
+
+.hero {
+  padding: 96px 24px 64px;
+  background:
+    radial-gradient(ellipse at top, var(--accent-soft), transparent 60%),
+    var(--bg);
+}
+.hero-inner { max-width: 880px; margin: 0 auto; text-align: center; }
+.hero-eyebrow {
+  display: inline-block; font-size: 0.78rem; letter-spacing: 0.18em;
+  color: var(--accent); margin-bottom: 18px;
+}
+.hero-title {
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  line-height: 1.1; margin: 0 0 18px;
+}
+.accent { color: var(--accent); }
+.hero-sub {
+  font-size: 1.07rem; color: var(--text-dim); max-width: 640px;
+  margin: 0 auto 32px;
+}
+.hero-ctas { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+.btn {
+  display: inline-block; padding: 12px 22px; border-radius: 999px;
+  font-weight: 600; font-size: 0.95rem;
+  border: 1px solid transparent; transition: all 0.15s ease;
+}
+.btn-primary { background: var(--accent); color: #211608; }
+.btn-primary:hover { background: #f7c489; text-decoration: none; }
+.btn-ghost { color: var(--text); border-color: var(--border); }
+.btn-ghost:hover { background: var(--surface); text-decoration: none; }
+
+/* ── Sections ───────────────────────────────────────────────────── */
+
+.section {
+  padding: 72px 24px;
+  max-width: var(--maxw); margin: 0 auto;
+}
+.section-alt { background: var(--bg-alt); max-width: none; }
+.section-alt > * { max-width: var(--maxw); margin-left: auto; margin-right: auto; }
+.section-title {
+  font-size: 1.6rem; margin: 0 0 28px;
+  color: var(--text);
+}
+
+/* ── Drift cards (layer cards) ──────────────────────────────────── */
+
+.drift-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+.drift {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 22px;
+}
+.drift h3 { margin: 0 0 8px; font-size: 1.1rem; }
+.drift p { color: var(--text-dim); margin: 0; }
+
+.matrix-note {
+  margin-top: 22px; color: var(--text-dim); font-size: 0.92rem;
+}
+
+/* ── Reply suggestions row (chat section) ───────────────────────── */
+
+.reply-row {
+  display: grid; gap: 14px; grid-template-columns: 1fr;
+  max-width: 720px; margin: 0 auto;
+}
+.reply {
+  background: var(--surface); border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px; padding: 16px 18px;
+  color: var(--text);
+}
+.reply-tag {
+  display: inline-block; font-size: 0.7rem; letter-spacing: 0.16em;
+  color: var(--accent); margin-right: 10px;
+}
+
+/* ── Privacy grid ───────────────────────────────────────────────── */
+
+.privacy-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+.privacy-drift {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+}
+.privacy-drift h3 { margin: 0 0 6px; font-size: 1.02rem; }
+.privacy-drift p  { color: var(--text-dim); margin: 0; font-size: 0.95rem; }
+
+/* ── Matrix table ───────────────────────────────────────────────── */
+
+.matrix table {
+  width: 100%; border-collapse: collapse; margin-top: 8px;
+}
+.matrix th, .matrix td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  text-align: left; vertical-align: top; font-size: 0.92rem;
+}
+.matrix thead th { color: var(--accent); font-weight: 700; }
+.matrix tbody th { color: var(--text); font-weight: 600; }
+.matrix td { color: var(--text-dim); }
+
+/* ── Footer ─────────────────────────────────────────────────────── */
+
+.footer {
+  background: var(--bg-alt); border-top: 1px solid var(--border);
+  padding: 28px 24px;
+}
+.footer-inner {
+  max-width: var(--maxw); margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px; color: var(--text-dim);
+}
+.footer-links { display: flex; gap: 18px; }
+.footer-links a { color: var(--text-dim); }
+.footer-links a:hover { color: var(--accent); text-decoration: none; }
+
+/* ── Responsive ─────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .nav-links { display: none; }
+  .hero { padding-top: 64px; }
+}

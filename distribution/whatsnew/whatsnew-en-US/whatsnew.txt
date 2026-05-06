@@ -1,0 +1,7 @@
+Drift v1.0 — Meet people at your pace, in your orbit.
+  • Four discovery layers: Server, State, County, ZIP.
+  • Every chat opens with three smart-reply suggestions.
+  • Verified profiles before chat unlocks (live-selfie + reference match).
+  • Voice-prompt + Hinge-style structured prompts.
+  • Public-meetup framing — never "send me your address."
+  • iPhone, Apple Watch, Android, Wear OS.
