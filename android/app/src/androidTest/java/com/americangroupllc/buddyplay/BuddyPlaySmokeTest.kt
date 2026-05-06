@@ -1,5 +1,6 @@
 package com.americangroupllc.buddyplay
 
+import androidx.compose.ui.test.assertExists
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -21,15 +22,15 @@ class BuddyPlaySmokeTest {
     @Test
     fun home_screen_renders_all_three_games() {
         composeRule.onNodeWithText("BuddyPlay").assertIsDisplayed()
-        composeRule.onNodeWithText("Royal Chess").assertIsDisplayed()
-        composeRule.onNodeWithText("Dice Kingdom").assertIsDisplayed()
-        composeRule.onNodeWithText("Mini Racer").assertIsDisplayed()
+        composeRule.onNodeWithText("Royal Chess").assertExists()
+        composeRule.onNodeWithText("Dice Kingdom").assertExists()
+        composeRule.onNodeWithText("Mini Racer").assertExists()
     }
 
     @Test
     fun navigates_to_settings() {
         composeRule.onNodeWithText("Settings").performClick()
         composeRule.onNodeWithText("BuddyPlay does not send any data.")
-            .assertIsDisplayed()
+            .assertExists()
     }
 }

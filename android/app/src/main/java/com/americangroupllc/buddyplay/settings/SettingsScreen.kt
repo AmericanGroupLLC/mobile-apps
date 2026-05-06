@@ -2,6 +2,8 @@ package com.americangroupllc.buddyplay.settings
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,7 +31,7 @@ fun SettingsScreen() {
     var showResetIdConfirm by remember { mutableStateOf(false) }
 
     Column(
-        Modifier.fillMaxSize().padding(20.dp),
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text("Settings", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
@@ -78,7 +80,7 @@ fun SettingsScreen() {
         Button(onClick = { showEraseConfirm = true }) { Text("Erase all rivalries") }
         Button(onClick = { showResetIdConfirm = true }) { Text("Reset device ID") }
 
-        Spacer(Modifier.weight(1f))
+        Spacer(Modifier.height(16.dp))
         Text("BuddyPlay v1.0 · MIT-licensed",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
