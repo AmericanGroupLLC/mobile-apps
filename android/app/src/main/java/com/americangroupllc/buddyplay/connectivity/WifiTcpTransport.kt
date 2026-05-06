@@ -46,7 +46,7 @@ class WifiTcpTransport(context: Context) : BuddyTransport {
         nsd.onHostsChanged = { onHostsChanged?.invoke(it) }
     }
 
-    override suspend fun startHosting(localPeer: Peer) = withContext(Dispatchers.IO) {
+    override suspend fun startHosting(localPeer: Peer): Unit = withContext(Dispatchers.IO) {
         this@WifiTcpTransport.localPeer = localPeer
         val s = ServerSocket(PORT)
         server = s
