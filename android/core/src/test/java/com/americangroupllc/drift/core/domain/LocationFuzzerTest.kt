@@ -20,6 +20,7 @@ class LocationFuzzerTest {
         val f = LocationFuzzer.fuzz(zip5 = "94025", countyFips = "06085", stateCode = "ca")
         // Reflect over the data class properties — adding lat/lon would fail this.
         val names = FuzzedLocation::class.java.declaredFields
+            .filterNot { java.lang.reflect.Modifier.isStatic(it.modifiers) }
             .map { it.name }
             .filterNot { it.startsWith("$") }
             .toSet()

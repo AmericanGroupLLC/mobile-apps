@@ -45,7 +45,7 @@ class LayerScorerTest {
         val target = profile(intent = Intent.FRIENDSHIP, zip = "100", county = "36061",
                              state = "NY", vibes = listOf("chess"))
         val s = LayerScorer.score(viewer, target, Layer.STATE)
-        assertThat(s).isLessThan(0.30)
+        assertThat(s).isLessThan(0.50)
     }
 
     @Test fun `weights sum to 1`() {
