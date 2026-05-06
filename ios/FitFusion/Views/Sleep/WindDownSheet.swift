@@ -97,10 +97,10 @@ struct WindDownSheet: View {
         cycleBreath()
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-            if let s = startedAt {
-                elapsed = Date().timeIntervalSince(s)
-                if elapsed >= totalSeconds && !written {
-                    Task {
+            Task { @MainActor in
+                if let s = startedAt {
+                    elapsed = Date().timeIntervalSince(s)
+                    if elapsed >= totalSeconds && !written {
                         await hk.writeMindfulSession(start: s, end: Date())
                         written = true
                     }

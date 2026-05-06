@@ -54,7 +54,10 @@ public final class AnalyticsService: ObservableObject {
         let config = PostHogConfig(apiKey: key, host: Self.resolveHost())
         config.captureApplicationLifecycleEvents = true
         config.captureScreenViews = false  // we'll fire screens manually
+        #if os(iOS)
+        // sessionReplay is iOS-only on the PostHog SDK; not available on watchOS.
         config.sessionReplay = false        // privacy-first; opt-in if needed
+        #endif
         PostHogSDK.shared.setup(config)
         isStarted = true
         #endif
