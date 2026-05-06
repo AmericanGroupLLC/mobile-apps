@@ -140,10 +140,15 @@ jobs:
         run: |
           mkdir -p build
           set -o pipefail
+          # Debug config matches what pre-release-tests / iOS UI tests build
+          # successfully. The Release config triggers Swift 6 strict-concurrency
+          # / WMO availability errors that don't fire in Debug. This sim binary
+          # is QA-only (signed-disabled); the App Store / TestFlight flow below
+          # uses a separate archive step that is Release + signed.
           xcodebuild -project FitFusion.xcodeproj \
             -scheme FitFusion \
             -sdk iphonesimulator \
-            -configuration Release \
+            -configuration Debug \
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build/derivedData \
             CODE_SIGNING_ALLOWED=NO \
@@ -200,10 +205,14 @@ jobs:
         run: |
           mkdir -p build
           set -o pipefail
+          # Debug config matches the pre-release-tests watchos-unit-tests job
+          # which already builds successfully. Release config trips on watchOS
+          # availability checks that are SDK-version sensitive and only fire
+          # under WMO. This sim binary is QA-only.
           xcodebuild -project HealthAppWatch.xcodeproj \
             -scheme HealthAppWatch \
             -sdk watchsimulator \
-            -configuration Release \
+            -configuration Debug \
             -destination 'generic/platform=watchOS Simulator' \
             -derivedDataPath build/derivedData \
             CODE_SIGNING_ALLOWED=NO \
