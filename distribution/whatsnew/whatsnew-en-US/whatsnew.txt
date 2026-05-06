@@ -1,0 +1,7 @@
+BuddyPlay v1.0 — Play anywhere. No internet needed.
+
+* Three offline multiplayer mini-games: Royal Chess, Dice Kingdom (Ludo-style), Mini Racer.
+* Pair two phones over Wi-Fi, Mobile Hotspot, or Bluetooth — auto-failover ladder.
+* Cross-platform: iPhone ↔ Android.
+* Local rivalries store ("You vs. Sarah: Chess 14W · 12L · 2D").
+* No accounts, no servers, no ads. Subway tunnels welcome.
