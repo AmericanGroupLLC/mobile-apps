@@ -1,0 +1,15 @@
+{
+  "dataCollected": [],
+  "dataShared": null,
+  "generated": "2026-05-06",
+  "packageName": "com.americangroupllc.buddyplay",
+  "securityPractices": {
+    "dataDeletionPolicy": "Account holders can request deletion via Settings or by emailing privacy@americangroupllc.com. Local data is wiped on uninstall.",
+    "dataEncryptedInTransit": true,
+    "committedToPlayFamiliesPolicy": false,
+    "independentSecurityReview": false
+  },
+  "$schema": "https://support.google.com/googleplay/android-developer/answer/10787469",
+  "appName": "BuddyPlay",
+  "notes": "DRAFT - generated from static SDK analysis. User must verify and submit in Play Console, Data safety form."
+}

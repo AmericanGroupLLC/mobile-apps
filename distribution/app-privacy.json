@@ -1,0 +1,13 @@
+{
+  "dataTypes": [],
+  "$schema": "https://developer.apple.com/app-store/app-privacy-details/",
+  "notes": "DRAFT - generated from static SDK analysis. User must verify each line in App Store Connect, Privacy.",
+  "generated": "2026-05-06",
+  "privacyChoices": {
+    "requiresAccount": false,
+    "providesAccount": false,
+    "tracksAcrossApps": false
+  },
+  "bundleId": "com.americangroupllc.buddyplay",
+  "appName": "BuddyPlay"
+}
