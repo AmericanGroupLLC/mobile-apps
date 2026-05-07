@@ -1,0 +1,46 @@
+{
+  "dataTypes": [
+    {
+      "linked_to_user": false,
+      "type": "Crash data",
+      "category": "Diagnostics",
+      "note": "Sentry. Off by default; user opts in via Settings, Privacy. Anonymous installation ID only.",
+      "collected": true,
+      "tracking": false,
+      "purposes": [
+        "App Functionality"
+      ]
+    },
+    {
+      "linked_to_user": false,
+      "type": "Product Interaction",
+      "category": "Usage Data",
+      "note": "PostHog. Off by default. Captures screen views and feature taps; never captures health or personal content.",
+      "collected": true,
+      "tracking": false,
+      "purposes": [
+        "Analytics",
+        "App Functionality"
+      ]
+    },
+    {
+      "linked_to_user": false,
+      "type": "Health",
+      "category": "Health & Fitness",
+      "note": "Reads/writes Apple HealthKit on-device only. Not collected by the developer; never sent off-device.",
+      "collected": false,
+      "tracking": false,
+      "purposes": []
+    }
+  ],
+  "$schema": "https://developer.apple.com/app-store/app-privacy-details/",
+  "notes": "DRAFT - generated from static SDK analysis. User must verify each line in App Store Connect, Privacy.",
+  "generated": "2026-05-06",
+  "privacyChoices": {
+    "requiresAccount": true,
+    "providesAccount": false,
+    "tracksAcrossApps": false
+  },
+  "bundleId": "com.fitfusion.ios",
+  "appName": "MyHealth"
+}

@@ -1,0 +1,18 @@
+Personal fitness operating system.
+
+Training, cardio, nutrition, sleep, mindfulness, on-device AI coaching. Apple HealthKit + Android Health Connect as source of truth. iPhone, Apple Watch, Android, Wear OS.
+
+What you get
+- Native on every platform.
+- Privacy first - no account, no tracking by default.
+- Optional Wear OS and Apple Watch companions where supported.
+- Open source under MIT.
+
+Why it is different
+We do not collect telemetry by default. Crash reports (Sentry) and product analytics (PostHog) are off until you turn them on in Settings, Privacy. Health and personal data never leaves your device unless you opt into a sync surface.
+
+Source code, issues and ideas
+https://github.com/AmericanGroupLLC/HealthApp
+
+Privacy: https://americangroupllc.github.io/HealthApp/privacy
+Support: https://americangroupllc.github.io/HealthApp/support
