@@ -1,0 +1,18 @@
+Five tools. One Pocket.
+
+Clock, alarm, timer, world clock, and bedtime - five native utilities, four platforms (iPhone, Apple Watch, Android, Wear OS). Privacy-first; no account.
+
+What you get
+- Native on every platform.
+- Privacy first - no account, no tracking by default.
+- Optional Wear OS and Apple Watch companions where supported.
+- Open source under MIT.
+
+Why it is different
+We do not collect telemetry by default. Crash reports (Sentry) and product analytics (PostHog) are off until you turn them on in Settings, Privacy. Health and personal data never leaves your device unless you opt into a sync surface.
+
+Source code, issues and ideas
+https://github.com/AmericanGroupLLC/ClockApp
+
+Privacy: https://americangroupllc.github.io/ClockApp/privacy
+Support: https://americangroupllc.github.io/ClockApp/support
