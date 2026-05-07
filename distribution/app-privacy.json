@@ -1,0 +1,36 @@
+{
+  "dataTypes": [
+    {
+      "linked_to_user": false,
+      "type": "Device ID",
+      "category": "Identifiers",
+      "note": "Google AdMob IDFA. Subject to App Tracking Transparency prompt; user can decline.",
+      "collected": true,
+      "tracking": true,
+      "purposes": [
+        "Third-Party Advertising"
+      ]
+    },
+    {
+      "linked_to_user": true,
+      "type": "Purchase History",
+      "category": "Purchases",
+      "note": "RevenueCat manages in-app purchases / subscriptions.",
+      "collected": true,
+      "tracking": false,
+      "purposes": [
+        "App Functionality"
+      ]
+    }
+  ],
+  "$schema": "https://developer.apple.com/app-store/app-privacy-details/",
+  "notes": "DRAFT - generated from static SDK analysis. User must verify each line in App Store Connect, Privacy.",
+  "generated": "2026-05-06",
+  "privacyChoices": {
+    "requiresAccount": false,
+    "providesAccount": false,
+    "tracksAcrossApps": true
+  },
+  "bundleId": "com.americangroupllc.offlineaibuddy",
+  "appName": "Offline AI Buddy"
+}

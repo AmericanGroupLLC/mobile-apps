@@ -1,0 +1,1 @@
+On-device LLM. Chat, voice, roasts, kid-safe mode, multilingual translator, system keyboard with smart replies. After a one-time ~1 GB model download, works fully offline

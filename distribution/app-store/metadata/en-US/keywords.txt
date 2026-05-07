@@ -1,0 +1,1 @@
+AI,offline AI,LLM,chat,keyboard,privacy,no internet,assistant,translator,smart replies

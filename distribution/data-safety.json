@@ -1,0 +1,57 @@
+{
+  "dataCollected": [
+    {
+      "purpose": [
+        "Advertising or marketing"
+      ],
+      "category": "Device or other IDs",
+      "shared": true,
+      "dataType": "Device or other IDs",
+      "ephemeral": false,
+      "optional": false
+    },
+    {
+      "purpose": [
+        "App functionality"
+      ],
+      "category": "Financial info",
+      "shared": true,
+      "dataType": "Purchase history",
+      "ephemeral": false,
+      "optional": false
+    }
+  ],
+  "dataShared": [
+    {
+      "purpose": [
+        "Advertising or marketing"
+      ],
+      "category": "Device or other IDs",
+      "shared": true,
+      "dataType": "Device or other IDs",
+      "ephemeral": false,
+      "optional": false
+    },
+    {
+      "purpose": [
+        "App functionality"
+      ],
+      "category": "Financial info",
+      "shared": true,
+      "dataType": "Purchase history",
+      "ephemeral": false,
+      "optional": false
+    }
+  ],
+  "generated": "2026-05-06",
+  "packageName": "com.americangroupllc.offlineaibuddy",
+  "securityPractices": {
+    "dataDeletionPolicy": "Account holders can request deletion via Settings or by emailing privacy@americangroupllc.com. Local data is wiped on uninstall.",
+    "dataEncryptedInTransit": true,
+    "committedToPlayFamiliesPolicy": false,
+    "independentSecurityReview": false
+  },
+  "$schema": "https://support.google.com/googleplay/android-developer/answer/10787469",
+  "appName": "Offline AI Buddy",
+  "notes": "DRAFT - generated from static SDK analysis. User must verify and submit in Play Console, Data safety form."
+}
