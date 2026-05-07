@@ -43,10 +43,11 @@ jobs:
             echo "ANDROID_KEYSTORE_BASE64 secret is empty - aborting." >&2
             exit 1
           fi
-          mkdir -p android/app/keystore
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/keystore/upload.jks
+                    KEYSTORE_PATH="$GITHUB_WORKSPACE/android/keystore/upload.jks"
+          mkdir -p android/keystore
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$KEYSTORE_PATH"
           cat > android/keystore.properties <<EOF
-          storeFile=keystore/upload.jks
+          storeFile=$KEYSTORE_PATH
           storePassword=$ANDROID_KEYSTORE_PASSWORD
           keyAlias=$ANDROID_KEY_ALIAS
           keyPassword=$ANDROID_KEY_PASSWORD
@@ -83,4 +84,5 @@ jobs:
                 --draft \
                 --title "Android binaries $VERSION" \
                 --notes "Self-signed Android binaries built by release-binaries-only workflow. Replace upload key and tag a real version when ready to publish."
+
 
