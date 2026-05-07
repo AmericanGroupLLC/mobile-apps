@@ -1,0 +1,6 @@
+v0.1.0 - Initial release on App Store and Google Play.
+- Full feature parity across iPhone, Android, Apple Watch, Wear OS.
+- Privacy: no account required, no tracking by default.
+- Open source: https://github.com/AmericanGroupLLC/DriftDate
+
+Issues + ideas welcome: https://github.com/AmericanGroupLLC/DriftDate/issues
