@@ -85,3 +85,4 @@ jobs:
                 --draft \
                 --title "Android binaries $VERSION" \
                 --notes "Self-signed Android binaries built by release-binaries-only workflow. Replace upload key and tag a real version when ready to publish."
+
