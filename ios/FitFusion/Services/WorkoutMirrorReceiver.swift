@@ -8,9 +8,11 @@ import Combine
 /// Two ingestion paths feed the published live stats:
 ///
 /// 1. **`HKWorkoutSessionMirroringStartHandler`** — observed via
-///    `HKHealthStore.workoutSessionMirroringStartHandler`. When a watch session
-///    starts mirroring, we associate ourselves as the companion-side
-///    `HKLiveWorkoutBuilderDelegate` and forward `didCollectDataOf:` deltas.
+///    `HKHealthStore.workoutSessionMirroringStartHandler`. We retain the
+///    incoming `HKWorkoutSession` so we can react to lifecycle events; the
+///    live `HKLiveWorkoutBuilderDelegate` API is watchOS-only and not
+///    available on iOS, so we deliberately do not subscribe to per-sample
+///    deltas through HealthKit on this side.
 ///
 /// 2. **App Group fallback** — the Watch's `WorkoutController` writes a
 ///    per-second tick to the shared `UserDefaults` suite `group.com.fitfusion`
@@ -26,7 +28,9 @@ final class WorkoutMirrorReceiver: NSObject, ObservableObject {
 
     private let store = HKHealthStore()
     private var session: HKWorkoutSession?
-    private var builder: HKLiveWorkoutBuilder?
+    // NOTE: `HKLiveWorkoutBuilder` and `associatedWorkoutBuilder()` are
+    // watchOS-only; on iOS the receiver relies entirely on the App Group
+    // polling fallback in `pollAppGroup()` for live stats.
 
     @Published var isActive = false
     @Published var heartRate: Double = 0
@@ -90,10 +94,10 @@ final class WorkoutMirrorReceiver: NSObject, ObservableObject {
 
     @available(iOS 17.0, *)
     private func attach(session: HKWorkoutSession) {
+        // We only retain the session reference; live-stat deltas are
+        // delivered via the App Group polling path in `pollAppGroup()`
+        // because the live-builder delegate API is watchOS-only.
         self.session = session
-        let builder = session.associatedWorkoutBuilder()
-        builder.delegate = self
-        self.builder = builder
         startedAt = Date()
         isActive = true
     }
@@ -101,7 +105,6 @@ final class WorkoutMirrorReceiver: NSObject, ObservableObject {
     private func reset() {
         isActive = false
         session = nil
-        builder = nil
         heartRate = 0
         activeCalories = 0
         distanceMeters = 0
@@ -145,27 +148,7 @@ final class WorkoutMirrorReceiver: NSObject, ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
 }
 
-// MARK: - HKLiveWorkoutBuilderDelegate (companion-side mirror)
-
-extension WorkoutMirrorReceiver: HKLiveWorkoutBuilderDelegate {
-    nonisolated func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
-
-    nonisolated func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder,
-                                    didCollectDataOf collectedTypes: Set<HKSampleType>) {
-        for type in collectedTypes {
-            guard let qType = type as? HKQuantityType,
-                  let stats = workoutBuilder.statistics(for: qType) else { continue }
-            if qType == HKQuantityType(.heartRate) {
-                let unit = HKUnit.count().unitDivided(by: .minute())
-                let v = stats.mostRecentQuantity()?.doubleValue(for: unit) ?? 0
-                Task { @MainActor in self.heartRate = v }
-            } else if qType == HKQuantityType(.activeEnergyBurned) {
-                let v = stats.sumQuantity()?.doubleValue(for: .kilocalorie()) ?? 0
-                Task { @MainActor in self.activeCalories = v }
-            } else if qType == HKQuantityType(.distanceWalkingRunning) {
-                let v = stats.sumQuantity()?.doubleValue(for: .meter()) ?? 0
-                Task { @MainActor in self.distanceMeters = v }
-            }
-        }
-    }
-}
+// NOTE: Live `didCollectDataOf:` deltas require `HKLiveWorkoutBuilderDelegate`,
+// which is watchOS-only. The iOS receiver therefore relies entirely on the
+// App Group polling fallback (`pollAppGroup`) for per-second stats, which the
+// Watch's `WorkoutController` writes to `group.com.fitfusion`.

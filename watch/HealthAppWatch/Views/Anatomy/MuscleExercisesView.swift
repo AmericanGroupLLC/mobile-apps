@@ -8,6 +8,7 @@ struct MuscleExercisesView: View {
 
     @State private var equipmentFilter: Equipment?
     @State private var includeStretches: Bool = true
+    @State private var showFilterSheet = false
 
     private var results: [Exercise] {
         ExerciseLibrary.filter(muscle: muscle,
@@ -18,15 +19,10 @@ struct MuscleExercisesView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 6) {
-                Menu {
-                    Button("All Equipment") { equipmentFilter = nil }
-                    ForEach(Equipment.allCases) { e in
-                        Button(e.label) { equipmentFilter = e }
-                    }
-                    Divider()
-                    Button(includeStretches ? "Hide stretches" : "Show stretches") {
-                        includeStretches.toggle()
-                    }
+                // `Menu` is unavailable in watchOS; use a sheet-based picker
+                // instead to expose the same filter options.
+                Button {
+                    showFilterSheet = true
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "line.3.horizontal.decrease.circle")
@@ -37,6 +33,8 @@ struct MuscleExercisesView: View {
                     .background(.white.opacity(0.12), in: Capsule())
                     .foregroundStyle(.white)
                 }
+                .buttonStyle(.plain)
+                .sheet(isPresented: $showFilterSheet) { filterSheet }
 
                 ForEach(results) { exercise in
                     NavigationLink {
@@ -79,5 +77,32 @@ struct MuscleExercisesView: View {
         .padding(.horizontal, 8).padding(.vertical, 6)
         .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder
+    private var filterSheet: some View {
+        NavigationStack {
+            List {
+                Section("Equipment") {
+                    Button("All Equipment") {
+                        equipmentFilter = nil
+                        showFilterSheet = false
+                    }
+                    ForEach(Equipment.allCases) { e in
+                        Button(e.label) {
+                            equipmentFilter = e
+                            showFilterSheet = false
+                        }
+                    }
+                }
+                Section {
+                    Button(includeStretches ? "Hide stretches" : "Show stretches") {
+                        includeStretches.toggle()
+                        showFilterSheet = false
+                    }
+                }
+            }
+            .navigationTitle("Filter")
+        }
     }
 }

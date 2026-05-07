@@ -406,12 +406,12 @@ final class iOSHealthKitManager: ObservableObject {
         }
     }
 
-    // MARK: - State of Mind (iOS 17+)
+    // MARK: - State of Mind (iOS 18+)
 
     /// Write a 2-axis State of Mind sample (valence + arousal) to Apple Health.
     /// `valence` ∈ [-1, 1] (very unpleasant → very pleasant);
     /// `arousal` is mapped via Apple's `HKStateOfMind.Label` set picked by the caller.
-    @available(iOS 17.0, *)
+    @available(iOS 18.0, *)
     func writeStateOfMind(label: HKStateOfMind.Label,
                           valence: Double,
                           kind: HKStateOfMind.Kind = .momentaryEmotion,
@@ -427,7 +427,7 @@ final class iOSHealthKitManager: ObservableObject {
     }
 
     /// Recent State of Mind entries (rolling window).
-    @available(iOS 17.0, *)
+    @available(iOS 18.0, *)
     func readRecentStateOfMind(daysBack: Int = 7) async throws -> [HKStateOfMind] {
         let cal = Calendar.current
         guard let start = cal.date(byAdding: .day, value: -daysBack, to: Date()) else { return [] }

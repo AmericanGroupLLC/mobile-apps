@@ -122,8 +122,8 @@ struct StateOfMindLogger: View {
     }
 
     private func save() async {
-        // 1) HKStateOfMindSample (iOS 17+).
-        if #available(iOS 17.0, *) {
+        // 1) HKStateOfMindSample (iOS 18+).
+        if #available(iOS 18.0, *) {
             await hk.writeStateOfMind(label: label.healthKitLabel,
                                       valence: valence)
         }
@@ -136,7 +136,7 @@ struct StateOfMindLogger: View {
     }
 }
 
-/// User-facing label set; maps each option to an HKStateOfMind.Label on iOS 17+.
+/// User-facing label set; maps each option to an HKStateOfMind.Label on iOS 18+.
 enum MoodLabel: CaseIterable {
     case happy, calm, content, sad, angry, anxious, energized
 
@@ -152,7 +152,7 @@ enum MoodLabel: CaseIterable {
         }
     }
 
-    @available(iOS 17.0, *)
+    @available(iOS 18.0, *)
     var healthKitLabel: HKStateOfMind.Label {
         switch self {
         case .happy: return .happy
