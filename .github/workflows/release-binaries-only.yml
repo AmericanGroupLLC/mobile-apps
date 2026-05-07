@@ -1,12 +1,5 @@
 name: Release binaries (Android only, no test gate)
 
-# Builds signed Android binaries (.aab + .apk) using ANDROID_KEYSTORE_BASE64
-# secret. Deliberately bypasses the heavy pre-release-tests gate so we can
-# produce binaries for v1 even before iOS / watchOS / emulator tests pass.
-#
-# Triggered manually via workflow_dispatch. Uploads binaries as workflow
-# artifacts AND attaches them to a draft GitHub Release named v<version>-android.
-
 on:
   workflow_dispatch:
     inputs:
@@ -35,6 +28,10 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.10'
+
       - name: Decode keystore
         env:
           ANDROID_KEYSTORE_BASE64:    ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -55,15 +52,9 @@ jobs:
           keyPassword=$ANDROID_KEY_PASSWORD
           EOF
 
-      - name: Setup Gradle Wrapper
-        working-directory: android
-        run: |
-          gradle wrapper --gradle-version 8.10 || true
-          chmod +x gradlew || true
-
       - name: Build release artefacts
         working-directory: android
-        run: ./gradlew --no-daemon :app:assembleRelease :app:bundleRelease
+        run: gradle --no-daemon :app:assembleRelease :app:bundleRelease
 
       - name: Stage outputs
         run: |
@@ -92,4 +83,3 @@ jobs:
                 --draft \
                 --title "Android binaries $VERSION" \
                 --notes "Self-signed Android binaries built by release-binaries-only workflow. Replace upload key and tag a real version when ready to publish."
-
