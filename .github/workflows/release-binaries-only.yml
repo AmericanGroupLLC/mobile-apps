@@ -55,13 +55,11 @@ jobs:
           keyPassword=$ANDROID_KEY_PASSWORD
           EOF
 
-      - name: Setup Gradle wrapper if missing
+      - name: Setup Gradle Wrapper
         working-directory: android
         run: |
-          if [ ! -f gradlew ]; then
-            gradle wrapper --gradle-version 8.10
-          fi
-          chmod +x gradlew
+          gradle wrapper --gradle-version 8.10 || true
+          chmod +x gradlew || true
 
       - name: Build release artefacts
         working-directory: android
@@ -94,3 +92,4 @@ jobs:
                 --draft \
                 --title "Android binaries $VERSION" \
                 --notes "Self-signed Android binaries built by release-binaries-only workflow. Replace upload key and tag a real version when ready to publish."
+
