@@ -1,0 +1,21 @@
+Capture once. Convert anywhere.
+
+One feed. Every entry is a Card. Tap once to convert any Card into a Note, Task, or Reminder. iPhone, Apple Watch, Android, Wear OS.
+
+WHY CARD
+- Privacy first - no account required, no tracking by default.
+- Native on every platform - SwiftUI for Apple, Jetpack Compose for Android.
+- Open source under MIT - audit anything; build it yourself if you don't trust us.
+
+WHATS INCLUDED
+- Full Card experience on iPhone and Apple Watch.
+- Identical feature set on Android and Wear OS.
+- Localised UI strings; more languages coming.
+- Optional opt-in crash reporting (Sentry) and product analytics (PostHog) - both off by default.
+
+GET INVOLVED
+Issues, ideas and pull requests at https://github.com/AmericanGroupLLC/Card - we read every one.
+
+Source: https://github.com/AmericanGroupLLC/Card
+Privacy policy: https://americangroupllc.github.io/Card/privacy
+Support: https://americangroupllc.github.io/Card/support
