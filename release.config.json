@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "appName": "FitFusion",
+  "appSlug": "fitfusion",
+  "displayName": "FitFusion",
+  "bundleId": "com.fitfusion.ios",
+  "applicationId": "com.myhealth.app",
+  "electronAppId": "com.fitfusion.desktop",
+  "brandColor": "#2ECC71",
+  "iconLetter": "F",
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "watchos": true,
+    "web": true,
+    "desktop": true
+  },
+  "hasBackend": true,
+  "hasExpo": true,
+  "hasModels": false,
+  "iosSchemes": ["FitFusion"],
+  "iosWatchSchemes": ["FitFusionWatch"],
+  "iosExtensions": ["MyHealthLiveActivity", "MyHealthWidget", "MyHealthMessages"],
+  "marketingHtml": "index.html",
+  "videoScript": "RELEASE-VIDEO-SCRIPT.md",
+  "docs": [
+    "README.md",
+    "QUICKSTART.md",
+    "DESIGN.md",
+    "WORKOUT-MEDIA.md",
+    "PRODUCTION.md",
+    "RELEASING.md",
+    "STORE-PACKAGING.md",
+    "TESTING.md",
+    "SENTRY.md",
+    "OBSERVABILITY.md",
+    "PRIVACY.md",
+    "CHANGELOG.md"
+  ]
+}

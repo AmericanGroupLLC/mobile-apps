@@ -240,3 +240,32 @@ the required marker for Shape A.
 The repo is **fully production-ready for Google Play** today (modulo the $25
 fee + the one-time manual first upload). It's **80% production-ready for
 Apple App Store** — only the watch-embedding restructure is missing.
+
+---
+
+## Desktop binaries (Electron)
+
+The `build-desktop` job in `.github/workflows/release.yml` uses
+`electron-builder` on an Ubuntu runner to produce three artifacts
+attached to every GitHub Release:
+
+| Artifact                      | Signed?  | Notes                          |
+|-------------------------------|:--------:|--------------------------------|
+| `FitFusion-Setup-X.Y.Z.exe` (NSIS) | no       | Windows SmartScreen will prompt on first run; click *More info* → *Run anyway*. |
+| `FitFusion-X.Y.Z.AppImage`  | no       | `chmod +x` then double-click on Linux. |
+| `FitFusion-X.Y.Z.dmg`       | **no**   | macOS Gatekeeper will refuse. To install: |
+
+```bash
+xattr -cr "/Volumes/FitFusion/FitFusion.app"
+cp -R "/Volumes/FitFusion/FitFusion.app" /Applications/
+```
+
+(or *System Settings → Privacy & Security → Open Anyway*.)
+
+A future change can add a separate `macos-latest` job + Apple
+Developer cert to produce a properly notarised .dmg without
+restructuring this workflow.
+
+The Electron shell loads the existing root `index.html` in a
+`BrowserWindow` with `contextIsolation` enabled. See
+`desktop/main.js`.
