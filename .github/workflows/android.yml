@@ -1,11 +1,11 @@
 name: Android (instrumented)
 
 # Boots an Android emulator and runs Compose UI / Health Connect / WorkManager
-# instrumented tests. Slow — only runs on push to main and on demand.
+# instrumented tests. Slow — only runs on push to master and on demand.
 
 on:
   push:
-    branches: [main, master]
+    branches: [master]
     paths:
       - 'android/**'
       - '.github/workflows/android.yml'

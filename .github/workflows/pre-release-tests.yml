@@ -22,7 +22,7 @@ on:
         value: ${{ jobs.summary.outputs.passed }}
   workflow_dispatch:
   pull_request:
-    branches: [main, master]
+    branches: [master]
 
 permissions:
   contents: read

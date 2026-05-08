@@ -2,7 +2,7 @@ name: Deploy HealthApp to GitHub Pages
 
 on:
   push:
-    branches: [main, master]
+    branches: [master]
     paths:
       - 'index.html'
       - 'styles.css'
