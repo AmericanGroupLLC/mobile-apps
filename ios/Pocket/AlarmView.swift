@@ -1,4 +1,5 @@
 import SwiftUI
+import PocketCore
 
 struct Alarm: Identifiable {
     let id = UUID()
@@ -28,7 +29,16 @@ struct AlarmView: View {
                 Button { showingAdd = true } label: { Image(systemName: "plus") }
             }
             .sheet(isPresented: $showingAdd) {
-                AddAlarmSheet { alarms.append(Alarm(time: $0, enabled: true)) }
+                AddAlarmSheet { time in
+                    let local = Alarm(time: time, enabled: true)
+                    alarms.append(local)
+                    let comps = Calendar.current.dateComponents([.hour, .minute], from: time)
+                    let coreAlarm = PocketCore.Alarm(
+                        hour: comps.hour ?? 0,
+                        minute: comps.minute ?? 0
+                    )
+                    Task { await AlarmService.shared.schedule(coreAlarm) }
+                }
             }
         }
     }
