@@ -21,16 +21,17 @@ import com.americangroupllc.buddyplay.core.models.GameKind
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    onHost: (GameKind) -> Unit = {},
+    onJoin: () -> Unit = {},
+) {
     var lobbyTab by remember { mutableStateOf(LobbyTab.DUOPLAY) }
-    var hostingKind by remember { mutableStateOf<GameKind?>(null) }
-    var showJoin by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = { CenterAlignedTopAppBar(title = { Text("BuddyPlay") }) },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = { showJoin = true },
+                onClick = onJoin,
                 icon = { Icon(Icons.Filled.PersonSearch, contentDescription = null) },
                 text = { Text("Join Nearby Game") },
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -50,28 +51,10 @@ fun HomeScreen() {
             if (lobbyTab == LobbyTab.PARTY) {
                 PartyDimmedCard()
             } else {
-                CardScroller(onPick = { hostingKind = it })
+                CardScroller(onPick = onHost)
                 LastPlayedSection()
             }
         }
-    }
-
-    hostingKind?.let { kind ->
-        // Phase 7 stub: opens a placeholder host lobby. Real lobby in Phase 8.
-        AlertDialog(
-            onDismissRequest = { hostingKind = null },
-            title = { Text("Hosting ${kind.displayName}") },
-            text  = { Text("Connectivity adapters land in Phase 8. The lobby flow + game screens are wired through Phase 9.") },
-            confirmButton = { TextButton(onClick = { hostingKind = null }) { Text("OK") } }
-        )
-    }
-    if (showJoin) {
-        AlertDialog(
-            onDismissRequest = { showJoin = false },
-            title = { Text("Join Nearby") },
-            text  = { Text("Scanning for nearby BuddyPlay phones — connectivity adapters land in Phase 8.") },
-            confirmButton = { TextButton(onClick = { showJoin = false }) { Text("OK") } }
-        )
     }
 }
 
