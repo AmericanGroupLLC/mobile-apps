@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "appName": "Pocket",
+  "appSlug": "pocket",
+  "displayName": "Pocket",
+  "bundleId": "com.americangroupllc.pocket",
+  "applicationId": "com.americangroupllc.pocket",
+  "electronAppId": "com.americangroupllc.pocket.desktop",
+  "brandColor": "#3498DB",
+  "iconLetter": "P",
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "watchos": true,
+    "web": true,
+    "desktop": true
+  },
+  "hasBackend": false,
+  "hasExpo": false,
+  "hasModels": false,
+  "iosSchemes": ["Pocket"],
+  "iosWatchSchemes": ["PocketWatch"],
+  "iosExtensions": [],
+  "marketingHtml": "index.html",
+  "videoScript": "RELEASE-VIDEO-SCRIPT.md",
+  "docs": [
+    "README.md",
+    "QUICKSTART.md",
+    "TOOLS-FEATURES.md",
+    "DESIGN.md",
+    "PRODUCTION.md",
+    "RELEASING.md",
+    "STORE-PACKAGING.md",
+    "TESTING.md",
+    "SENTRY.md",
+    "OBSERVABILITY.md",
+    "PRIVACY.md",
+    "CHANGELOG.md"
+  ]
+}

@@ -78,3 +78,32 @@ xhdpi,xxhdpi,xxxhdpi}/` before tagging `v1.0.0`. See [`PRODUCTION.md`](./PRODUCT
 English only at v1. Adding more is a per-platform `Localizable.strings` /
 `values-{xx}/strings.xml` exercise — no code changes needed thanks to all UI
 strings being centralised.
+
+---
+
+## Desktop binaries (Electron)
+
+The `build-desktop` job in `.github/workflows/release.yml` uses
+`electron-builder` on an Ubuntu runner to produce three artifacts
+attached to every GitHub Release:
+
+| Artifact                      | Signed?  | Notes                          |
+|-------------------------------|:--------:|--------------------------------|
+| `Pocket-Setup-X.Y.Z.exe` (NSIS) | no       | Windows SmartScreen will prompt on first run; click *More info* → *Run anyway*. |
+| `Pocket-X.Y.Z.AppImage`  | no       | `chmod +x` then double-click on Linux. |
+| `Pocket-X.Y.Z.dmg`       | **no**   | macOS Gatekeeper will refuse. To install: |
+
+```bash
+xattr -cr "/Volumes/Pocket/Pocket.app"
+cp -R "/Volumes/Pocket/Pocket.app" /Applications/
+```
+
+(or *System Settings → Privacy & Security → Open Anyway*.)
+
+A future change can add a separate `macos-latest` job + Apple
+Developer cert to produce a properly notarised .dmg without
+restructuring this workflow.
+
+The Electron shell loads the existing root `index.html` in a
+`BrowserWindow` with `contextIsolation` enabled. See
+`desktop/main.js`.
