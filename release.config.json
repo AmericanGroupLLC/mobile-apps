@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "appName": "BuddyPlay",
+  "appSlug": "buddyplay",
+  "displayName": "BuddyPlay",
+  "bundleId": "com.americangroupllc.buddyplay",
+  "applicationId": "com.americangroupllc.buddyplay",
+  "electronAppId": "com.americangroupllc.buddyplay.desktop",
+  "brandColor": "#E74C3C",
+  "iconLetter": "B",
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "watchos": false,
+    "web": true,
+    "desktop": true
+  },
+  "hasBackend": false,
+  "hasExpo": false,
+  "hasModels": false,
+  "iosSchemes": ["BuddyPlay"],
+  "iosWatchSchemes": [],
+  "iosExtensions": [],
+  "marketingHtml": "index.html",
+  "videoScript": "RELEASE-VIDEO-SCRIPT.md",
+  "docs": [
+    "README.md",
+    "QUICKSTART.md",
+    "BUDDYPLAY-FEATURES.md",
+    "DESIGN.md",
+    "CONNECTIVITY.md",
+    "PRODUCTION.md",
+    "RELEASING.md",
+    "STORE-PACKAGING.md",
+    "TESTING.md",
+    "SENTRY.md",
+    "OBSERVABILITY.md",
+    "PRIVACY.md",
+    "CHANGELOG.md"
+  ]
+}

@@ -1,0 +1,41 @@
+appId: com.americangroupllc.buddyplay.desktop
+productName: "BuddyPlay"
+copyright: "Copyright © AmericanGroupLLC"
+asar: true
+directories:
+  output: dist
+  buildResources: build
+files:
+  - "main.js"
+  - "preload.js"
+  - "package.json"
+  - "../index.html"
+  - { from: "..", to: ".", filter: ["styles.css", "script.js", "*.svg", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.ico", "*.woff", "*.woff2"] }
+extraMetadata:
+  main: main.js
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  icon: build/icon.ico
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  perMachine: false
+  artifactName: "${productName}-Setup-${version}.${ext}"
+linux:
+  target:
+    - target: AppImage
+      arch: [x64]
+  category: Utility
+  icon: build/icon.png
+  artifactName: "${productName}-${version}.${ext}"
+mac:
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+  icon: build/icon.icns
+  identity: null
+  artifactName: "${productName}-${version}.${ext}"
+dmg:
+  sign: false

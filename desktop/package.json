@@ -1,0 +1,23 @@
+{
+  "name": "buddyplay-desktop",
+  "version": "1.0.0",
+  "description": "BuddyPlay desktop wrapper (Electron)",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --linux --win",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
+    "build:mac": "electron-builder --mac",
+    "build:all": "electron-builder --win --linux --mac",
+    "pack:linux": "electron-builder --linux --dir"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "dependencies": {
+    "electron-store": "^10.0.0"
+  }
+}
