@@ -55,7 +55,21 @@ jobs:
 
       - name: Build release artefacts
         working-directory: android
-        run: gradle --no-daemon :app:assembleRelease :app:bundleRelease
+        env:
+          ADMOB_APP_ID_ANDROID: ${{ secrets.ADMOB_APP_ID_ANDROID }}
+        run: |
+          # Forward the AdMob App ID to gradle as a project property when
+          # the secret is defined. Falls back to the Google test ID
+          # (default in app/build.gradle.kts) when the secret is missing,
+          # so PR / dev runs don't fail. See STORE-PACKAGING.md §2.
+          if [ -n "$ADMOB_APP_ID_ANDROID" ]; then
+            gradle --no-daemon \
+              -PADMOB_APP_ID_ANDROID="$ADMOB_APP_ID_ANDROID" \
+              :app:assembleRelease :app:bundleRelease
+          else
+            echo "ADMOB_APP_ID_ANDROID secret not set — building with Google test AdMob App ID." >&2
+            gradle --no-daemon :app:assembleRelease :app:bundleRelease
+          fi
 
       - name: Stage outputs
         run: |

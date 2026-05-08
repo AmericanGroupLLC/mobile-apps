@@ -43,16 +43,21 @@ fun ModelDownloadScreen(onContinue: () -> Unit) {
 }
 
 @Composable
-fun PermissionsScreen() {
-    Column(modifier = Modifier.padding(24.dp)) {
+fun PermissionsScreen(onContinue: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
         Text("You're all set. We'll ask for microphone access only when you tap the voice button.")
+        Spacer(Modifier.weight(1f))
+        Button(onClick = onContinue, modifier = Modifier.fillMaxWidth()) { Text("Get started") }
     }
 }
 
 @Composable
 fun OnboardingScreen() {
-    // Simple linear flow placeholder. RootNav uses HomeScreen as start
-    // destination; the full onboarding lives behind first-launch detection
-    // in v1.1 via DataStore.
+    // Legacy placeholder. The real flow is wired in RootNav as a
+    // sequence of: consent → profile → model-download → permissions → home,
+    // gated by the OnboardingPrefs.completed DataStore flag.
     Text("Onboarding")
 }

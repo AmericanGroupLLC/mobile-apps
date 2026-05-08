@@ -34,6 +34,16 @@ android {
         buildConfigField("String", "REVENUECAT_API_KEY", "\"${System.getenv("REVENUECAT_API_KEY_ANDROID") ?: ""}\"")
         buildConfigField("String", "ADMOB_APP_ID",       "\"${System.getenv("ADMOB_APP_ID_ANDROID") ?: ""}\"")
 
+        // AdMob APPLICATION_ID for the AndroidManifest <meta-data>. Defaults
+        // to Google's official sample/test ID so CI / dev builds don't crash
+        // at startup; release builds pass -PADMOB_APP_ID_ANDROID=ca-app-pub-...
+        // (see STORE-PACKAGING.md §2). The env var is supported as a
+        // secondary source so local shells can `export ADMOB_APP_ID_ANDROID=...`.
+        manifestPlaceholders["admobAppId"] =
+            (project.findProperty("ADMOB_APP_ID_ANDROID") as String?)
+                ?: System.getenv("ADMOB_APP_ID_ANDROID")
+                ?: "ca-app-pub-3940256099942544~3347511713"
+
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
         }

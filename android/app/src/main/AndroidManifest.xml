@@ -42,13 +42,15 @@
 
         <!-- AdMob APPLICATION_ID. Required by play-services-ads's
              MobileAdsInitProvider — otherwise the process crashes at
-             startup with IllegalStateException. The value below is
-             Google's official sample/test app ID; replace with the real
-             AdMob app id (or wire via manifestPlaceholders driven by the
-             ADMOB_APP_ID_ANDROID env var) before store submission. -->
+             startup with IllegalStateException. The value is wired via
+             the `admobAppId` manifestPlaceholder set in
+             android/app/build.gradle.kts. CI / dev builds default to
+             Google's official sample/test ID; release builds must pass
+             -PADMOB_APP_ID_ANDROID=ca-app-pub-XXXX (or set the env var of
+             the same name). See STORE-PACKAGING.md §2. -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="${admobAppId}" />
 
         <activity
             android:name=".MainActivity"

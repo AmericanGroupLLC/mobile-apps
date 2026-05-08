@@ -78,6 +78,33 @@ See `PRODUCTION.md §3`. Summary: Mic + Internet + Network State +
 Notifications + ForegroundService + BindInputMethod + Billing only.
 **No camera, no Bluetooth, no location.**
 
+### AdMob App ID (release builds)
+
+The `<meta-data android:name="com.google.android.gms.ads.APPLICATION_ID">`
+entry in `android/app/src/main/AndroidManifest.xml` is wired via the
+`admobAppId` manifestPlaceholder set in `android/app/build.gradle.kts`.
+Resolution order:
+
+1. Gradle project property `-PADMOB_APP_ID_ANDROID=ca-app-pub-XXXX...`
+2. Environment variable `ADMOB_APP_ID_ANDROID`
+3. Google's official sample/test ID
+   (`ca-app-pub-3940256099942544~3347511713`) — used by CI and local dev
+   builds so the process doesn't crash at startup with the
+   `MobileAdsInitProvider` `IllegalStateException`.
+
+**Production releases must pass the real ID.** For local release builds:
+
+```bash
+cd android
+./gradlew -PADMOB_APP_ID_ANDROID=ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY \
+  :app:bundleRelease
+```
+
+In CI, define the `ADMOB_APP_ID_ANDROID` GitHub repository secret. The
+`.github/workflows/release-binaries-only.yml` workflow forwards it to
+gradle automatically when present (and warns + falls back to the test ID
+when it is empty).
+
 ### Data safety form
 
 | Question | Answer |
