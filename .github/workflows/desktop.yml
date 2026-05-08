@@ -1,12 +1,12 @@
 name: Desktop
 
-# - PR / push to main: linux dir-pack smoke test (fast).
+# - PR / push to master: linux dir-pack smoke test (fast).
 # - Tag push (handled by release.yml's build-desktop job; this workflow
 #   stays minimal and only validates the desktop subdirectory builds).
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - 'desktop/**'
       - 'index.html'
