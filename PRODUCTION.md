@@ -27,8 +27,20 @@ from `BuildConfig` on Android.
   `selfies` (private, deleted after Edge Function CompareFaces returns).
 - **Realtime**: publication declared in `0002_realtime.sql` includes
   `messages`, `waves`, `conversations`, `wave_aggregates`.
-- **Edge Functions**: `reply-suggest`, `verify-selfie`, `fuzz-location`.
-  Each one is deployed via `supabase functions deploy <name>` from CI.
+- **Edge Functions**: `reply-suggest`, `verify-selfie`, `fuzz-location`,
+  `wipe-me`. Each one is deployed via `supabase functions deploy <name>`
+  from CI.
+
+  > **One-time deploy required for `wipe-me` against production:**
+  > ```sh
+  > supabase functions deploy wipe-me --project-ref <ref>
+  > ```
+  > Both the iOS and Android Settings screens call
+  > `POST /functions/v1/wipe-me` to satisfy the GDPR "right to erasure".
+  > Until this function exists in the live project the clients receive a
+  > 404. The user-owner must run the deploy command once against the
+  > production project ref. See
+  > `backend/supabase/functions/wipe-me/README.md` for the function spec.
 
 ## 3. Capacity & scaling
 

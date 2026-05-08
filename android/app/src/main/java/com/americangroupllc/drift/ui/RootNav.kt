@@ -57,7 +57,21 @@ fun RootNav(nav: NavHostController) {
                 ChatScreen(conversationId = entry.arguments?.getString("id").orEmpty())
             }
             composable("profile")  { ProfileScreen() }
-            composable("settings") { SettingsScreen() }
+            composable("settings") {
+                SettingsScreen(
+                    onAccountErased = {
+                        // Mirrors iOS post-erase UX: jump back to the
+                        // root start destination and clear the back
+                        // stack so the user can't tap "back" into a
+                        // signed-out chat. When an explicit onboarding
+                        // route lands, swap "discover" for it here.
+                        nav.navigate("discover") {
+                            popUpTo(nav.graph.startDestinationId) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
         }
     }
 }

@@ -67,3 +67,6 @@ verify_jwt = true
 
 [functions.fuzz-location]
 verify_jwt = true
+
+[functions.wipe-me]
+verify_jwt = true
