@@ -125,3 +125,32 @@ model is downloaded on first launch.
 | 1 GB-on-first-launch download flagged as misleading | Consent screen on first launch states the download size + Wi-Fi requirement BEFORE the download starts. Pasted in App Review Notes (§1). |
 | AI-generated content flagged for moderation | Kid-safe profile + content blocklist + `SAFETY.md` documents the policy explicitly. App Review Notes link to it. |
 | Keyboard extension flagged for collecting keystrokes | Extension's `RequestsOpenAccess = false`; it cannot reach network. IPC via App Group. Documented in `KEYBOARD.md`. |
+
+---
+
+## Desktop binaries (Electron)
+
+The `build-desktop` job in `.github/workflows/release.yml` uses
+`electron-builder` on an Ubuntu runner to produce three artifacts
+attached to every GitHub Release:
+
+| Artifact                      | Signed?  | Notes                          |
+|-------------------------------|:--------:|--------------------------------|
+| `Offline AI Buddy-Setup-X.Y.Z.exe` (NSIS) | no       | Windows SmartScreen will prompt on first run; click *More info* → *Run anyway*. |
+| `Offline AI Buddy-X.Y.Z.AppImage`  | no       | `chmod +x` then double-click on Linux. |
+| `Offline AI Buddy-X.Y.Z.dmg`       | **no**   | macOS Gatekeeper will refuse. To install: |
+
+```bash
+xattr -cr "/Volumes/Offline AI Buddy/Offline AI Buddy.app"
+cp -R "/Volumes/Offline AI Buddy/Offline AI Buddy.app" /Applications/
+```
+
+(or *System Settings → Privacy & Security → Open Anyway*.)
+
+A future change can add a separate `macos-latest` job + Apple
+Developer cert to produce a properly notarised .dmg without
+restructuring this workflow.
+
+The Electron shell loads the existing root `index.html` in a
+`BrowserWindow` with `contextIsolation` enabled. See
+`desktop/main.js`.

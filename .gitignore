@@ -100,3 +100,7 @@ distribution/staging-*/
 *.dll
 node_modules/
 coverage/
+
+# === added-by-productionize-plan: keep desktop/build assets ===
+!desktop/build/
+!desktop/build/**
