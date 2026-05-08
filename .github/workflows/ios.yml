@@ -2,7 +2,7 @@ name: iOS (simulator)
 
 on:
   push:
-    branches: [main, master]
+    branches: [master]
     paths:
       - 'ios/**'
       - 'shared/BuddyCore/**'
