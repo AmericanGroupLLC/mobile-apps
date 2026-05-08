@@ -94,3 +94,32 @@ release workflow uploads it via `r0adkll/upload-google-play@v1`. App
 Store Connect's "What's New" field is updated manually each release
 (automating it requires App Store Connect API privileges Drift doesn't
 yet have).
+
+---
+
+## Desktop binaries (Electron)
+
+The `build-desktop` job in `.github/workflows/release.yml` uses
+`electron-builder` on an Ubuntu runner to produce three artifacts
+attached to every GitHub Release:
+
+| Artifact                      | Signed?  | Notes                          |
+|-------------------------------|:--------:|--------------------------------|
+| `Drift-Setup-X.Y.Z.exe` (NSIS) | no       | Windows SmartScreen will prompt on first run; click *More info* → *Run anyway*. |
+| `Drift-X.Y.Z.AppImage`  | no       | `chmod +x` then double-click on Linux. |
+| `Drift-X.Y.Z.dmg`       | **no**   | macOS Gatekeeper will refuse. To install: |
+
+```bash
+xattr -cr "/Volumes/Drift/Drift.app"
+cp -R "/Volumes/Drift/Drift.app" /Applications/
+```
+
+(or *System Settings → Privacy & Security → Open Anyway*.)
+
+A future change can add a separate `macos-latest` job + Apple
+Developer cert to produce a properly notarised .dmg without
+restructuring this workflow.
+
+The Electron shell loads the existing root `index.html` in a
+`BrowserWindow` with `contextIsolation` enabled. See
+`desktop/main.js`.

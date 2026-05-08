@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "appName": "Drift",
+  "appSlug": "drift",
+  "displayName": "Drift",
+  "bundleId": "com.americangroupllc.drift",
+  "applicationId": "com.americangroupllc.drift",
+  "electronAppId": "com.americangroupllc.drift.desktop",
+  "brandColor": "#FF6B9D",
+  "iconLetter": "D",
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "watchos": true,
+    "web": true,
+    "desktop": true
+  },
+  "hasBackend": true,
+  "hasExpo": false,
+  "hasModels": false,
+  "iosSchemes": ["Drift"],
+  "iosWatchSchemes": ["DriftWatch"],
+  "iosExtensions": ["DriftNotificationService"],
+  "marketingHtml": "index.html",
+  "videoScript": "RELEASE-VIDEO-SCRIPT.md",
+  "docs": [
+    "README.md",
+    "QUICKSTART.md",
+    "DRIFT-FEATURES.md",
+    "DESIGN.md",
+    "PRODUCTION.md",
+    "RELEASING.md",
+    "STORE-PACKAGING.md",
+    "TESTING.md",
+    "SENTRY.md",
+    "OBSERVABILITY.md",
+    "SAFETY.md",
+    "PRIVACY.md",
+    "CHANGELOG.md"
+  ]
+}
