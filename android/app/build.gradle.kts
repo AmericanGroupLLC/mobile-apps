@@ -1,3 +1,7 @@
+// Note the `import java.util.Properties` at the top — Kotlin DSL doesn't
+// auto-import java.util.* and the `release` signing block uses Properties.
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -43,6 +47,21 @@ android {
         compose = true
         buildConfig = true
     }
+
+    signingConfigs {
+        create("release") {
+            val ksProps = rootProject.file("keystore.properties")
+            if (ksProps.exists()) {
+                val props = Properties()
+                props.load(ksProps.inputStream())
+                storeFile     = file(props.getProperty("storeFile"))
+                storePassword = props.getProperty("storePassword")
+                keyAlias      = props.getProperty("keyAlias")
+                keyPassword   = props.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         debug {
             enableUnitTestCoverage = true
@@ -51,6 +70,11 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            // Use the upload key when keystore.properties is present (CI / local
+            // release builds); otherwise fall back to the debug key so a release
+            // build still produces a runnable, locally-signed artefact.
+            signingConfig = signingConfigs.findByName("release")
+                ?: signingConfigs.findByName("debug")
         }
     }
     compileOptions {
