@@ -160,3 +160,32 @@ Suggested flow mirrors the iOS list above.
 - [ ] App Store Promotional text + Description (use the bullets from
   `index.html`).
 - [ ] Play Short description (80 chars max) + Full description.
+
+---
+
+## Desktop binaries (Electron)
+
+The `build-desktop` job in `.github/workflows/release.yml` uses
+`electron-builder` on an Ubuntu runner to produce three artifacts
+attached to every GitHub Release:
+
+| Artifact                      | Signed?  | Notes                          |
+|-------------------------------|:--------:|--------------------------------|
+| `Card-Setup-X.Y.Z.exe` (NSIS) | no       | Windows SmartScreen will prompt on first run; click *More info* → *Run anyway*. |
+| `Card-X.Y.Z.AppImage`  | no       | `chmod +x` then double-click on Linux. |
+| `Card-X.Y.Z.dmg`       | **no**   | macOS Gatekeeper will refuse. To install: |
+
+```bash
+xattr -cr "/Volumes/Card/Card.app"
+cp -R "/Volumes/Card/Card.app" /Applications/
+```
+
+(or *System Settings → Privacy & Security → Open Anyway*.)
+
+A future change can add a separate `macos-latest` job + Apple
+Developer cert to produce a properly notarised .dmg without
+restructuring this workflow.
+
+The Electron shell loads the existing root `index.html` in a
+`BrowserWindow` with `contextIsolation` enabled. See
+`desktop/main.js`.
