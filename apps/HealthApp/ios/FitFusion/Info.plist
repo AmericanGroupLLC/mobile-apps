@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>$(DEVELOPMENT_LANGUAGE)</string>
+    <key>CFBundleDisplayName</key>
+    <string>MyHealth</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.3.3</string>
+    <key>CFBundleVersion</key>
+    <string>2</string>
+    <key>UIApplicationSceneManifest</key>
+    <dict>
+        <key>UIApplicationSupportsMultipleScenes</key>
+        <false/>
+    </dict>
+    <key>UILaunchScreen</key>
+    <dict>
+        <key>UIColorName</key>
+        <string></string>
+    </dict>
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+        <string>arm64</string>
+    </array>
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+    </array>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+        <key>NSAllowsLocalNetworking</key>
+        <true/>
+    </dict>
+    <key>NSHealthShareUsageDescription</key>
+    <string>MyHealth reads your steps, heart rate, HRV, sleep, weight, dietary energy, workouts, and state of mind to power your training, recovery, and nutrition insights — all on-device.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>MyHealth writes the meals, water, weight, mindful sessions, mood entries, workouts, and route data you log back to Apple Health.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>MyHealth uses the camera to scan barcodes, snap meal photos for AI recognition, and read nutrition labels.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>MyHealth uses your location during runs to track your route and pace.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>MyHealth uses your location to track runs in the background, even when the app is in your pocket.</string>
+    <key>NSMotionUsageDescription</key>
+    <string>MyHealth uses motion data to count steps and improve run distance accuracy.</string>
+    <key>NSSiriUsageDescription</key>
+    <string>MyHealth uses Siri so you can start workouts, log meals, and check your readiness with just your voice.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>MyHealth lets you pick a meal photo from your library so the on-device food classifier can suggest what you ate.</string>
+    <key>NSUserActivityTypes</key>
+    <array>
+        <string>StartWorkoutIntent</string>
+        <string>StartRunIntent</string>
+        <string>LogMealIntent</string>
+        <string>LogMealPhotoIntent</string>
+        <string>JoinSharedWorkoutIntent</string>
+    </array>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>location</string>
+        <string>processing</string>
+        <string>workout-processing</string>
+    </array>
+    <key>BGTaskSchedulerPermittedIdentifiers</key>
+    <array>
+        <string>com.fitfusion.bg.fineTune</string>
+    </array>
+    <key>NSSupportsLiveActivities</key>
+    <true/>
+</dict>
+</plist>

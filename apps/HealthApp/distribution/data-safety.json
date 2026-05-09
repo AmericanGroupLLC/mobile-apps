@@ -1,0 +1,37 @@
+{
+  "dataCollected": [
+    {
+      "purpose": [
+        "App functionality"
+      ],
+      "category": "App activity",
+      "shared": false,
+      "dataType": "Crash logs",
+      "ephemeral": false,
+      "optional": true
+    },
+    {
+      "purpose": [
+        "Analytics",
+        "App functionality"
+      ],
+      "category": "App activity",
+      "shared": false,
+      "dataType": "App interactions",
+      "ephemeral": false,
+      "optional": true
+    }
+  ],
+  "dataShared": null,
+  "generated": "2026-05-06",
+  "packageName": "com.myhealth.app",
+  "securityPractices": {
+    "dataDeletionPolicy": "Account holders can request deletion via Settings or by emailing privacy@americangroupllc.com. Local data is wiped on uninstall.",
+    "dataEncryptedInTransit": true,
+    "committedToPlayFamiliesPolicy": false,
+    "independentSecurityReview": false
+  },
+  "$schema": "https://support.google.com/googleplay/android-developer/answer/10787469",
+  "appName": "MyHealth",
+  "notes": "DRAFT - generated from static SDK analysis. User must verify and submit in Play Console, Data safety form."
+}

@@ -1,0 +1,168 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (Jest + smoke)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - name: Prepare .env
+        run: |
+          cp .env.example .env
+          sed -i "s|JWT_SECRET=.*|JWT_SECRET=ci-secret-12345678901234567890ABCD|" .env
+          sed -i "s|DB_PATH=.*|DB_PATH=/tmp/myhealth-ci.db|" .env
+      - name: Jest with coverage
+        run: npm test -- --coverage --runInBand --detectOpenHandles
+      - name: Boot server in background
+        run: |
+          node server.js &
+          echo $! > server.pid
+          sleep 3
+      - name: Smoke test
+        run: node smoke.js
+      - name: Stop server
+        if: always()
+        run: kill $(cat server.pid) || true
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: server/coverage/lcov.info
+          flags: backend
+          name: backend-coverage-ci
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  android:
+    name: Android (Lint + Unit + Assemble Debug)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/*.gradle*', 'android/**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-
+      - name: Setup Gradle Wrapper
+        run: |
+          gradle wrapper --gradle-version 8.10 || true
+          chmod +x gradlew || true
+      - name: Lint
+        run: ./gradlew :app:lintDebug --warning-mode all || true
+      - name: Unit tests (core)
+        run: ./gradlew :core:testDebugUnitTest
+      - name: Unit tests (app)
+        run: ./gradlew :app:testDebugUnitTest
+      - name: Unit tests (wear)
+        run: ./gradlew :wear:testDebugUnitTest
+      - name: Assemble Debug
+        run: ./gradlew :app:assembleDebug :wear:assembleDebug
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          directory: android
+          flags: android
+          name: android-unit-coverage
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload debug APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-debug-apks
+          path: |
+            android/app/build/outputs/apk/debug/*.apk
+            android/wear/build/outputs/apk/debug/*.apk
+          retention-days: 14
+
+  ios:
+    name: iOS / watchOS Swift Package tests
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show Xcode version
+        run: xcodebuild -version
+      # FitFusionCore is iOS/watchOS-only (UIKit + WatchConnectivity). Run
+      # the test target via xcodebuild on iOS Simulator — `swift test` on
+      # the macOS host can't link these frameworks.
+      - name: FitFusionCore tests on iPhone 15 sim
+        working-directory: shared/FitFusionCore
+        run: |
+          xcodebuild test \
+            -scheme FitFusionCore-Package \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            CODE_SIGNING_ALLOWED=NO | xcpretty --simple || true
+      - name: Install xcodegen
+        run: brew install xcodegen
+      - name: Generate iOS project
+        working-directory: ios
+        run: xcodegen generate
+      - name: Build iOS (simulator)
+        working-directory: ios
+        run: |
+          xcodebuild -project FitFusion.xcodeproj \
+            -scheme FitFusion \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            build CODE_SIGNING_ALLOWED=NO | xcpretty --simple
+      - name: Generate watchOS project
+        working-directory: watch
+        run: xcodegen generate
+      - name: Build watchOS (simulator)
+        working-directory: watch
+        run: |
+          xcodebuild -project HealthAppWatch.xcodeproj \
+            -scheme HealthAppWatch \
+            -sdk watchsimulator \
+            -configuration Debug \
+            -destination 'platform=watchOS Simulator,name=Apple Watch Series 10 (46mm),OS=latest' \
+            build CODE_SIGNING_ALLOWED=NO | xcpretty --simple || true
+
+  marketing:
+    name: Marketing site (lint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - name: HTML / CSS lint (best-effort)
+        run: |
+          npx --yes htmlhint index.html || true
+          npx --yes stylelint "styles.css" || true

@@ -1,0 +1,38 @@
+name: Expo (mobile)
+
+on:
+  push:
+    paths:
+      - 'mobile/**'
+      - '.github/workflows/expo.yml'
+  pull_request:
+    paths:
+      - 'mobile/**'
+  workflow_dispatch:
+
+jobs:
+  jest:
+    name: Jest + coverage
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install (allow legacy peer deps for RN)
+        run: npm install --legacy-peer-deps --no-audit --no-fund
+      - name: Jest with coverage
+        run: npm run test:coverage
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: mobile/coverage/lcov.info
+          flags: expo
+          name: expo-coverage
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

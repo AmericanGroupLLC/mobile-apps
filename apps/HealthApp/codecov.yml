@@ -1,0 +1,64 @@
+# Codecov configuration — keeps coverage thresholds reasonable across the
+# multi-platform repo (Swift/Kotlin/JS/Node).
+#
+# Coverage is uploaded by ci.yml + ios.yml + android.yml + backend.yml +
+# expo.yml. Each upload uses a `flag` so the per-platform numbers stay
+# distinguishable in the Codecov dashboard.
+
+codecov:
+  require_ci_to_pass: false
+  notify:
+    wait_for_ci: true
+
+coverage:
+  precision: 1
+  round: down
+  range: "60...95"
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 2%
+        informational: true
+      ios:
+        flags: [ios]
+        target: auto
+        informational: true
+      android:
+        flags: [android]
+        target: auto
+        informational: true
+      backend:
+        flags: [backend]
+        target: 70%
+        informational: false
+      expo:
+        flags: [expo]
+        target: auto
+        informational: true
+    patch:
+      default:
+        target: 70%
+        informational: true
+
+flags:
+  ios:
+    paths:
+      - shared/FitFusionCore/Sources/
+      - ios/FitFusion/
+  android:
+    paths:
+      - android/core/src/main/
+      - android/app/src/main/
+      - android/wear/src/main/
+  backend:
+    paths:
+      - server/
+  expo:
+    paths:
+      - mobile/src/
+
+comment:
+  layout: "header,diff,flags,components,footer"
+  behavior: default
+  require_changes: false

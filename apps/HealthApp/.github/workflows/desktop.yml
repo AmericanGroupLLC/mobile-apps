@@ -1,0 +1,48 @@
+name: Desktop
+
+# - PR / push to master: linux dir-pack smoke test (fast).
+# - Tag push (handled by release.yml's build-desktop job; this workflow
+#   stays minimal and only validates the desktop subdirectory builds).
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'desktop/**'
+      - 'index.html'
+      - 'styles.css'
+      - 'script.js'
+      - 'release.config.json'
+      - '.github/workflows/desktop.yml'
+  pull_request:
+    paths:
+      - 'desktop/**'
+      - 'index.html'
+      - 'styles.css'
+      - 'script.js'
+      - 'release.config.json'
+      - '.github/workflows/desktop.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Linux dir-pack smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install desktop deps
+        working-directory: desktop
+        run: npm install --no-audit --no-fund
+      - name: Pack (--linux --dir, no signing)
+        working-directory: desktop
+        run: npx electron-builder --linux --dir
+      - name: List output
+        working-directory: desktop
+        run: |
+          ls -la dist/ || true
+          ls -la dist/linux-unpacked/ 2>/dev/null | head -20 || true

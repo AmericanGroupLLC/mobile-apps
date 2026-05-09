@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MyHealth</string>
+    <string name="tab_home">होम</string>
+    <string name="tab_train">ट्रेन</string>
+    <string name="tab_diary">डायरी</string>
+    <string name="tab_sleep">नींद</string>
+    <string name="tab_more">अधिक</string>
+    <string name="welcome_title">MyHealth में आपका स्वागत है</string>
+    <string name="welcome_subtitle">आपका व्यक्तिगत फिटनेस OS — फिटनेस, भोजन, नींद, मूड, वाइटल्स और जैविक उम्र। सब कुछ आपके डिवाइस पर।</string>
+    <string name="cta_get_started">शुरू करें</string>
+    <string name="cta_continue">जारी रखें</string>
+    <string name="cta_save">सहेजें</string>
+    <string name="cta_cancel">रद्द करें</string>
+</resources>

@@ -1,0 +1,6 @@
+v1.4.0
+- Release pipeline now signs and uploads Android + server + web automatically on tag.
+- Expanded test coverage on Wear OS surfaces.
+- Privacy policy formalised at https://americangroupllc.github.io/HealthApp/privacy.
+
+Issues: https://github.com/AmericanGroupLLC/HealthApp/issues

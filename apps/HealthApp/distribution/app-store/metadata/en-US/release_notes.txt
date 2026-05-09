@@ -1,0 +1,1 @@
+v1.4.0 - initial App Store release. Full feature parity across iPhone, Apple Watch. Bug reports welcome at https://github.com/AmericanGroupLLC/HealthApp/issues.

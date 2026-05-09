@@ -1,0 +1,21 @@
+Personal fitness operating system.
+
+Training, cardio, nutrition, sleep, mindfulness, on-device AI coaching. Apple HealthKit + Android Health Connect as source of truth. iPhone, Apple Watch, Android, Wear OS.
+
+WHY MYHEALTH
+- Privacy first - no account required, no tracking by default.
+- Native on every platform - SwiftUI for Apple, Jetpack Compose for Android.
+- Open source under MIT - audit anything; build it yourself if you don't trust us.
+
+WHATS INCLUDED
+- Full MyHealth experience on iPhone and Apple Watch.
+- Identical feature set on Android and Wear OS.
+- Localised UI strings; more languages coming.
+- Optional opt-in crash reporting (Sentry) and product analytics (PostHog) - both off by default.
+
+GET INVOLVED
+Issues, ideas and pull requests at https://github.com/AmericanGroupLLC/HealthApp - we read every one.
+
+Source: https://github.com/AmericanGroupLLC/HealthApp
+Privacy policy: https://americangroupllc.github.io/HealthApp/privacy
+Support: https://americangroupllc.github.io/HealthApp/support

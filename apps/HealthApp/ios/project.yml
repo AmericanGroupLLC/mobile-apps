@@ -1,0 +1,115 @@
+name: FitFusion
+options:
+  bundleIdPrefix: com.fitfusion
+  deploymentTarget:
+    iOS: "17.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    DEVELOPMENT_TEAM: ""
+
+packages:
+  FitFusionCore:
+    path: ../shared/FitFusionCore
+
+targets:
+  FitFusion:
+    type: application
+    platform: iOS
+    sources:
+      - path: FitFusion
+    info:
+      path: FitFusion/Info.plist
+    entitlements:
+      path: FitFusion/FitFusion.entitlements
+    dependencies:
+      - package: FitFusionCore
+        product: FitFusionCore
+      - target: MyHealthLiveActivity
+      - target: MyHealthWidget
+      - target: MyHealthMessages
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fitfusion.ios
+        TARGETED_DEVICE_FAMILY: "1,2"
+        CODE_SIGN_ENTITLEMENTS: FitFusion/FitFusion.entitlements
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: "1.0"
+    # capabilities are declared in the entitlements file; the
+    # xcodegen `capabilities:` block can collide with them and yield
+    # a corrupt .xcodeproj on macos-14 with xcodegen 2.45.
+
+  MyHealthLiveActivity:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: MyHealthLiveActivity
+    info:
+      path: MyHealthLiveActivity/Info.plist
+    entitlements:
+      path: MyHealthLiveActivity/MyHealthLiveActivity.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fitfusion.ios.liveactivity
+        CODE_SIGN_ENTITLEMENTS: MyHealthLiveActivity/MyHealthLiveActivity.entitlements
+        INFOPLIST_KEY_NSExtensionPointIdentifier: com.apple.widgetkit-extension
+
+  MyHealthWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: MyHealthWidget
+    info:
+      path: MyHealthWidget/Info.plist
+    entitlements:
+      path: MyHealthWidget/MyHealthWidget.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fitfusion.ios.widget
+        CODE_SIGN_ENTITLEMENTS: MyHealthWidget/MyHealthWidget.entitlements
+        INFOPLIST_KEY_NSExtensionPointIdentifier: com.apple.widgetkit-extension
+
+  MyHealthMessages:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: MyHealthMessages
+    info:
+      path: MyHealthMessages/Info.plist
+    entitlements:
+      path: MyHealthMessages/MyHealthMessages.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fitfusion.ios.messages
+        CODE_SIGN_ENTITLEMENTS: MyHealthMessages/MyHealthMessages.entitlements
+        INFOPLIST_KEY_NSExtensionPointIdentifier: com.apple.message-payload-provider
+
+  FitFusionUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: FitFusionUITests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fitfusion.ios.uitests
+        TEST_TARGET_NAME: FitFusion
+    dependencies:
+      - target: FitFusion
+
+schemes:
+  FitFusion:
+    build:
+      targets:
+        FitFusion: all
+        MyHealthLiveActivity: all
+        MyHealthWidget: all
+        MyHealthMessages: all
+        FitFusionUITests: [test]
+    test:
+      targets:
+        - FitFusionUITests
+      gatherCoverageData: true
+      coverageTargets:
+        - FitFusion
+    run:
+      config: Debug

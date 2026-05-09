@@ -1,0 +1,58 @@
+name: HealthAppWatch
+options:
+  bundleIdPrefix: com.fitfusion
+  deploymentTarget:
+    watchOS: "10.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    DEVELOPMENT_TEAM: ""
+
+packages:
+  FitFusionCore:
+    path: ../shared/FitFusionCore
+
+targets:
+  HealthAppWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - path: HealthAppWatch
+    info:
+      path: HealthAppWatch/Info.plist
+    entitlements:
+      path: HealthAppWatch/HealthAppWatch.entitlements
+    dependencies:
+      - package: FitFusionCore
+        product: FitFusionCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fitfusion.watch
+        TARGETED_DEVICE_FAMILY: "4"
+        CODE_SIGN_ENTITLEMENTS: HealthAppWatch/HealthAppWatch.entitlements
+    # NOTE: HealthKit + Siri capabilities are declared via the
+    # entitlements file. xcodegen 2.45 on watchOS targets fails to read
+    # the project when `capabilities:` is set on a watchOS app target,
+    # producing only "Generating project..." with no completion message
+    # and then xcodebuild can't read the resulting .xcodeproj. Same goes
+    # for INFOPLIST_KEY_* settings that are already declared in
+    # Info.plist — they cause xcodegen to emit a corrupt project.
+
+  FitFusionComplication:
+    type: app-extension
+    platform: watchOS
+    sources:
+      - path: FitFusionComplication
+    info:
+      path: FitFusionComplication/Info.plist
+    entitlements:
+      path: FitFusionComplication/FitFusionComplication.entitlements
+    dependencies:
+      - package: FitFusionCore
+        product: FitFusionCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.fitfusion.watch.complication
+        TARGETED_DEVICE_FAMILY: "4"
+        CODE_SIGN_ENTITLEMENTS: FitFusionComplication/FitFusionComplication.entitlements
+        INFOPLIST_KEY_NSExtensionPointIdentifier: com.apple.widgetkit-extension

@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "HealthApp",
+    "slug": "healthapp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "backgroundColor": "#06b6d4",
+      "resizeMode": "contain"
+    },
+    "ios": { "supportsTablet": true },
+    "android": {
+      "adaptiveIcon": { "backgroundColor": "#06b6d4" }
+    },
+    "web": { "bundler": "metro" },
+    "extra": {
+      "apiUrl": "http://localhost:4000"
+    }
+  }
+}

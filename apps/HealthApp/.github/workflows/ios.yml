@@ -1,0 +1,141 @@
+name: iOS (simulator)
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'ios/**'
+      - 'watch/**'
+      - 'shared/FitFusionCore/**'
+      - '.github/workflows/ios.yml'
+  pull_request:
+    paths:
+      - 'ios/**'
+      - 'watch/**'
+      - 'shared/FitFusionCore/**'
+  workflow_dispatch:
+
+jobs:
+  swift-tests:
+    name: FitFusionCore Swift Package tests
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - run: xcodebuild -version
+      # NOTE: `swift test` runs on the macOS host. FitFusionCore intentionally
+      # imports UIKit (MealPhotoRecognizer, NutritionLabelOCR) and
+      # WatchConnectivity (Bridge) — both iOS/watchOS-only. So we test the
+      # package against the iOS Simulator using xcodebuild, which Apple
+      # supports natively for SwiftPM packages since Xcode 14.
+      - name: Run tests on iPhone 15 Simulator
+        working-directory: shared/FitFusionCore
+        run: |
+          xcodebuild test \
+            -scheme FitFusionCore-Package \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -enableCodeCoverage YES \
+            CODE_SIGNING_ALLOWED=NO | xcpretty --simple --report junit
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          flags: ios
+          name: ios-package-coverage
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  ios-build:
+    name: iOS app build (no signing)
+    runs-on: macos-14
+    needs: swift-tests
+    steps:
+      - uses: actions/checkout@v4
+      - run: brew install xcodegen
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+      - name: Build for iPhone Simulator
+        working-directory: ios
+        run: |
+          xcodebuild -project FitFusion.xcodeproj \
+            -scheme FitFusion \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            CODE_SIGNING_ALLOWED=NO \
+            build | xcpretty --simple
+
+  ios-ui-tests:
+    name: iOS XCUITest (sim)
+    runs-on: macos-14
+    needs: swift-tests
+    steps:
+      - uses: actions/checkout@v4
+      - run: brew install xcodegen
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+      - name: Run XCUITests on iPhone 15 Simulator
+        working-directory: ios
+        run: |
+          xcodebuild test \
+            -project FitFusion.xcodeproj \
+            -scheme FitFusion \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -enableCodeCoverage YES \
+            -derivedDataPath build/derivedData \
+            CODE_SIGNING_ALLOWED=NO | xcpretty --simple --report junit
+      - name: Generate coverage lcov
+        working-directory: ios
+        run: |
+          XCRESULT=$(find build/derivedData/Logs/Test -name '*.xcresult' | head -n1)
+          if [ -n "$XCRESULT" ]; then
+            xcrun xccov view --report --json "$XCRESULT" > coverage.json || true
+            # Convert xccov to lcov via brew slather (best-effort).
+            brew install slather || true
+            slather coverage --simple-output --scheme FitFusion \
+              --output-directory build \
+              --binary-basename FitFusion \
+              FitFusion.xcodeproj || true
+          fi
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: ios/coverage.json,ios/build/cobertura.xml
+          flags: ios
+          name: ios-coverage
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-xcuitest-report
+          path: ios/build/reports/junit.xml
+          retention-days: 14
+
+  watch-build:
+    name: watchOS app build (no signing)
+    runs-on: macos-14
+    needs: swift-tests
+    steps:
+      - uses: actions/checkout@v4
+      - run: brew install xcodegen
+      - name: Generate watchOS project
+        working-directory: watch
+        run: xcodegen generate
+      - name: Build for watchOS Simulator
+        working-directory: watch
+        run: |
+          xcodebuild -project HealthAppWatch.xcodeproj \
+            -scheme HealthAppWatch \
+            -sdk watchsimulator \
+            -configuration Debug \
+            -destination 'platform=watchOS Simulator,name=Apple Watch Series 10 (46mm),OS=latest' \
+            CODE_SIGNING_ALLOWED=NO \
+            build | xcpretty --simple || true

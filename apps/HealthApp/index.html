@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ====== Google Analytics (GA4) ====== -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y0CDD6QJ9J"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Y0CDD6QJ9J');
+    </script>
+
+    <!-- ====== SEO META TAGS ====== -->
+    <title>MyHealth &middot; Your Personal Fitness OS | Training, Nutrition, Sleep &amp; Mindfulness</title>
+    <meta name="description" content="MyHealth is your unified iPhone + Apple Watch fitness operating system. Combine training, cardio, nutrition, sleep tracking, and mindfulness into one elegant app. Explore health pillars, habits, and top health apps." />
+    <meta name="keywords" content="MyHealth, fitness app, health tracking, Apple Watch fitness, iPhone health, nutrition tracker, sleep tracking, workout planner, mental wellness, cardio training, mindfulness, health OS, personal fitness" />
+    <meta name="author" content="American Group LLC" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://americangroupllc.github.io/HealthApp/" />
+
+    <!-- ====== OPEN GRAPH (Facebook, LinkedIn, etc.) ====== -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="MyHealth &middot; Your Personal Fitness OS" />
+    <meta property="og:description" content="A unified iPhone + Apple Watch experience combining training, cardio, nutrition, sleep, and mindfulness into one elegant fitness operating system." />
+    <meta property="og:url" content="https://americangroupllc.github.io/HealthApp/" />
+    <meta property="og:site_name" content="MyHealth by American Group LLC" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- ====== TWITTER CARD ====== -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MyHealth &middot; Your Personal Fitness OS" />
+    <meta name="twitter:description" content="Unified iPhone + Apple Watch fitness OS — training, nutrition, sleep & mindfulness in one app." />
+
+    <!-- ====== STRUCTURED DATA (JSON-LD) ====== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "MyHealth",
+      "description": "Your Personal Fitness OS — a unified iPhone + Apple Watch experience that combines training, cardio, nutrition, sleep, and mindfulness.",
+      "url": "https://americangroupllc.github.io/HealthApp/",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "iOS, watchOS",
+      "author": {
+        "@type": "Organization",
+        "name": "American Group LLC",
+        "url": "https://americangroupllc.github.io"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+
+    <!-- ====== FONTS & STYLES ====== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- ================= NAVBAR ================= -->
+    <header class="navbar" id="navbar">
+      <div class="nav-container">
+        <a href="#home" class="logo" aria-label="MyHealth home">
+          <span class="logo-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
+              <path
+                d="M12 21s-7-4.5-9.5-9.2C.6 8.2 2.6 4 6.5 4c2 0 3.5 1 5.5 3 2-2 3.5-3 5.5-3 3.9 0 5.9 4.2 4 7.8C19 16.5 12 21 12 21Z"
+                fill="currentColor"
+              />
+            </svg>
+          </span>
+          <span class="logo-text">MyHealth</span>
+        </a>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="#vision">Vision</a>
+          <a href="#what-is-health">What is Health</a>
+          <a href="#types">Pillars</a>
+          <a href="#habits">Habits</a>
+          <a href="#issues">Issues</a>
+          <a href="#organizations">Organizations</a>
+          <a href="#apps">Top Apps</a>
+          <a href="#watch">iPhone vs Watch</a>
+        </nav>
+        <a href="#cta" class="btn btn-primary nav-cta">Get Started</a>
+        <button
+          class="menu-toggle"
+          aria-label="Toggle menu"
+          aria-expanded="false"
+          id="menuToggle"
+        >
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ================= HERO ================= -->
+    <section class="hero" id="home">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-content">
+        <span class="eyebrow">Welcome to MyHealth</span>
+        <h1 class="hero-title">
+          Your Personal
+          <span class="gradient-text">Fitness OS</span>.
+        </h1>
+        <p class="hero-subtitle">
+          Not just another workout app &mdash; a unified iPhone + Apple Watch experience
+          that combines training, cardio, nutrition, sleep, and mindfulness into
+          one elegant operating system for your body.
+        </p>
+        <div class="hero-actions">
+          <a href="#what-is-health" class="btn btn-primary">Explore</a>
+          <a href="#organizations" class="btn btn-ghost">Trusted Sources &rarr;</a>
+        </div>
+        <div class="hero-stats" role="list">
+          <div class="stat" role="listitem">
+            <div class="stat-num">3</div>
+            <div class="stat-label">Core Types of Health</div>
+          </div>
+          <div class="stat" role="listitem">
+            <div class="stat-num">2</div>
+            <div class="stat-label">Major Global Authorities</div>
+          </div>
+          <div class="stat" role="listitem">
+            <div class="stat-num">&infin;</div>
+            <div class="stat-label">Reasons to Care</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= UNIFIED VISION ================= -->
+    <section class="section section-alt" id="vision">
+      <div class="container">
+        <span class="eyebrow center">The Unified Vision</span>
+        <h2 class="section-title center">One MyHealth, Two Devices</h2>
+        <p class="section-sub center">
+          MyHealth treats your iPhone and Apple Watch as a single coherent system &mdash;
+          each device plays to its strengths, and HealthKit + WorkoutKit keep them in
+          perfect sync.
+        </p>
+
+        <div class="grid grid-2">
+          <article class="card">
+            <div class="card-icon icon-blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="5" y="2" width="14" height="20" rx="3"/>
+                <line x1="12" y1="18" x2="12" y2="18.01"/>
+              </svg>
+            </div>
+            <h3>&#128241; iPhone &mdash; Planning &amp; Insight Hub</h3>
+            <p>
+              Browse the workout library, plan meals, scan barcodes, view sleep
+              stages, analyze HRV trends, and schedule structured workouts that
+              show up on the Watch via WorkoutKit.
+            </p>
+            <ul class="feature-list" style="margin-top: 14px;">
+              <li>Workout library with smart filters</li>
+              <li>Run history with route maps &amp; pace charts</li>
+              <li>Barcode scanning + macro tracking</li>
+              <li>Sleep stages + recovery score</li>
+              <li>Wind Down + mindful sessions</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <div class="card-icon icon-purple" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="7" y="6" width="10" height="12" rx="2"/>
+                <path d="M9 6V3h6v3M9 18v3h6v-3"/>
+              </svg>
+            </div>
+            <h3>&#8984; Apple Watch &mdash; Live Coach &amp; Tracker</h3>
+            <p>
+              Start workouts and runs from your wrist, monitor heart rate zones in
+              real time, log water/weight/mood in 5 seconds, and glance at today's
+              Readiness % from any watch face complication.
+            </p>
+            <ul class="feature-list" style="margin-top: 14px;">
+              <li>Live workout controls (HR, zones, calories)</li>
+              <li>Run tracking with live pace</li>
+              <li>Always-on display during sessions</li>
+              <li>Readiness complication on the watch face</li>
+              <li>Siri &amp; Action Button shortcuts</li>
+            </ul>
+          </article>
+        </div>
+
+        <div
+          style="
+            margin-top: 40px;
+            padding: 28px;
+            background: linear-gradient(135deg, #f97316, #ec4899 50%, #8b5cf6);
+            border-radius: var(--radius-lg);
+            color: #fff;
+            text-align: center;
+          "
+        >
+          <div style="font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.9; font-weight: 700;">
+            &#128279; The Glue
+          </div>
+          <p style="margin-top: 10px; font-size: 1.1rem; line-height: 1.6;">
+            <strong>HealthKit</strong> is the source of truth for cross-device
+            health data &middot; <strong>WorkoutKit</strong> schedules structured workouts
+            between iPhone and Watch &middot; <strong>CloudKit</strong> instantly syncs
+            plans, meals, and moods across your Apple devices.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= WHAT IS HEALTH ================= -->
+    <section class="section" id="what-is-health">
+      <div class="container narrow">
+        <span class="eyebrow center">Definition</span>
+        <h2 class="section-title center">What is Health?</h2>
+        <p class="lead center">
+          Health is a state of <strong>complete physical, mental, and social
+          well-being</strong> &mdash; not merely the absence of disease or infirmity.
+          It's a holistic balance that empowers people to live full, active, and
+          meaningful lives.
+        </p>
+      </div>
+    </section>
+
+    <!-- ================= TYPES ================= -->
+    <section class="section section-alt" id="types">
+      <div class="container">
+        <span class="eyebrow center">Pillars</span>
+        <h2 class="section-title center">Key Types of Health</h2>
+        <p class="section-sub center">
+          True wellness is built on three interconnected pillars.
+        </p>
+
+        <div class="grid grid-3">
+          <article class="card">
+            <div class="card-icon icon-blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z"/>
+              </svg>
+            </div>
+            <h3>Physical Health</h3>
+            <p>
+              The condition of your body &mdash; strength, endurance, flexibility, and
+              the proper functioning of organs and systems.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="card-icon icon-purple" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.3 4.7 3.3 6 .5.3.7.9.7 1.5V18a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-1.5c0-.6.2-1.2.7-1.5 2-1.3 3.3-3.5 3.3-6a7 7 0 0 0-7-7Z"/>
+                <path d="M9 22h6"/>
+              </svg>
+            </div>
+            <h3>Mental Health</h3>
+            <p>
+              Cognitive well-being &mdash; how you think, learn, focus, and respond to
+              stress, challenges, and the world around you.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="card-icon icon-pink" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                <line x1="9" y1="9" x2="9.01" y2="9"/>
+                <line x1="15" y1="9" x2="15.01" y2="9"/>
+              </svg>
+            </div>
+            <h3>Emotional Health</h3>
+            <p>
+              The ability to understand, express, and manage feelings &mdash; building
+              resilience and meaningful relationships.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= HABITS ================= -->
+    <section class="section" id="habits">
+      <div class="container">
+        <span class="eyebrow center">Daily Practice</span>
+        <h2 class="section-title center">How Health Is Maintained</h2>
+        <p class="section-sub center">
+          Small, consistent habits create lifelong well-being.
+        </p>
+
+        <div class="grid grid-3">
+          <article class="feature">
+            <div class="feature-num">01</div>
+            <h3>Balanced Nutrition</h3>
+            <p>
+              Whole foods, fruits, vegetables, lean proteins, and proper
+              hydration fuel your body and mind.
+            </p>
+          </article>
+          <article class="feature">
+            <div class="feature-num">02</div>
+            <h3>Regular Exercise</h3>
+            <p>
+              Movement strengthens muscles, supports cardiovascular health, and
+              improves mood and energy.
+            </p>
+          </article>
+          <article class="feature">
+            <div class="feature-num">03</div>
+            <h3>Preventative Care</h3>
+            <p>
+              Regular checkups, screenings, and vaccinations catch issues early
+              and keep you protected.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ISSUES ================= -->
+    <section class="section section-alt" id="issues">
+      <div class="container">
+        <span class="eyebrow center">Awareness</span>
+        <h2 class="section-title center">Major Health Issues</h2>
+        <p class="section-sub center">
+          Understanding today's challenges is the first step toward solving
+          them.
+        </p>
+
+        <div class="grid grid-2">
+          <article class="issue-card">
+            <div class="issue-flag">&#127482;&#127480; U.S.</div>
+            <h3>Chronic Diseases</h3>
+            <p>
+              Conditions such as heart disease, diabetes, obesity, and cancer
+              are the leading causes of death and disability in the United
+              States. Most are preventable through lifestyle and care.
+            </p>
+          </article>
+
+          <article class="issue-card">
+            <div class="issue-flag">&#127758; Global</div>
+            <h3>Access to Care</h3>
+            <p>
+              Millions worldwide lack access to safe, affordable, and quality
+              health services. Bridging this gap is essential for equitable
+              global well-being.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ORGANIZATIONS ================= -->
+    <section class="section" id="organizations">
+      <div class="container">
+        <span class="eyebrow center">Trusted Sources</span>
+        <h2 class="section-title center">Key Health Organizations</h2>
+        <p class="section-sub center">
+          Reliable, science-backed authorities guiding global and national
+          health policy.
+        </p>
+
+        <div class="grid grid-2">
+          <a
+            href="https://www.who.int/"
+            target="_blank"
+            rel="noopener"
+            class="org-card"
+          >
+            <div class="org-badge">WHO</div>
+            <h3>World Health Organization</h3>
+            <p>
+              The United Nations agency leading international public health,
+              setting global health standards and coordinating responses to
+              emergencies.
+            </p>
+            <span class="org-link">Visit who.int &rarr;</span>
+          </a>
+
+          <a
+            href="https://www.cdc.gov/"
+            target="_blank"
+            rel="noopener"
+            class="org-card"
+          >
+            <div class="org-badge">CDC</div>
+            <h3>Centers for Disease Control &amp; Prevention</h3>
+            <p>
+              The U.S. national public health agency working to protect Americans
+              from health, safety, and security threats both at home and abroad.
+            </p>
+            <span class="org-link">Visit cdc.gov &rarr;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TOP HEALTH APPS ================= -->
+    <section class="section section-alt" id="apps">
+      <div class="container">
+        <span class="eyebrow center">Curated Picks</span>
+        <h2 class="section-title center">Top-Class Health Mobile Apps</h2>
+        <p class="section-sub center">
+          The best apps across fitness, nutrition, mental wellness, and
+          tracking &mdash; with the features that make them stand out.
+        </p>
+
+        <!-- Category tabs -->
+        <div class="tabs" role="tablist" aria-label="App categories">
+          <button class="tab active" data-filter="all" role="tab" aria-selected="true">All</button>
+          <button class="tab" data-filter="fitness" role="tab">&#127941; Fitness</button>
+          <button class="tab" data-filter="running" role="tab">&#127939; Running</button>
+          <button class="tab" data-filter="diet" role="tab">&#129367; Diet</button>
+          <button class="tab" data-filter="mental" role="tab">&#129504; Mental &amp; Sleep</button>
+          <button class="tab" data-filter="tracking" role="tab">&#128200; Tracking</button>
+        </div>
+
+        <!-- App grid -->
+        <div class="grid grid-3 app-grid" id="appGrid">
+          <!-- FITNESS -->
+          <article class="app-card" data-category="fitness">
+            <div class="app-head">
+              <div class="app-logo blue">N</div>
+              <span class="app-tag">&#127941; Fitness</span>
+            </div>
+            <h3>Nike Training Club</h3>
+            <p class="app-desc">Free, high-quality workouts spanning every level and discipline.</p>
+            <ul class="feature-list">
+              <li>Free HIIT, strength &amp; yoga workouts</li>
+              <li>300+ trainer-guided sessions</li>
+              <li>Beginner to advanced programs</li>
+              <li>Personalized weekly plans</li>
+            </ul>
+          </article>
+
+          <article class="app-card" data-category="fitness">
+            <div class="app-head">
+              <div class="app-logo dark">&#63743;</div>
+              <span class="app-tag">&#127941; Fitness</span>
+            </div>
+            <h3>Apple Fitness+</h3>
+            <p class="app-desc">Premium experience with real-time on-screen metrics.</p>
+            <ul class="feature-list">
+              <li>Real-time metrics via Apple Watch</li>
+              <li>AI-adjusted workouts to fitness level</li>
+              <li>Studio-quality video sessions</li>
+              <li>Audio meditations &amp; walks</li>
+            </ul>
+          </article>
+
+          <article class="app-card" data-category="fitness">
+            <div class="app-head">
+              <div class="app-logo orange">S</div>
+              <span class="app-tag">&#127941; Fitness</span>
+            </div>
+            <h3>Sworkit</h3>
+            <p class="app-desc">Highly customizable all-in-one workout solution.</p>
+            <ul class="feature-list">
+              <li>Customizable workout plans</li>
+              <li>Strength, cardio, yoga, stretching</li>
+              <li>Family-friendly programs</li>
+              <li>No equipment options</li>
+            </ul>
+          </article>
+
+          <!-- RUNNING -->
+          <article class="app-card" data-category="running">
+            <div class="app-head">
+              <div class="app-logo red">S</div>
+              <span class="app-tag">&#127939; Running</span>
+            </div>
+            <h3>Strava</h3>
+            <p class="app-desc">The social network for runners and cyclists.</p>
+            <ul class="feature-list">
+              <li>Excellent GPS route tracking</li>
+              <li>Segments &amp; leaderboards</li>
+              <li>Monthly challenges &amp; badges</li>
+              <li>Social feed &amp; kudos</li>
+            </ul>
+          </article>
+
+          <article class="app-card" data-category="running">
+            <div class="app-head">
+              <div class="app-logo blue">NR</div>
+              <span class="app-tag">&#127939; Running</span>
+            </div>
+            <h3>Nike Run Club</h3>
+            <p class="app-desc">Free guided runs and structured race training.</p>
+            <ul class="feature-list">
+              <li>Audio-guided runs with coaches</li>
+              <li>5K, 10K, half &amp; full marathon plans</li>
+              <li>Personal bests &amp; milestones</li>
+              <li>Run with friends &amp; cheers</li>
+            </ul>
+          </article>
+
+          <!-- DIET -->
+          <article class="app-card" data-category="diet">
+            <div class="app-head">
+              <div class="app-logo green">M</div>
+              <span class="app-tag">&#129367; Diet</span>
+            </div>
+            <h3>MyFitnessPal</h3>
+            <p class="app-desc">The world's most popular calorie tracker.</p>
+            <ul class="feature-list">
+              <li>14M+ food database</li>
+              <li>Barcode scanner for quick logging</li>
+              <li>Macro &amp; nutrient breakdowns</li>
+              <li>Recipe &amp; meal plan tools</li>
+            </ul>
+          </article>
+
+          <article class="app-card" data-category="diet">
+            <div class="app-head">
+              <div class="app-logo teal">H</div>
+              <span class="app-tag">&#129367; Diet</span>
+            </div>
+            <h3>HealthifyMe</h3>
+            <p class="app-desc">AI-powered diet coaching tailored to you.</p>
+            <ul class="feature-list">
+              <li>AI nutritionist &ldquo;Ria&rdquo;</li>
+              <li>Smart meal &amp; water tracking</li>
+              <li>Human coach add-ons</li>
+              <li>Indian &amp; global cuisine database</li>
+            </ul>
+          </article>
+
+          <!-- MENTAL -->
+          <article class="app-card" data-category="mental">
+            <div class="app-head">
+              <div class="app-logo indigo">C</div>
+              <span class="app-tag">&#129504; Mental</span>
+            </div>
+            <h3>Calm</h3>
+            <p class="app-desc">Meditation, sleep, and stress relief.</p>
+            <ul class="feature-list">
+              <li>Guided meditations</li>
+              <li>Sleep stories with celebrities</li>
+              <li>Breathing &amp; relaxation exercises</li>
+              <li>Daily Calm sessions</li>
+            </ul>
+          </article>
+
+          <article class="app-card" data-category="mental">
+            <div class="app-head">
+              <div class="app-logo purple">Z</div>
+              <span class="app-tag">&#129504; Sleep</span>
+            </div>
+            <h3>SleepScore</h3>
+            <p class="app-desc">Science-based sleep quality tracking.</p>
+            <ul class="feature-list">
+              <li>Sonar-based sleep tracking</li>
+              <li>Personalized sleep score</li>
+              <li>Improvement recommendations</li>
+              <li>Smart alarm wake-up</li>
+            </ul>
+          </article>
+
+          <!-- TRACKING -->
+          <article class="app-card" data-category="tracking">
+            <div class="app-head">
+              <div class="app-logo green">G</div>
+              <span class="app-tag">&#128200; Tracking</span>
+            </div>
+            <h3>Google Fit</h3>
+            <p class="app-desc">Free, universal activity tracking.</p>
+            <ul class="feature-list">
+              <li>Steps, distance &amp; calories</li>
+              <li>Heart Points &amp; Move Minutes</li>
+              <li>Works with many wearables</li>
+              <li>Syncs across Android/iOS</li>
+            </ul>
+          </article>
+
+          <article class="app-card" data-category="tracking">
+            <div class="app-head">
+              <div class="app-logo teal">F</div>
+              <span class="app-tag">&#128200; Tracking</span>
+            </div>
+            <h3>Fitbit</h3>
+            <p class="app-desc">Deep insights for sleep, heart, and activity.</p>
+            <ul class="feature-list">
+              <li>24/7 heart-rate tracking</li>
+              <li>Sleep stages &amp; SpO&#8322;</li>
+              <li>Stress management score</li>
+              <li>Activity &amp; workout trends</li>
+            </ul>
+          </article>
+        </div>
+
+        <!-- Quick Recommendations -->
+        <div class="reco">
+          <h3 class="reco-title">&#9889; Quick Recommendations by Goal</h3>
+          <div class="grid grid-3">
+            <div class="reco-card">
+              <div class="reco-goal">Weight Loss</div>
+              <div class="reco-apps">MyFitnessPal + Nike Training Club</div>
+            </div>
+            <div class="reco-card">
+              <div class="reco-goal">Muscle / Gym</div>
+              <div class="reco-apps">Sworkit or Strong</div>
+            </div>
+            <div class="reco-card">
+              <div class="reco-goal">Running</div>
+              <div class="reco-apps">Strava</div>
+            </div>
+            <div class="reco-card">
+              <div class="reco-goal">Overall Health</div>
+              <div class="reco-apps">Apple Fitness+ or Google Fit</div>
+            </div>
+            <div class="reco-card">
+              <div class="reco-goal">Mental Wellness</div>
+              <div class="reco-apps">Calm</div>
+            </div>
+            <div class="reco-card">
+              <div class="reco-goal">Sleep Quality</div>
+              <div class="reco-apps">SleepScore + Fitbit</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= IPHONE vs APPLE WATCH ================= -->
+    <section class="section" id="watch">
+      <div class="container">
+        <span class="eyebrow center">Companion Devices</span>
+        <h2 class="section-title center">&#128241; iPhone vs &#8984; Apple Watch Apps</h2>
+        <p class="section-sub center">
+          Most health apps come in two flavors &mdash; one on your phone, one on your
+          wrist. Here's how they work together.
+        </p>
+
+        <!-- Two intro cards -->
+        <div class="grid grid-2" style="margin-bottom: 48px;">
+          <article class="card">
+            <div class="card-icon icon-blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="5" y="2" width="14" height="20" rx="3"/>
+                <line x1="12" y1="18" x2="12" y2="18.01"/>
+              </svg>
+            </div>
+            <h3>1. The &ldquo;Watch&rdquo; App on iPhone</h3>
+            <p>
+              A built-in utility that acts as the <strong>remote control and
+              settings hub</strong> for your Apple Watch.
+            </p>
+            <ul class="feature-list" style="margin-top: 14px;">
+              <li>Change watch faces &amp; complications</li>
+              <li>Manage notifications &amp; Do Not Disturb</li>
+              <li>Set up Apple Pay on your wrist</li>
+              <li>Install or remove apps from the watch</li>
+            </ul>
+            <p style="margin-top: 14px; padding: 12px; background: linear-gradient(135deg, #fef3c7, #fdf2f8); border-radius: 12px; color: #92400e; font-size: 0.9rem;">
+              &#9888;&#65039; You <strong>cannot delete</strong> this app if you use an Apple
+              Watch &mdash; it's the bridge between the two devices.
+            </p>
+          </article>
+
+          <article class="card">
+            <div class="card-icon icon-purple" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="7" y="6" width="10" height="12" rx="2"/>
+                <path d="M9 6V3h6v3M9 18v3h6v-3"/>
+              </svg>
+            </div>
+            <h3>2. watchOS Versions of Apps</h3>
+            <p>
+              When you download a third-party app (Spotify, Strava, Starbucks),
+              you often get <strong>two versions</strong>: one for iOS and one
+              for watchOS.
+            </p>
+            <ul class="feature-list" style="margin-top: 14px;">
+              <li>Designed for quick &ldquo;glance&rdquo; interactions</li>
+              <li>Big buttons, minimal text</li>
+              <li>Optimized for 5-second use</li>
+              <li>Often relies on the iPhone app to function fully</li>
+            </ul>
+          </article>
+        </div>
+
+        <!-- Comparison Table -->
+        <h3 class="reco-title" style="margin-bottom: 20px;">&#128269; Side-by-Side Comparison</h3>
+        <div class="compare-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>&#128241; iOS App (iPhone)</th>
+                <th>&#8984; watchOS App (Apple Watch)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Interface</strong></td>
+                <td>Designed for a large screen &mdash; full of detail and menus.</td>
+                <td>Designed for &ldquo;glances&rdquo; &mdash; quick info and big buttons.</td>
+              </tr>
+              <tr>
+                <td><strong>Function</strong></td>
+                <td>The &ldquo;heavy lifter.&rdquo; Used for deep configuration and history.</td>
+                <td>The &ldquo;remote.&rdquo; Used for quick actions (start a run, pause music).</td>
+              </tr>
+              <tr>
+                <td><strong>Independence</strong></td>
+                <td>Works entirely on its own.</td>
+                <td>Most still need the iPhone app installed to work properly.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Why they seem different -->
+        <div class="reco" style="margin-top: 48px;">
+          <h3 class="reco-title">&#128161; Why the Same App Feels Different</h3>
+          <p style="text-align: center; color: var(--c-muted); margin-bottom: 24px; max-width: 640px; margin-left: auto; margin-right: auto;">
+            Even when it's the &ldquo;same&rdquo; app (like Apple Maps), the experience is
+            tailored to where it sits.
+          </p>
+          <div class="grid grid-2">
+            <div class="reco-card" style="text-align: left;">
+              <div class="reco-goal">&#128241; On the Phone</div>
+              <div class="reco-apps" style="font-size: 0.95rem; font-weight: 500; color: var(--c-muted); margin-top: 6px;">
+                You type in an address and explore the full map with detail.
+              </div>
+            </div>
+            <div class="reco-card" style="text-align: left;">
+              <div class="reco-goal">&#8984; On the Watch</div>
+              <div class="reco-apps" style="font-size: 0.95rem; font-weight: 500; color: var(--c-muted); margin-top: 6px;">
+                It taps your wrist to tell you &ldquo;turn left in 100 feet.&rdquo;
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TL;DR -->
+        <div
+          style="
+            margin-top: 40px;
+            padding: 28px;
+            background: linear-gradient(135deg, #06b6d4, #8b5cf6, #ec4899);
+            background-size: 200% 200%;
+            animation: gradientShift 6s ease infinite;
+            border-radius: var(--radius-lg);
+            color: #fff;
+            text-align: center;
+          "
+        >
+          <div style="font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.85; font-weight: 700;">
+            &#10024; The Short Version
+          </div>
+          <p style="margin-top: 10px; font-size: 1.1rem; line-height: 1.6;">
+            The app on your <strong>iPhone</strong> is for <em>managing</em> the
+            watch &mdash; the apps on your <strong>Watch</strong> are stripped-down
+            versions of your phone apps, designed to be used in 5 seconds or less.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CTA ================= -->
+    <section class="cta" id="cta">
+      <div class="container narrow center">
+        <h2 class="cta-title">Take the first step toward better health.</h2>
+        <p class="cta-sub">
+          Knowledge is the foundation of wellness. Share, learn, and act.
+        </p>
+        <div class="hero-actions center">
+          <a href="#home" class="btn btn-primary">Back to Top</a>
+          <a
+            href="https://www.who.int/"
+            target="_blank"
+            rel="noopener"
+            class="btn btn-ghost"
+            >Learn from WHO</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div>
+          <div class="logo logo-footer">
+            <span class="logo-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M12 21s-7-4.5-9.5-9.2C.6 8.2 2.6 4 6.5 4c2 0 3.5 1 5.5 3 2-2 3.5-3 5.5-3 3.9 0 5.9 4.2 4 7.8C19 16.5 12 21 12 21Z"/>
+              </svg>
+            </span>
+            <span class="logo-text">MyHealth</span>
+          </div>
+          <p class="footer-tag">Your Personal Fitness OS &mdash; iPhone + Apple Watch, in perfect sync.</p>
+        </div>
+        <div>
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="#what-is-health">What is Health</a></li>
+            <li><a href="#types">Types</a></li>
+            <li><a href="#habits">Habits</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Issues</h4>
+          <ul>
+            <li><a href="#issues">U.S. Concerns</a></li>
+            <li><a href="#issues">Global Concerns</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Connect</h4>
+          <ul>
+            <li><a href="https://www.youtube.com/@AmericanGroupLLC" target="_blank" rel="noopener">YouTube</a></li>
+            <li><a href="https://github.com/AmericanGroupLLC" target="_blank" rel="noopener">GitHub</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#apps">Top Apps</a></li>
+            <li><a href="#watch">iPhone vs Watch</a></li>
+            <li><a href="https://www.who.int/" target="_blank" rel="noopener">WHO</a></li>
+            <li><a href="https://www.cdc.gov/" target="_blank" rel="noopener">CDC</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <span id="year"></span> MyHealth &middot; Built with care for a healthier world.</p>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

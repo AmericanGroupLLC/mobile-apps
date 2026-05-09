@@ -1,0 +1,53 @@
+name: Backend
+
+on:
+  push:
+    paths:
+      - 'server/**'
+      - '.github/workflows/backend.yml'
+  pull_request:
+    paths:
+      - 'server/**'
+
+jobs:
+  jest:
+    name: Jest + smoke
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - name: Prepare .env
+        run: |
+          cp .env.example .env
+          sed -i "s|JWT_SECRET=.*|JWT_SECRET=ci-secret-12345678901234567890ABCD|" .env
+          sed -i "s|DB_PATH=.*|DB_PATH=/tmp/myhealth-ci.db|" .env
+      - name: Jest with coverage
+        run: npm test -- --coverage --runInBand --detectOpenHandles
+      - name: Boot server in background
+        run: |
+          node server.js &
+          echo $! > server.pid
+          sleep 3
+      - name: Smoke test
+        run: node smoke.js
+      - name: Stop server
+        if: always()
+        run: kill $(cat server.pid) || true
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: server/coverage/lcov.info
+          flags: backend
+          name: backend-coverage
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

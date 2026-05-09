@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MyHealth</string>
+    <string name="tab_home">Accueil</string>
+    <string name="tab_train">Sport</string>
+    <string name="tab_diary">Journal</string>
+    <string name="tab_sleep">Sommeil</string>
+    <string name="tab_more">Plus</string>
+    <string name="welcome_title">Bienvenue dans MyHealth</string>
+    <string name="welcome_subtitle">Votre OS personnel de bien-être : sport, alimentation, sommeil, humeur, signes vitaux et âge biologique. Tout sur votre appareil.</string>
+    <string name="cta_get_started">Commencer</string>
+    <string name="cta_continue">Continuer</string>
+    <string name="cta_save">Enregistrer</string>
+    <string name="cta_cancel">Annuler</string>
+</resources>
