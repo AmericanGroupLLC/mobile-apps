@@ -1,0 +1,30 @@
+# Build outputs
+**/build/
+**/.gradle/
+**/.kotlin/
+**/.idea/
+**/.cxx/
+**/.externalNativeBuild/
+**/captures/
+
+# Native deps
+**/Pods/
+**/DerivedData/
+
+# JS / RN
+**/node_modules/
+**/.expo/
+**/.metro/
+**/dist/
+
+# Local config (NEVER commit secrets / signing keys)
+local.properties
+*.keystore
+*.jks
+.env
+.env.local
+
+# Logs / OS junk
+*.log
+.DS_Store
+Thumbs.db

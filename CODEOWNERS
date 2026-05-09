@@ -1,0 +1,11 @@
+# Default owner for everything in the monorepo.
+*                          @srpatcha
+
+# Per-app placeholders -- fill in real owners as teams form.
+/apps/BuddyPlay/           @srpatcha
+/apps/Card/                @srpatcha
+/apps/ClockApp/            @srpatcha
+/apps/DriftDate/           @srpatcha
+/apps/HealthApp/           @srpatcha
+/apps/Offline-AI-Buddy/    @srpatcha
+/apps/UrbanNeeds/          @srpatcha
