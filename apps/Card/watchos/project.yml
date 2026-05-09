@@ -1,0 +1,55 @@
+name: CardWatch
+options:
+  bundleIdPrefix: com.americangroupllc
+  deploymentTarget:
+    watchOS: "10.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    WATCHOS_DEPLOYMENT_TARGET: "10.0"
+    PRODUCT_BUNDLE_IDENTIFIER: com.americangroupllc.card.watchkitapp
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+packages:
+  CardCore:
+    path: ../shared/CardCore
+
+targets:
+  CardWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - path: CardWatch
+        excludes: ["**/*.md"]
+    info:
+      path: CardWatch/Resources/Info.plist
+    entitlements:
+      path: CardWatch/Resources/CardWatch.entitlements
+    dependencies:
+      - package: CardCore
+        product: CardCore
+      - sdk: UserNotifications.framework
+      - sdk: Speech.framework
+      - sdk: AVFoundation.framework
+
+  CardComplication:
+    type: app-extension
+    platform: watchOS
+    sources: [CardComplication]
+    info:
+      path: CardComplication/Info.plist
+    entitlements:
+      path: CardComplication/CardComplication.entitlements
+    dependencies:
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+
+schemes:
+  CardWatch:
+    build:
+      targets:
+        CardWatch: all
+        CardComplication: all
+    run:
+      config: Debug

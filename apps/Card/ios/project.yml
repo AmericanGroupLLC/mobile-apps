@@ -1,0 +1,94 @@
+name: Card
+options:
+  bundleIdPrefix: com.americangroupllc
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: en
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+    PRODUCT_BUNDLE_IDENTIFIER: com.americangroupllc.card
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ""
+    INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+    INFOPLIST_KEY_UILaunchStoryboardName: LaunchScreen
+    SUPPORTS_MACCATALYST: NO
+    TARGETED_DEVICE_FAMILY: "1,2"
+
+packages:
+  CardCore:
+    path: ../shared/CardCore
+
+targets:
+  Card:
+    type: application
+    platform: iOS
+    sources:
+      - path: Card
+        excludes:
+          - "**/*.md"
+    resources:
+      - path: Card/Resources/Assets.xcassets
+      - path: Card/Resources/LaunchScreen.storyboard
+    info:
+      path: Card/Resources/Info.plist
+    entitlements:
+      path: Card/Resources/Card.entitlements
+    dependencies:
+      - package: CardCore
+        product: CardCore
+      - target: CardShareExtension
+      - sdk: UserNotifications.framework
+      - sdk: Speech.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.americangroupllc.card
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+
+  CardShareExtension:
+    type: app-extension
+    platform: iOS
+    sources: [CardShareExtension]
+    info:
+      path: CardShareExtension/Info.plist
+    entitlements:
+      path: CardShareExtension/CardShareExtension.entitlements
+    dependencies:
+      - package: CardCore
+        product: CardCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.americangroupllc.card.share
+        INFOPLIST_KEY_CFBundleDisplayName: "Card – Save"
+
+  CardTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [CardTests]
+    dependencies:
+      - target: Card
+      - package: CardCore
+        product: CardCore
+
+  CardUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [CardUITests]
+    dependencies:
+      - target: Card
+
+schemes:
+  Card:
+    build:
+      targets:
+        Card: all
+        CardShareExtension: all
+    test:
+      targets:
+        - CardTests
+        - CardUITests
+    run:
+      config: Debug
