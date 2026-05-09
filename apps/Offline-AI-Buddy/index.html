@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Offline AI Buddy — Your phone-only AI. Works without internet.</title>
+    <meta
+      name="description"
+      content="Offline AI Buddy is a phone-only on-device LLM app. Multilingual chat, voice, smart-reply keyboard, kid-safe mode — all running locally after a one-time ~1 GB model download. No accounts, no servers."
+    />
+    <meta name="theme-color" content="#1A0B2E" />
+    <link rel="canonical" href="https://americangroupllc.github.io/Offline-AI-Buddy/" />
+    <link rel="stylesheet" href="styles.css" />
+    <meta property="og:title" content="Offline AI Buddy — On-device LLM, multilingual, kid-safe" />
+    <meta property="og:description" content="Multilingual on-device AI. Chat, voice, smart-reply keyboard. No internet after first launch." />
+    <meta property="og:url" content="https://americangroupllc.github.io/Offline-AI-Buddy/" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <header class="hero">
+      <nav>
+        <span class="brand">Offline AI Buddy</span>
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#privacy">Privacy</a>
+        <a href="https://github.com/AmericanGroupLLC/Offline-AI-Buddy" class="ghost">GitHub</a>
+      </nav>
+      <h1>
+        Your phone-only AI.<br />
+        <span class="accent">Works without internet.</span>
+      </h1>
+      <p class="lead">
+        A 1.5-billion-parameter language model running entirely on your phone.
+        Multilingual chat, voice, a system smart-reply keyboard, and a kid-safe
+        mode — <strong>after a one-time ~1 GB download, no internet required</strong>.
+      </p>
+      <div class="cta">
+        <a class="btn" href="#features">See the features</a>
+        <a class="btn ghost" href="https://github.com/AmericanGroupLLC/Offline-AI-Buddy">Source on GitHub</a>
+      </div>
+    </header>
+
+    <section id="features" class="games">
+      <h2>What ships in v1</h2>
+      <div class="grid">
+        <article class="card">
+          <div class="badge">Multilingual · 5 languages</div>
+          <h3>Chat in English, Hindi, Mandarin, French, Spanish</h3>
+          <p>
+            One model, five languages. A picker swaps the system prompt
+            and TTS/STT locale; the model handles the rest.
+          </p>
+        </article>
+        <article class="card">
+          <div class="badge">Voice · push-to-talk + read-aloud</div>
+          <h3>Talk to your AI</h3>
+          <p>
+            On-device speech recognition where the platform supports it.
+            Per-message playback in the right voice for the right locale.
+          </p>
+        </article>
+        <article class="card">
+          <div class="badge">System keyboard</div>
+          <h3>Smart replies in any chat app</h3>
+          <p>
+            A custom system keyboard offers 3 AI suggestions for whatever
+            you're about to type — inside Messages, WhatsApp, Slack, anywhere.
+          </p>
+        </article>
+        <article class="card">
+          <div class="badge">Kid-safe profile · PIN-locked</div>
+          <h3>Two profiles per install</h3>
+          <p>
+            Adult and Kid-safe. The Kid profile prepends a strict refusal
+            prompt and runs every assistant token through a content
+            filter. PIN-locked escape.
+          </p>
+        </article>
+        <article class="card">
+          <div class="badge">Live translator</div>
+          <h3>Translate between any of the 5</h3>
+          <p>
+            Source → Target picker. Strict translation prompt — output is
+            the translation only, no commentary.
+          </p>
+        </article>
+        <article class="card">
+          <div class="badge">Roast · Daily Challenge · Party Q · Game Coach</div>
+          <h3>Four play modes</h3>
+          <p>
+            Each is a prompt template wrapping the same on-device LLM. Roast
+            is disabled in Kid-safe.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="how" class="how">
+      <h2>How "offline" actually works</h2>
+      <ol>
+        <li>
+          <strong>One-time model download.</strong> On first launch the app
+          downloads a ~1 GB language model file over Wi-Fi. The Consent
+          screen tells you the size + Wi-Fi requirement before the download
+          starts.
+        </li>
+        <li>
+          <strong>SHA-256 verified.</strong> If the download is corrupt,
+          we re-download. If a CDN goes down, we try a mirror.
+        </li>
+        <li>
+          <strong>That's it.</strong> Toggle airplane mode after first launch
+          and every feature still works. The app never reaches the internet
+          for chat, voice, or keyboard.
+        </li>
+      </ol>
+      <p class="muted">
+        The only network traffic after first launch is RevenueCat's
+        receipt validation when you subscribe (and the optional AdMob
+        interstitial for ad-unlocks on the free tier).
+      </p>
+    </section>
+
+    <section id="privacy" class="privacy">
+      <h2>Privacy by absence</h2>
+      <p>
+        No accounts. No servers we run. No analytics by default. No chat
+        content ever leaves your phone. Offline AI Buddy literally cannot
+        share your conversations because it doesn't have anywhere to send
+        them.
+      </p>
+      <p>
+        Profiles, chat history, and quota counters live in plain JSON
+        files on your phone. Settings → Erase any time. Done.
+      </p>
+    </section>
+
+    <footer>
+      <span class="brand">Offline AI Buddy</span> · MIT-licensed · 2026 American Group LLC · <a href="https://www.youtube.com/@AmericanGroupLLC" target="_blank" rel="noopener" style="color:inherit">YouTube</a>
+    </footer>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>

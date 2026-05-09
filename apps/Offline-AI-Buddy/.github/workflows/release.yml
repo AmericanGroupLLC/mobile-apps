@@ -1,0 +1,671 @@
+name: Release
+
+# Triggered by a tag like v1.2.0 / v1.2.0-rc1.
+#
+# This workflow is driven by ./release.config.json (the single source
+# of truth) and produces:
+#   - Android .apk + .aab + Wear .apk
+#   - iOS .ipa  (when APPLE_CERTIFICATE_BASE64 is set)
+#     fallback: iPhone Simulator .app.zip
+#   - watchOS .app.zip (when platforms.watchos == true)
+#   - Web (marketing) .zip
+#   - Windows .exe (NSIS), Linux AppImage, macOS .dmg (Electron)
+#   - Styled PDF release book   (umbrella reusable workflow)
+#   - Silent MP4 release video  (umbrella reusable workflow)
+#
+# All optional steps degrade gracefully when secrets are absent.
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+
+  # ─────────────────────────────────────────────────────────────
+  # 0. Required test gate
+  # ─────────────────────────────────────────────────────────────
+  pre-release-tests:
+    name: Pre-Release Tests
+    uses: ./.github/workflows/pre-release-tests.yml
+
+  # ─────────────────────────────────────────────────────────────
+  # 1. Setup — read release.config.json into job outputs
+  # ─────────────────────────────────────────────────────────────
+  setup:
+    name: Setup (read release.config.json)
+    needs: [pre-release-tests]
+    runs-on: ubuntu-latest
+    outputs:
+      version:        ${{ steps.read.outputs.version }}
+      app-name:       ${{ steps.read.outputs.app_name }}
+      app-slug:       ${{ steps.read.outputs.app_slug }}
+      display-name:   ${{ steps.read.outputs.display_name }}
+      bundle-id:      ${{ steps.read.outputs.bundle_id }}
+      application-id: ${{ steps.read.outputs.application_id }}
+      electron-app-id: ${{ steps.read.outputs.electron_app_id }}
+      brand-color:    ${{ steps.read.outputs.brand_color }}
+      docs:           ${{ steps.read.outputs.docs }}
+      platforms:      ${{ steps.read.outputs.platforms }}
+      ios-schemes:    ${{ steps.read.outputs.ios_schemes }}
+      watch-schemes:  ${{ steps.read.outputs.watch_schemes }}
+      ios-extensions: ${{ steps.read.outputs.ios_extensions }}
+      marketing-html: ${{ steps.read.outputs.marketing_html }}
+      video-script:   ${{ steps.read.outputs.video_script }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: read
+        run: |
+          set -euo pipefail
+          if [ ! -f release.config.json ]; then
+            echo "::error::release.config.json missing in repo root"; exit 1
+          fi
+          # jq is preinstalled on GitHub-hosted ubuntu runners.
+          v="${GITHUB_REF_NAME#}"
+          echo "version=${v}" >> "$GITHUB_OUTPUT"
+          for k in appName appSlug displayName bundleId applicationId electronAppId brandColor marketingHtml videoScript; do
+            val=$(jq -r ".${k} // \"\"" release.config.json)
+            # snake_case key for outputs
+            out_key=$(echo "$k" | sed -E 's/([A-Z])/_\L\1/g')
+            echo "${out_key}=${val}" >> "$GITHUB_OUTPUT"
+          done
+          # JSON-typed outputs (compact one-line JSON).
+          echo "docs=$(jq -c '.docs // []' release.config.json)" >> "$GITHUB_OUTPUT"
+          echo "platforms=$(jq -c '.platforms // {}' release.config.json)" >> "$GITHUB_OUTPUT"
+          echo "ios_schemes=$(jq -c '.iosSchemes // []' release.config.json)" >> "$GITHUB_OUTPUT"
+          echo "watch_schemes=$(jq -c '.iosWatchSchemes // []' release.config.json)" >> "$GITHUB_OUTPUT"
+          echo "ios_extensions=$(jq -c '.iosExtensions // []' release.config.json)" >> "$GITHUB_OUTPUT"
+
+  # ─────────────────────────────────────────────────────────────
+  # 2. Android phone + Wear
+  # ─────────────────────────────────────────────────────────────
+  build-android:
+    name: Build Android phone + Wear
+    needs: [pre-release-tests, setup]
+    if: ${{ fromJson(needs.setup.outputs.platforms).android }}
+    runs-on: ubuntu-latest
+    env:
+      APP_SLUG: ${{ needs.setup.outputs.app-slug }}
+      VERSION:  ${{ needs.setup.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Decode keystore
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          mkdir -p android/keystore
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/keystore/upload.jks
+          cat > android/keystore.properties <<EOF
+          storeFile=keystore/upload.jks
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          EOF
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.10'
+      - name: Setup Gradle wrapper
+        working-directory: android
+        run: |
+          gradle wrapper --gradle-version 8.10 || true
+          chmod +x gradlew || true
+      - name: Build phone APK + AAB
+        working-directory: android
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN_ANDROID }}
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY_ANDROID }}
+          POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
+        run: ./gradlew :app:assembleRelease :app:bundleRelease
+      - name: Build Wear APK
+        working-directory: android
+        continue-on-error: true
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN_WEAR }}
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY_ANDROID }}
+          POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
+        run: ./gradlew :wear:assembleRelease || true
+      - name: Stage outputs
+        run: |
+          mkdir -p staging
+          # phone APK
+          cp android/app/build/outputs/apk/release/app-release-unsigned.apk \
+             staging/${APP_SLUG}-Android-Phone-${VERSION}-unsigned.apk 2>/dev/null || \
+             cp android/app/build/outputs/apk/release/app-release.apk \
+             staging/${APP_SLUG}-Android-Phone-${VERSION}.apk 2>/dev/null || true
+          cp android/app/build/outputs/bundle/release/app-release.aab \
+             staging/${APP_SLUG}-Android-Phone-${VERSION}.aab 2>/dev/null || true
+          # Wear APK (if module exists)
+          cp android/wear/build/outputs/apk/release/wear-release-unsigned.apk \
+             staging/${APP_SLUG}-Android-Watch-${VERSION}-unsigned.apk 2>/dev/null || \
+             cp android/wear/build/outputs/apk/release/wear-release.apk \
+             staging/${APP_SLUG}-Android-Watch-${VERSION}.apk 2>/dev/null || true
+          # Fall back to debug APKs if release ones never produced.
+          if [ ! "$(ls staging 2>/dev/null)" ]; then
+            ./gradlew -p android :app:assembleDebug :wear:assembleDebug || true
+            cp android/app/build/outputs/apk/debug/app-debug.apk \
+               staging/${APP_SLUG}-Android-Phone-${VERSION}-debug.apk 2>/dev/null || true
+            cp android/wear/build/outputs/apk/debug/wear-debug.apk \
+               staging/${APP_SLUG}-Android-Watch-${VERSION}-debug.apk 2>/dev/null || true
+          fi
+          ls -la staging/ || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          path: staging/*
+          if-no-files-found: warn
+
+  # ─────────────────────────────────────────────────────────────
+  # 3. iOS .ipa (signed) OR .app.zip (Simulator fallback)
+  # ─────────────────────────────────────────────────────────────
+  build-ios:
+    name: Build iOS .ipa or Simulator .app.zip
+    needs: [pre-release-tests, setup]
+    if: ${{ fromJson(needs.setup.outputs.platforms).ios }}
+    runs-on: macos-14
+    env:
+      APP_NAME:  ${{ needs.setup.outputs.app-name }}
+      APP_SLUG:  ${{ needs.setup.outputs.app-slug }}
+      VERSION:   ${{ needs.setup.outputs.version }}
+      BUNDLE_ID: ${{ needs.setup.outputs.bundle-id }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select latest Xcode
+        run: |
+          XCODE=$(ls -d /Applications/Xcode_16*.app /Applications/Xcode_15*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$XCODE" ]; then sudo xcode-select -s "$XCODE/Contents/Developer"; fi
+          xcodebuild -version
+      - name: Install xcodegen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+
+      # Detect signing assets once.
+      - id: signing
+        name: Detect signing assets
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+        run: |
+          if [ -n "$APPLE_CERTIFICATE_BASE64" ]; then
+            echo "signed=true"  >> "$GITHUB_OUTPUT"
+          else
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::APPLE_CERTIFICATE_BASE64 not set — falling back to unsigned Simulator build"
+          fi
+
+      # ----- Signed device path -----
+      - name: Import certificate + provisioning profile
+        if: steps.signing.outputs.signed == 'true'
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
+          APPLE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          set -euo pipefail
+          KEY="${APPLE_KEYCHAIN_PASSWORD:-temp-keychain-pw}"
+          security create-keychain -p "$KEY" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain  -p "$KEY" build.keychain
+          security set-keychain-settings -lut 21600 build.keychain
+          echo "$APPLE_CERTIFICATE_BASE64" | base64 -d > /tmp/cert.p12
+          security import /tmp/cert.p12 -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" \
+            -T /usr/bin/codesign -T /usr/bin/security
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEY" build.keychain
+          if [ -n "${APPLE_PROVISIONING_PROFILE_BASE64:-}" ]; then
+            mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+            echo "$APPLE_PROVISIONING_PROFILE_BASE64" | base64 -d \
+              > "$HOME/Library/MobileDevice/Provisioning Profiles/release.mobileprovision"
+          fi
+      - name: Build + export signed .ipa
+        if: steps.signing.outputs.signed == 'true'
+        working-directory: ios
+        env:
+          APPLE_TEAM_ID:     ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_BUNDLE_ID:   ${{ secrets.APPLE_BUNDLE_ID }}
+          SENTRY_DSN:        ${{ secrets.SENTRY_DSN_IOS }}
+          POSTHOG_API_KEY:   ${{ secrets.POSTHOG_API_KEY_IOS }}
+          POSTHOG_HOST:      ${{ secrets.POSTHOG_HOST }}
+        run: |
+          set -euo pipefail
+          BID="${APPLE_BUNDLE_ID:-$BUNDLE_ID}"
+          mkdir -p build
+          xcodebuild -project ${APP_NAME}.xcodeproj \
+            -scheme ${APP_NAME} \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/${APP_NAME}.xcarchive \
+            DEVELOPMENT_TEAM=${APPLE_TEAM_ID} \
+            archive | xcpretty --simple || \
+              xcodebuild -project ${APP_NAME}.xcodeproj \
+                -scheme ${APP_NAME} \
+                -configuration Release \
+                -sdk iphoneos \
+                -destination 'generic/platform=iOS' \
+                -archivePath build/${APP_NAME}.xcarchive \
+                DEVELOPMENT_TEAM=${APPLE_TEAM_ID} \
+                archive
+
+          cat > exportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store</string>
+            <key>teamID</key><string>${APPLE_TEAM_ID}</string>
+            <key>uploadBitcode</key><false/>
+            <key>uploadSymbols</key><true/>
+            <key>compileBitcode</key><false/>
+            <key>signingStyle</key><string>automatic</string>
+            <key>destination</key><string>export</string>
+          </dict></plist>
+          EOF
+
+          xcodebuild -exportArchive \
+            -archivePath build/${APP_NAME}.xcarchive \
+            -exportPath build/ipa \
+            -exportOptionsPlist exportOptions.plist | xcpretty --simple || \
+              xcodebuild -exportArchive \
+                -archivePath build/${APP_NAME}.xcarchive \
+                -exportPath build/ipa \
+                -exportOptionsPlist exportOptions.plist
+
+          mkdir -p ../staging
+          IPA=$(ls build/ipa/*.ipa 2>/dev/null | head -n1 || true)
+          if [ -n "$IPA" ]; then
+            cp "$IPA" "../staging/${APP_SLUG}-iOS-${VERSION}.ipa"
+          else
+            echo "::warning::No .ipa was produced from exportArchive."
+          fi
+
+      # ----- Unsigned simulator fallback -----
+      - name: Build .app for iPhone Simulator (unsigned fallback)
+        if: steps.signing.outputs.signed == 'false'
+        working-directory: ios
+        env:
+          SENTRY_DSN:      ${{ secrets.SENTRY_DSN_IOS }}
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY_IOS }}
+          POSTHOG_HOST:    ${{ secrets.POSTHOG_HOST }}
+        run: |
+          mkdir -p build
+          set -o pipefail
+          xcodebuild -project ${APP_NAME}.xcodeproj \
+            -scheme ${APP_NAME} \
+            -sdk iphonesimulator \
+            -configuration Release \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/derivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            build | xcpretty --simple
+          mkdir -p ../staging
+          APP=$(find build/derivedData/Build/Products -maxdepth 3 -name '*.app' -type d 2>/dev/null | head -n1)
+          if [ -n "$APP" ]; then
+            (cd "$(dirname "$APP")" && \
+             zip -qr "$GITHUB_WORKSPACE/staging/${APP_SLUG}-iOS-${VERSION}-Simulator.app.zip" \
+               "$(basename "$APP")")
+          else
+            echo "::warning::No .app product was produced; iOS artifact will be missing."
+          fi
+
+      - name: List staged outputs
+        run: ls -la staging/ || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-release
+          path: staging/*
+          if-no-files-found: warn
+
+  # ─────────────────────────────────────────────────────────────
+  # 4. watchOS (Simulator .app.zip), gated on platforms.watchos
+  # ─────────────────────────────────────────────────────────────
+  build-watchos:
+    name: Build watchOS .app.zip (Simulator)
+    needs: [pre-release-tests, setup]
+    if: ${{ fromJson(needs.setup.outputs.platforms).watchos }}
+    runs-on: macos-14
+    env:
+      APP_NAME: ${{ needs.setup.outputs.app-name }}
+      APP_SLUG: ${{ needs.setup.outputs.app-slug }}
+      VERSION:  ${{ needs.setup.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select latest Xcode
+        run: |
+          XCODE=$(ls -d /Applications/Xcode_16*.app /Applications/Xcode_15*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$XCODE" ]; then sudo xcode-select -s "$XCODE/Contents/Developer"; fi
+          xcodebuild -version
+      - name: Install xcodegen
+        run: brew install xcodegen
+      - name: Pick watch scheme name from release.config.json
+        id: watch
+        run: |
+          NAME=$(jq -r '.iosWatchSchemes[0] // "${APP_NAME}Watch"' release.config.json)
+          echo "scheme=$NAME" >> "$GITHUB_OUTPUT"
+      - name: Generate watchOS project
+        working-directory: watchos
+        run: xcodegen generate
+      - name: Build watch .app for watchOS Simulator
+        working-directory: watchos
+        env:
+          SENTRY_DSN:      ${{ secrets.SENTRY_DSN_IOS }}
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY_IOS }}
+          POSTHOG_HOST:    ${{ secrets.POSTHOG_HOST }}
+          WATCH_SCHEME:    ${{ steps.watch.outputs.scheme }}
+        run: |
+          mkdir -p build
+          set -o pipefail
+          xcodebuild -project ${WATCH_SCHEME}.xcodeproj \
+            -scheme ${WATCH_SCHEME} \
+            -sdk watchsimulator \
+            -configuration Release \
+            -destination 'generic/platform=watchOS Simulator' \
+            -derivedDataPath build/derivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            build | xcpretty --simple
+      - name: Stage outputs
+        env:
+          WATCH_SCHEME: ${{ steps.watch.outputs.scheme }}
+        run: |
+          mkdir -p staging
+          APP=$(find watchos/build/derivedData/Build/Products -maxdepth 3 -name '*.app' -type d 2>/dev/null | head -n1)
+          if [ -n "$APP" ]; then
+            (cd "$(dirname "$APP")" && \
+             zip -qr "$GITHUB_WORKSPACE/staging/${APP_SLUG}-Apple-Watch-${VERSION}-Simulator.app.zip" \
+               "$(basename "$APP")")
+          else
+            echo "::warning::No watchOS .app was produced."
+          fi
+          ls -la staging/ || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: watchos-release
+          path: staging/*
+          if-no-files-found: warn
+
+  # ─────────────────────────────────────────────────────────────
+  # 5. Web bundle (marketing site zip)
+  # ─────────────────────────────────────────────────────────────
+  build-web:
+    name: Build web bundle
+    needs: [pre-release-tests, setup]
+    if: ${{ fromJson(needs.setup.outputs.platforms).web }}
+    runs-on: ubuntu-latest
+    env:
+      APP_SLUG: ${{ needs.setup.outputs.app-slug }}
+      VERSION:  ${{ needs.setup.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Stage zip
+        run: |
+          mkdir -p staging
+          zip -r staging/${APP_SLUG}-Web-${VERSION}.zip \
+            $(ls index.html styles.css script.js robots.txt sitemap.xml 2>/dev/null) \
+            $(find . -maxdepth 2 -type d -name 'assets' 2>/dev/null) || true
+          ls -la staging/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-release
+          path: staging/*
+
+  # ─────────────────────────────────────────────────────────────
+  # 6. Desktop binaries (Win .exe + Linux AppImage + macOS .dmg)
+  # ─────────────────────────────────────────────────────────────
+  build-desktop:
+    name: Build desktop (Electron, Linux runner)
+    needs: [pre-release-tests, setup]
+    if: ${{ fromJson(needs.setup.outputs.platforms).desktop }}
+    runs-on: ubuntu-latest
+    env:
+      APP_SLUG: ${{ needs.setup.outputs.app-slug }}
+      VERSION:  ${{ needs.setup.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Wine + NSIS for Windows .exe
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            wine wine64 mono-devel \
+            fakeroot dpkg-dev rpm \
+            libarchive-tools imagemagick
+      - name: Install desktop deps
+        working-directory: desktop
+        run: npm install --no-audit --no-fund
+      - name: Bump desktop version to release tag
+        working-directory: desktop
+        run: |
+          V="${VERSION#v}"
+          npm version --no-git-tag-version "$V" || true
+      - name: Build all desktop targets
+        working-directory: desktop
+        run: |
+          # macOS DMG built on Linux is unsigned; document in STORE-PACKAGING.md.
+          npx electron-builder --win --linux --mac --publish=never || \
+            npx electron-builder --win --linux --publish=never
+      - name: Stage outputs
+        run: |
+          mkdir -p staging
+          # Match electron-builder default output dir.
+          if [ -d desktop/dist ]; then
+            find desktop/dist -maxdepth 2 -type f \( \
+                -iname '*.exe' -o -iname '*.AppImage' -o \
+                -iname '*.dmg' -o -iname '*.zip' \
+              \) -exec cp -v {} staging/ \; || true
+          fi
+          ls -la staging/ || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-release
+          path: staging/*
+          if-no-files-found: warn
+
+  # ─────────────────────────────────────────────────────────────
+  # 7. PDF release book (umbrella reusable workflow)
+  # ─────────────────────────────────────────────────────────────
+  release-book:
+    name: Build PDF release book
+    needs: [pre-release-tests, setup]
+    uses: AmericanGroupLLC/AmericanGroupLLC/.github/workflows/release-book.yml@master
+    with:
+      app-name:    ${{ needs.setup.outputs.app-name }}
+      version:     ${{ needs.setup.outputs.version }}
+      brand-color: ${{ needs.setup.outputs.brand-color }}
+      docs:        ${{ needs.setup.outputs.docs }}
+    secrets: inherit
+
+  # ─────────────────────────────────────────────────────────────
+  # 8. MP4 release video (umbrella reusable workflow)
+  # ─────────────────────────────────────────────────────────────
+  release-video:
+    name: Build MP4 release video
+    needs: [pre-release-tests, setup]
+    uses: AmericanGroupLLC/AmericanGroupLLC/.github/workflows/release-video.yml@master
+    with:
+      app-name:            ${{ needs.setup.outputs.app-name }}
+      version:             ${{ needs.setup.outputs.version }}
+      brand-color:         ${{ needs.setup.outputs.brand-color }}
+      video-script-path:   ${{ needs.setup.outputs.video-script }}
+      marketing-html-path: ${{ needs.setup.outputs.marketing-html }}
+    secrets: inherit
+
+  # ─────────────────────────────────────────────────────────────
+  # 9. Aggregate + create GitHub Release
+  # ─────────────────────────────────────────────────────────────
+  publish-github-release:
+    name: Create GitHub Release
+    needs:
+      - pre-release-tests
+      - setup
+      - build-android
+      - build-ios
+      - build-watchos
+      - build-web
+      - build-desktop
+      - release-book
+      - release-video
+    if: ${{ always() && !cancelled() && needs.pre-release-tests.result == 'success' }}
+    runs-on: ubuntu-latest
+    env:
+      APP_NAME:    ${{ needs.setup.outputs.app-name }}
+      DISPLAY:     ${{ needs.setup.outputs.display-name }}
+      VERSION:     ${{ needs.setup.outputs.version }}
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      is_prerelease: ${{ steps.meta.outputs.is_prerelease }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: dist }
+        continue-on-error: true
+      - name: Flatten artifacts
+        run: |
+          mkdir -p flat
+          if [ -d dist ]; then
+            find dist -type f \( \
+                -iname '*.apk' -o -iname '*.aab' -o \
+                -iname '*.app.zip' -o -iname '*.ipa' -o \
+                -iname '*.exe' -o -iname '*.AppImage' -o \
+                -iname '*.dmg' -o -iname '*.pdf' -o \
+                -iname '*.mp4' -o -iname '*.zip' -o \
+                -iname '*.tgz' \
+              \) -exec cp -v {} flat/ \; || true
+          fi
+          ls -la flat/ || true
+      - id: meta
+        run: |
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          if [[ "${VERSION}" == *-rc* || "${VERSION}" == *-beta* || "${VERSION}" == *-alpha* ]]; then
+            echo "is_prerelease=true"  >> "$GITHUB_OUTPUT"
+          else
+            echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Generate release notes
+        run: |
+          echo "# ${DISPLAY} ${VERSION}" > NOTES.md
+          echo "" >> NOTES.md
+          PREV=$(git tag --sort=-creatordate | grep -A1 "^${VERSION}\$" | tail -n1 || true)
+          if [ -n "$PREV" ] && [ "$PREV" != "${VERSION}" ]; then
+            echo "## Changes since $PREV" >> NOTES.md
+            git log --pretty=format:'- %s (%h)' "$PREV..HEAD" >> NOTES.md
+          else
+            echo "## Changes" >> NOTES.md
+            git log --pretty=format:'- %s (%h)' -n 50 >> NOTES.md
+          fi
+          echo "" >> NOTES.md
+          echo "" >> NOTES.md
+          echo "## Artefacts" >> NOTES.md
+          ls flat | sed 's/^/- /' >> NOTES.md
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name:     ${{ env.DISPLAY }} ${{ github.ref_name }}
+          body_path: NOTES.md
+          draft: false
+          prerelease: ${{ steps.meta.outputs.is_prerelease }}
+          generate_release_notes: false
+          files: |
+            flat/*
+
+  # ─────────────────────────────────────────────────────────────
+  # 10. Optional Play Store upload (gated by secret)
+  # ─────────────────────────────────────────────────────────────
+  publish-play-store:
+    name: Upload AAB to Google Play
+    needs: [publish-github-release]
+    runs-on: ubuntu-latest
+    env:
+      PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+      PLAY_STORE_PACKAGE_NAME:        ${{ secrets.PLAY_STORE_PACKAGE_NAME }}
+    steps:
+      - id: gate
+        run: |
+          if [ -z "$PLAY_STORE_SERVICE_ACCOUNT_JSON" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::PLAY_STORE_SERVICE_ACCOUNT_JSON not set — skipping."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.skip != 'true'
+      - uses: actions/download-artifact@v4
+        if: steps.gate.outputs.skip != 'true'
+        with: { name: android-release, path: dist }
+      - id: pick
+        if: steps.gate.outputs.skip != 'true'
+        run: echo "aab=$(ls dist/*.aab | head -n1)" >> "$GITHUB_OUTPUT"
+      - id: track
+        if: steps.gate.outputs.skip != 'true'
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            *-internal*) echo "track=internal"   >> "$GITHUB_OUTPUT" ;;
+            *-alpha*)    echo "track=alpha"      >> "$GITHUB_OUTPUT" ;;
+            *-beta*|*-rc*) echo "track=beta"     >> "$GITHUB_OUTPUT" ;;
+            *)           echo "track=production" >> "$GITHUB_OUTPUT" ;;
+          esac
+      - if: steps.gate.outputs.skip != 'true'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+          packageName: ${{ secrets.PLAY_STORE_PACKAGE_NAME }}
+          releaseFiles: ${{ steps.pick.outputs.aab }}
+          track: ${{ steps.track.outputs.track }}
+          status: completed
+          inAppUpdatePriority: 2
+          whatsNewDirectory: distribution/whatsnew
+
+  # ─────────────────────────────────────────────────────────────
+  # 11. Optional TestFlight upload (gated by secret)
+  # ─────────────────────────────────────────────────────────────
+  publish-testflight:
+    name: Upload .ipa to TestFlight
+    needs: [publish-github-release]
+    runs-on: macos-14
+    env:
+      APP_STORE_CONNECT_API_KEY_ID:        ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_API_ISSUER_ID:     ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      APP_STORE_CONNECT_API_KEY_P8_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8_BASE64 }}
+    steps:
+      - id: gate
+        run: |
+          if [ -z "$APP_STORE_CONNECT_API_KEY_P8_BASE64" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::App Store Connect key not set — skipping."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/download-artifact@v4
+        if: steps.gate.outputs.skip != 'true'
+        with: { name: ios-release, path: dist }
+      - id: pick
+        if: steps.gate.outputs.skip != 'true'
+        run: |
+          IPA=$(ls dist/*.ipa 2>/dev/null | head -n1 || true)
+          if [ -z "$IPA" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::No .ipa found in ios-release artifact — skipping."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "ipa=$IPA"  >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.gate.outputs.skip != 'true' && steps.pick.outputs.skip != 'true'
+        uses: Apple-Actions/upload-testflight-build@v1
+        with:
+          app-path: ${{ steps.pick.outputs.ipa }}
+          issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8_BASE64 }}

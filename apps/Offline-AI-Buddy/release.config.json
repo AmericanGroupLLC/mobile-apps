@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "appName": "OfflineAIBuddy",
+  "appSlug": "offlineaibuddy",
+  "displayName": "Offline AI Buddy",
+  "bundleId": "com.americangroupllc.offlineaibuddy",
+  "applicationId": "com.americangroupllc.offlineaibuddy",
+  "electronAppId": "com.americangroupllc.offlineaibuddy.desktop",
+  "brandColor": "#6B5BD3",
+  "iconLetter": "B",
+  "platforms": {
+    "android": true,
+    "ios": true,
+    "watchos": false,
+    "web": true,
+    "desktop": true
+  },
+  "hasBackend": false,
+  "hasExpo": false,
+  "hasModels": true,
+  "iosSchemes": ["OfflineAIBuddy"],
+  "iosWatchSchemes": [],
+  "iosExtensions": ["OfflineAIBuddyKeyboard"],
+  "marketingHtml": "index.html",
+  "videoScript": "RELEASE-VIDEO-SCRIPT.md",
+  "docs": [
+    "README.md",
+    "QUICKSTART.md",
+    "OFFLINE-AI-FEATURES.md",
+    "DESIGN.md",
+    "MODELS.md",
+    "KEYBOARD.md",
+    "PRODUCTION.md",
+    "RELEASING.md",
+    "STORE-PACKAGING.md",
+    "TESTING.md",
+    "SENTRY.md",
+    "OBSERVABILITY.md",
+    "SAFETY.md",
+    "PRIVACY.md",
+    "CHANGELOG.md"
+  ]
+}

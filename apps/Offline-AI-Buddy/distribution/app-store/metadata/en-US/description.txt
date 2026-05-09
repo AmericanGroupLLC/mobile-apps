@@ -1,0 +1,21 @@
+Your phone-only AI.
+
+On-device LLM. Chat, voice, roasts, kid-safe mode, multilingual translator, system keyboard with smart replies. After a one-time ~1 GB model download, works fully offline. No accounts, no servers, no telemetry by default.
+
+WHY OFFLINE AI BUDDY
+- Privacy first - no account required, no tracking by default.
+- Native on every platform - SwiftUI for Apple, Jetpack Compose for Android.
+- Open source under MIT - audit anything; build it yourself if you don't trust us.
+
+WHATS INCLUDED
+- Full Offline AI Buddy experience on iPhone.
+- Identical feature set on Android.
+- Localised UI strings; more languages coming.
+- Optional opt-in crash reporting (Sentry) and product analytics (PostHog) - both off by default.
+
+GET INVOLVED
+Issues, ideas and pull requests at https://github.com/AmericanGroupLLC/Offline-AI-Buddy - we read every one.
+
+Source: https://github.com/AmericanGroupLLC/Offline-AI-Buddy
+Privacy policy: https://americangroupllc.github.io/Offline-AI-Buddy/privacy
+Support: https://americangroupllc.github.io/Offline-AI-Buddy/support

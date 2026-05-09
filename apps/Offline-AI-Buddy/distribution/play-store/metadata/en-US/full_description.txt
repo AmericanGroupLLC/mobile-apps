@@ -1,0 +1,18 @@
+Your phone-only AI.
+
+On-device LLM. Chat, voice, roasts, kid-safe mode, multilingual translator, system keyboard with smart replies. After a one-time ~1 GB model download, works fully offline. No accounts, no servers, no telemetry by default.
+
+What you get
+- Native on every platform.
+- Privacy first - no account, no tracking by default.
+- Optional Wear OS (when applicable) and Apple Watch (when applicable) companions where supported.
+- Open source under MIT.
+
+Why it is different
+We do not collect telemetry by default. Crash reports (Sentry) and product analytics (PostHog) are off until you turn them on in Settings, Privacy. Health and personal data never leaves your device unless you opt into a sync surface.
+
+Source code, issues and ideas
+https://github.com/AmericanGroupLLC/Offline-AI-Buddy
+
+Privacy: https://americangroupllc.github.io/Offline-AI-Buddy/privacy
+Support: https://americangroupllc.github.io/Offline-AI-Buddy/support

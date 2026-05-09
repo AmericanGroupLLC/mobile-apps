@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    PLACEHOLDER LAUNCHER ICON FOREGROUND for Offline AI Buddy.
+    A stylised chat-bubble + AI face glyph. Still a placeholder; replace
+    with a designer-made 1024x1024 PNG (and matching adaptive XML pair)
+    before Google Play submission.
+
+    Adaptive icon safe zone is the inner 72dp x 72dp of the 108dp viewport.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Speech bubble body: rounded square with a small tail at lower-left -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M36,38
+                          L72,38
+                          A10,10 0 0 1 82,48
+                          L82,68
+                          A10,10 0 0 1 72,78
+                          L48,78
+                          L40,86
+                          L40,78
+                          L36,78
+                          A10,10 0 0 1 26,68
+                          L26,48
+                          A10,10 0 0 1 36,38 Z" />
+
+    <!-- Left eye -->
+    <path
+        android:fillColor="#3DDC84"
+        android:pathData="M44,55
+                          a3.5,3.5 0 1,0 0.001,0 Z" />
+
+    <!-- Right eye -->
+    <path
+        android:fillColor="#3DDC84"
+        android:pathData="M64,55
+                          a3.5,3.5 0 1,0 0.001,0 Z" />
+
+    <!-- Mouth: small smile arc -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#3DDC84"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M48,64
+                          Q54,70 60,64" />
+
+    <!-- Antenna dot above bubble (offline / on-device hint) -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M54,30
+                          a3,3 0 1,0 0.001,0 Z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M53,33
+                          h2 v6 h-2 z" />
+</vector>

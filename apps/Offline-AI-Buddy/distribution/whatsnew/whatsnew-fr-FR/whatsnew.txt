@@ -1,0 +1,9 @@
+Offline AI Buddy v1.0 — Votre IA sur téléphone. Fonctionne sans internet.
+
+* LLM 1,5 milliards de paramètres sur l'appareil. Après un téléchargement unique d'environ 1 Go, fonctionne entièrement hors ligne.
+* Conversation multilingue : français, anglais, hindi, mandarin, espagnol + traducteur en direct.
+* Reconnaissance vocale + lecture à voix haute, sur l'appareil quand possible.
+* Clavier de réponses intelligentes dans n'importe quelle application de messagerie.
+* Modes Roast, Défi quotidien, Questions de fête, Coach de jeu.
+* Profil kid-safe protégé par code PIN.
+* Pas de compte, pas de serveur — vos conversations ne quittent jamais votre téléphone.

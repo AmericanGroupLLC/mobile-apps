@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Mic for push-to-talk STT. Only requested at runtime when the user
+         taps the voice button. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- Internet — model download only. After first launch, no network use. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Foreground service for the model download progress notification. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
+    <!-- POST_NOTIFICATIONS — only used for the model download progress
+         notification. We never push other notifications. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Play Billing (RevenueCat). -->
+    <uses-permission android:name="com.android.vending.BILLING" />
+
+    <!-- BIND_INPUT_METHOD is declared on the IME service below; not a runtime perm. -->
+
+    <!-- Signature-protected permission for the keyboard ↔ main-app inference
+         ContentProvider IPC. Declared at <manifest> scope per AAPT rules. -->
+    <permission
+        android:name="${applicationId}.permission.INFERENCE"
+        android:protectionLevel="signature" />
+
+    <!-- We do NOT request: camera, bluetooth, location, calendar, contacts. -->
+
+    <application
+        android:name=".OfflineAIBuddyApplication"
+        android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@style/Theme.OfflineAIBuddy"
+        android:supportsRtl="true"
+        android:allowBackup="false">
+
+        <!-- AdMob APPLICATION_ID. Required by play-services-ads's
+             MobileAdsInitProvider — otherwise the process crashes at
+             startup with IllegalStateException. The value is wired via
+             the `admobAppId` manifestPlaceholder set in
+             android/app/build.gradle.kts. CI / dev builds default to
+             Google's official sample/test ID; release builds must pass
+             -PADMOB_APP_ID_ANDROID=ca-app-pub-XXXX (or set the env var of
+             the same name). See STORE-PACKAGING.md §2. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.OfflineAIBuddy">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Custom URL scheme so the IME can open the host app. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="offlineaibuddy" />
+            </intent-filter>
+        </activity>
+
+        <!-- The system input method (custom keyboard). -->
+        <service
+            android:name=".keyboard.BuddyInputMethodService"
+            android:exported="true"
+            android:label="@string/keyboard_label"
+            android:permission="android.permission.BIND_INPUT_METHOD">
+            <intent-filter>
+                <action android:name="android.view.InputMethod" />
+            </intent-filter>
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/method" />
+        </service>
+
+        <!-- ContentProvider for keyboard ↔ main-app inference IPC. Exported
+             but signature-permission-protected (only our own IME can talk
+             to it because it's signed with the same cert). -->
+        <provider
+            android:name=".keyboard.InferenceContentProvider"
+            android:authorities="${applicationId}.inference"
+            android:exported="true"
+            android:grantUriPermissions="false"
+            android:permission="${applicationId}.permission.INFERENCE" />
+
+        <!-- WorkManager Hilt initializer. -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+    </application>
+</manifest>
