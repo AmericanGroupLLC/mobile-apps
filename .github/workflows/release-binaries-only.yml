@@ -53,6 +53,42 @@ jobs:
           keyPassword=$ANDROID_KEY_PASSWORD
           EOF
 
+      - name: Provision google-services.json
+        env:
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+        run: |
+          DEST="android/app/google-services.json"
+          if [ -n "$GOOGLE_SERVICES_JSON_BASE64" ]; then
+            echo "Using GOOGLE_SERVICES_JSON_BASE64 secret"
+            echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 -d > "$DEST"
+          else
+            echo "No GOOGLE_SERVICES_JSON_BASE64 secret; writing CI placeholder"
+            cat > "$DEST" <<'JSON'
+          {
+            "project_info": {
+              "project_number": "000000000000",
+              "project_id": "drift-placeholder",
+              "storage_bucket": "drift-placeholder.appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
+                  "android_client_info": {
+                    "package_name": "com.americangroupllc.drift"
+                  }
+                },
+                "oauth_client": [],
+                "api_key": [{"current_key": "AIzaSyPlaceholderKeyDoNotUseInProduction00"}],
+                "services": {"appinvite_service": {"other_platform_oauth_client": []}}
+              }
+            ],
+            "configuration_version": "1"
+          }
+          JSON
+          fi
+          test -s "$DEST" || { echo "google-services.json missing" >&2; exit 1; }
+
       - name: Build release artefacts
         working-directory: android
         run: gradle --no-daemon :app:assembleRelease :wear:assembleRelease :app:bundleRelease
