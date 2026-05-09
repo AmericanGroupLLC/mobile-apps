@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pocket — Five Native Utilities, Four Platforms</title>
+  <meta name="description" content="Pocket is a single open-source app with five Apple-style native utilities — Clock, Calculator, Measure, Compass, Level — for iPhone, Apple Watch, Android, and Wear OS. No account, no tracking by default." />
+  <meta name="theme-color" content="#0b0b0c" />
+  <link rel="canonical" href="https://americangroupllc.github.io/Pocket/" />
+  <meta property="og:title" content="Pocket — Five Native Utilities, Four Platforms" />
+  <meta property="og:description" content="Clock · Calculator · Measure · Compass · Level. One app, four native UIs, zero account." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://americangroupllc.github.io/Pocket/" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <nav class="nav">
+      <a class="brand" href="./">Pocket</a>
+      <a href="https://github.com/AmericanGroupLLC/Pocket" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+    <div class="hero-inner">
+      <h1>Five tools that disappear into the OS.</h1>
+      <p>Clock · Calculator · Measure · Compass · Level — one app, four native UIs, zero account, no tracking by default.</p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/AmericanGroupLLC/Pocket" target="_blank" rel="noopener">View on GitHub</a>
+        <a class="btn ghost" href="#tools">See the tools</a>
+      </div>
+    </div>
+  </header>
+
+  <section id="tools" class="tools">
+    <h2>The five tools</h2>
+    <div class="tool-grid">
+      <article class="tool-card tc-clock">
+        <h3>⏰ Clock</h3>
+        <p>Real OS-scheduled alarms, world clock, stopwatch, timer, bedtime.</p>
+      </article>
+      <article class="tool-card tc-calc">
+        <h3>🔢 Calculator</h3>
+        <p>Basic in portrait. Scientific (sin, cos, log, π, x²) in landscape.</p>
+      </article>
+      <article class="tool-card tc-measure">
+        <h3>📏 Measure</h3>
+        <p>Two taps to size anything. ARKit on iPhone, ARCore on Android. On-screen ruler fallback.</p>
+      </article>
+      <article class="tool-card tc-compass">
+        <h3>🧭 Compass</h3>
+        <p>Magnetic + true heading, cardinal label, lat/lon panel, accuracy ring.</p>
+      </article>
+      <article class="tool-card tc-level">
+        <h3>📐 Level</h3>
+        <p>Bullseye when flat. Single-axis bubble when tilted. Long-press to calibrate.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="matrix">
+    <h2>Tool × platform matrix</h2>
+    <table>
+      <thead><tr><th></th><th>Clock</th><th>Calculator</th><th>Measure</th><th>Compass</th><th>Level</th></tr></thead>
+      <tbody>
+        <tr><th>iPhone</th><td>✅</td><td>✅ + scientific</td><td>✅ ARKit</td><td>✅ + lat/lon</td><td>✅ flat + tilted</td></tr>
+        <tr><th>Apple Watch</th><td>✅</td><td>✅ basic</td><td>—</td><td>✅</td><td>✅ flat</td></tr>
+        <tr><th>Android</th><td>✅</td><td>✅ + scientific</td><td>✅ ARCore</td><td>✅ + lat/lon</td><td>✅ flat + tilted</td></tr>
+        <tr><th>Wear OS</th><td>✅ (no on-device alarm)</td><td>✅ basic</td><td>—</td><td>✅</td><td>✅ flat</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="privacy">
+    <h2>Private by design</h2>
+    <ul>
+      <li>No account. No login.</li>
+      <li>Calculator history, headings, AR measurements, alarm names — all stay on device.</li>
+      <li>Crash reporting + product analytics are <strong>off by default</strong>; opt in from Settings.</li>
+      <li>Camera (Measure) + Location (Compass true heading) only used when their tool is open.</li>
+    </ul>
+  </section>
+
+  <footer class="foot">
+    <p>MIT licensed · <a href="https://github.com/AmericanGroupLLC/Pocket" target="_blank" rel="noopener">github.com/AmericanGroupLLC/Pocket</a> · <a href="https://www.youtube.com/@AmericanGroupLLC" target="_blank" rel="noopener">YouTube</a></p>
+  </footer>
+  <script src="./script.js" defer></script>
+</body>
+</html>

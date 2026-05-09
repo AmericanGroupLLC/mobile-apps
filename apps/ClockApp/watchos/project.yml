@@ -1,0 +1,55 @@
+name: PocketWatch
+options:
+  bundleIdPrefix: com.americangroupllc
+  deploymentTarget:
+    watchOS: "10.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    WATCHOS_DEPLOYMENT_TARGET: "10.0"
+    PRODUCT_BUNDLE_IDENTIFIER: com.americangroupllc.pocket.watchkitapp
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+packages:
+  PocketCore:
+    path: ../shared/PocketCore
+
+targets:
+  PocketWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - path: PocketWatch
+        excludes: ["**/*.md"]
+    info:
+      path: PocketWatch/Resources/Info.plist
+    entitlements:
+      path: PocketWatch/Resources/PocketWatch.entitlements
+    dependencies:
+      - package: PocketCore
+        product: PocketCore
+      - sdk: CoreLocation.framework
+      - sdk: CoreMotion.framework
+      - sdk: UserNotifications.framework
+
+  PocketComplication:
+    type: app-extension
+    platform: watchOS
+    sources: [PocketComplication]
+    info:
+      path: PocketComplication/Info.plist
+    entitlements:
+      path: PocketComplication/PocketComplication.entitlements
+    dependencies:
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+
+schemes:
+  PocketWatch:
+    build:
+      targets:
+        PocketWatch: all
+        PocketComplication: all
+    run:
+      config: Debug

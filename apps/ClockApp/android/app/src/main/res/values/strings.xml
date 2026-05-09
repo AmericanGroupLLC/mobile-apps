@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Pocket</string>
+    <string name="tool_clock">Clock</string>
+    <string name="tool_calculator">Calculator</string>
+    <string name="tool_measure">Measure</string>
+    <string name="tool_compass">Compass</string>
+    <string name="tool_level">Level</string>
+</resources>

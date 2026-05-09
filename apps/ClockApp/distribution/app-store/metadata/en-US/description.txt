@@ -1,0 +1,21 @@
+Five tools. One Pocket.
+
+Clock, alarm, timer, world clock, and bedtime - five native utilities, four platforms (iPhone, Apple Watch, Android, Wear OS). Privacy-first; no account.
+
+WHY POCKET
+- Privacy first - no account required, no tracking by default.
+- Native on every platform - SwiftUI for Apple, Jetpack Compose for Android.
+- Open source under MIT - audit anything; build it yourself if you don't trust us.
+
+WHATS INCLUDED
+- Full Pocket experience on iPhone and Apple Watch.
+- Identical feature set on Android and Wear OS.
+- Localised UI strings; more languages coming.
+- Optional opt-in crash reporting (Sentry) and product analytics (PostHog) - both off by default.
+
+GET INVOLVED
+Issues, ideas and pull requests at https://github.com/AmericanGroupLLC/ClockApp - we read every one.
+
+Source: https://github.com/AmericanGroupLLC/ClockApp
+Privacy policy: https://americangroupllc.github.io/ClockApp/privacy
+Support: https://americangroupllc.github.io/ClockApp/support
