@@ -1,0 +1,60 @@
+name: DriftWatch
+options:
+  bundleIdPrefix: com.americangroupllc
+  deploymentTarget:
+    watchOS: "10.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    WATCHOS_DEPLOYMENT_TARGET: "10.0"
+    PRODUCT_BUNDLE_IDENTIFIER: com.americangroupllc.drift.watchkitapp
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+packages:
+  DriftCore:
+    path: ../shared/DriftCore
+
+targets:
+  DriftWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - path: DriftWatch
+        excludes: ["**/*.md"]
+    info:
+      path: DriftWatch/Resources/Info.plist
+    entitlements:
+      path: DriftWatch/Resources/DriftWatch.entitlements
+    dependencies:
+      - package: DriftCore
+        product: DriftCore
+      - sdk: UserNotifications.framework
+      - sdk: WidgetKit.framework
+      - target: DriftWatchComplication
+
+  DriftWatchComplication:
+    type: app-extension
+    platform: watchOS
+    sources: [DriftWatchComplication]
+    info:
+      path: DriftWatchComplication/Info.plist
+    entitlements:
+      path: DriftWatchComplication/DriftWatchComplication.entitlements
+    dependencies:
+      - package: DriftCore
+        product: DriftCore
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.americangroupllc.drift.complication
+
+schemes:
+  DriftWatch:
+    build:
+      targets:
+        DriftWatch: all
+        DriftWatchComplication: all
+    run:
+      config: Debug

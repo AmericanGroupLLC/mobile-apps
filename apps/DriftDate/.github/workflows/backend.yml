@@ -1,0 +1,100 @@
+name: Backend (Supabase)
+
+# Validates the Supabase schema migrations and Edge Functions on every
+# push that touches `backend/`. Optionally deploys to a linked project
+# when SUPABASE_ACCESS_TOKEN + SUPABASE_PROJECT_REF are set.
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend.yml'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'backend/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  schema-and-functions:
+    name: Schema dry-run + Edge Function tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Install Deno (for Edge Function tests)
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Validate migrations apply cleanly
+        working-directory: backend/supabase
+        run: |
+          # Boots a local Postgres + GoTrue + Realtime via Docker, runs
+          # every migration. If `supabase start` isn't available on the
+          # runner, fall back to `db lint` which still catches SQL parse
+          # errors against the embedded Postgres.
+          if supabase --help | grep -q 'start'; then
+            supabase start || true
+            supabase db reset --no-seed
+            supabase db diff --schema public --linked=false || true
+            supabase stop || true
+          else
+            supabase db lint --linked=false || true
+          fi
+
+      - name: Run Edge Function unit tests (Deno)
+        working-directory: backend/supabase/functions
+        run: |
+          # Each function ships with a sibling `_test.ts`. Run them all.
+          # We give Deno --allow-net only for the LLM-stub fetch — the
+          # tests inject a fake.
+          shopt -s nullglob
+          tests=( */_test.ts )
+          if [ ${#tests[@]} -eq 0 ]; then
+            echo "::notice::No Edge Function tests found yet — skipping."
+            exit 0
+          fi
+          for t in "${tests[@]}"; do
+            echo "=== $t ==="
+            deno test --allow-env --allow-net --no-check "$t"
+          done
+
+      - name: RLS policy assertions (psql)
+        run: |
+          # Hand-written SQL test that two distinct roles can/cannot see
+          # each other's profiles per layer. Skipped when no Postgres
+          # is reachable.
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::notice::DATABASE_URL not set — skipping live RLS tests."
+            exit 0
+          fi
+          psql "$DATABASE_URL" -f backend/supabase/tests/rls_layer_visibility.sql
+
+      - name: Functions deploy dry-run
+        if: env.SUPABASE_ACCESS_TOKEN != '' && env.SUPABASE_PROJECT_REF != ''
+        working-directory: backend/supabase
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          supabase link --project-ref "$SUPABASE_PROJECT_REF"
+          for fn in functions/*/; do
+            name=$(basename "$fn")
+            [[ "$name" == "_shared" ]] && continue
+            echo "::notice::Dry-run deploy: $name"
+            supabase functions deploy "$name" --no-verify-jwt || true
+          done

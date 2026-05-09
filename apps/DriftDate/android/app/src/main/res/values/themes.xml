@@ -1,0 +1,13 @@
+<resources>
+    <style name="Theme.Drift" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/drift_navy</item>
+        <item name="android:colorAccent">@color/drift_amber</item>
+        <item name="android:textColor">@color/drift_text</item>
+    </style>
+    <style name="Theme.Drift.Translucent" parent="android:Theme.Translucent.NoTitleBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+</resources>

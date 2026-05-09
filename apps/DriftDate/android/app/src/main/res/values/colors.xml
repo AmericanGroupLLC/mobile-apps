@@ -1,0 +1,9 @@
+<resources>
+    <!-- Drift palette: deep navy background + soft amber accent. -->
+    <color name="drift_navy">#0A0E1C</color>
+    <color name="drift_navy_alt">#10162A</color>
+    <color name="drift_surface">#161D35</color>
+    <color name="drift_amber">#F5B66C</color>
+    <color name="drift_text">#E8EBF3</color>
+    <color name="drift_text_dim">#9AA3C0</color>
+</resources>

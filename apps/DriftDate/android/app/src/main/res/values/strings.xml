@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Drift</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_wave">Wave</string>
+    <string name="action_pass">Pass</string>
+    <string name="action_report">Report</string>
+    <string name="action_block">Block</string>
+    <string name="settings_title">Settings</string>
+    <string name="discover_title">Discover</string>
+    <string name="matches_title">Matches</string>
+    <string name="profile_title">Profile</string>
+    <string name="layer_server">Server</string>
+    <string name="layer_state">State</string>
+    <string name="layer_county">County</string>
+    <string name="layer_zip">ZIP</string>
+    <string name="reply_casual">Casual</string>
+    <string name="reply_context">Context</string>
+    <string name="reply_playful">Playful</string>
+    <string name="verify_to_chat">Verify your selfie to unlock chat</string>
+</resources>
