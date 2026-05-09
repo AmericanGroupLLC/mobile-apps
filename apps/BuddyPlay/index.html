@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>BuddyPlay — Play anywhere. No internet needed.</title>
+    <meta
+      name="description"
+      content="BuddyPlay is a lightweight, all-in-one offline multiplayer hub. Two phones nearby — by Wi-Fi, Mobile Hotspot, or Bluetooth — pair and play together. Subway tunnels welcome."
+    />
+    <meta name="theme-color" content="#0E1A2B" />
+    <link rel="canonical" href="https://americangroupllc.github.io/BuddyPlay/" />
+    <link rel="stylesheet" href="styles.css" />
+    <meta property="og:title" content="BuddyPlay — Offline multiplayer mini-games" />
+    <meta property="og:description" content="Two phones nearby. No internet, no accounts, no servers. Royal Chess, Dice Kingdom, Mini Racer." />
+    <meta property="og:url" content="https://americangroupllc.github.io/BuddyPlay/" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <header class="hero">
+      <nav>
+        <span class="brand">BuddyPlay</span>
+        <a href="#games">Games</a>
+        <a href="#how">How it works</a>
+        <a href="#privacy">Privacy</a>
+        <a href="https://github.com/AmericanGroupLLC/BuddyPlay" class="ghost">GitHub</a>
+      </nav>
+      <h1>
+        Play anywhere.<br />
+        <span class="accent">No internet needed.</span>
+      </h1>
+      <p class="lead">
+        Two phones nearby. Wi-Fi, Mobile Hotspot, or Bluetooth — BuddyPlay
+        bridges them and you start playing. <strong>Subway tunnels welcome.</strong>
+      </p>
+      <div class="cta">
+        <a class="btn" href="#games">See the games</a>
+        <a class="btn ghost" href="https://github.com/AmericanGroupLLC/BuddyPlay">Source on GitHub</a>
+      </div>
+    </header>
+
+    <section id="games" class="games">
+      <h2>Three games at launch</h2>
+      <div class="grid">
+        <article class="card">
+          <div class="badge">Turn-based · Wi-Fi · BLE</div>
+          <h3>Royal Chess</h3>
+          <p>
+            Standard 8×8 with full move legality — castling, en passant,
+            promotion, the works. BLE-friendly so it works deep underground.
+          </p>
+        </article>
+        <article class="card">
+          <div class="badge">Turn-based · Wi-Fi · BLE · DuoPlay</div>
+          <h3>Dice Kingdom</h3>
+          <p>
+            Ludo-style 4-token race. Roll, move, capture, race home.
+            2 players in v1; party mode lands in v1.1.
+          </p>
+        </article>
+        <article class="card">
+          <div class="badge">Real-time · Wi-Fi / Hotspot</div>
+          <h3>Mini Racer</h3>
+          <p>
+            Top-down 2D racer at 30 Hz. Needs Wi-Fi or Hotspot — Bluetooth
+            isn't fast enough for twitch play, and we tell you that upfront.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="how" class="how">
+      <h2>How the connectivity ladder works</h2>
+      <ol>
+        <li>
+          <strong>Local Wi-Fi.</strong> Both phones on the same router?
+          BuddyPlay finds you via Bonjour / NSD on <code>_buddyplay._tcp</code>
+          and runs game traffic over a single TCP connection. Lowest latency.
+        </li>
+        <li>
+          <strong>Mobile Hotspot.</strong> No router? Host turns on their
+          phone's hotspot, guest joins it. Wi-Fi path resumes — no router
+          required.
+        </li>
+        <li>
+          <strong>Bluetooth LE.</strong> No Wi-Fi at all? BLE GATT carries
+          turn-based games. Slower, but it works on a plane, in the subway,
+          or in a basement.
+        </li>
+      </ol>
+      <p class="muted">
+        BuddyPlay tries each rung top-down, surfaces a clear status, and lets
+        you pick a rung manually if the auto-detect chooses wrong.
+      </p>
+    </section>
+
+    <section id="privacy" class="privacy">
+      <h2>Privacy by absence</h2>
+      <p>
+        No accounts. No servers. No analytics. No ads. No SDKs phoning home.
+        BuddyPlay literally cannot send your data anywhere because BuddyPlay
+        doesn't have anywhere to send it.
+      </p>
+      <p>
+        Your win/loss tallies live in a local JSON file on your phone. Settings
+        → Erase any time. Done.
+      </p>
+    </section>
+
+    <footer>
+      <span class="brand">BuddyPlay</span> · MIT-licensed · 2026 American Group LLC · <a href="https://www.youtube.com/@AmericanGroupLLC" target="_blank" rel="noopener" style="color:inherit">YouTube</a>
+    </footer>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>

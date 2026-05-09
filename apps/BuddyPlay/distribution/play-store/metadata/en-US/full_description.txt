@@ -1,0 +1,18 @@
+Local multiplayer. No internet.
+
+Two phones nearby - by Wi-Fi, Hotspot, or Bluetooth - pair and play. No accounts. No servers. No tracking.
+
+What you get
+- Native on every platform.
+- Privacy first - no account, no tracking by default.
+- Optional Wear OS (when applicable) and Apple Watch (when applicable) companions where supported.
+- Open source under MIT.
+
+Why it is different
+We do not collect telemetry by default. Crash reports (Sentry) and product analytics (PostHog) are off until you turn them on in Settings, Privacy. Health and personal data never leaves your device unless you opt into a sync surface.
+
+Source code, issues and ideas
+https://github.com/AmericanGroupLLC/BuddyPlay
+
+Privacy: https://americangroupllc.github.io/BuddyPlay/privacy
+Support: https://americangroupllc.github.io/BuddyPlay/support

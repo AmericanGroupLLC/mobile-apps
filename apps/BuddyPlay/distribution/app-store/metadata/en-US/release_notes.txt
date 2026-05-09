@@ -1,0 +1,1 @@
+v0.1.0 - initial App Store release. Full feature parity across iPhone. Bug reports welcome at https://github.com/AmericanGroupLLC/BuddyPlay/issues.

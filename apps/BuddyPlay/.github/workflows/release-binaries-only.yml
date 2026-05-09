@@ -1,0 +1,88 @@
+name: Release binaries (Android only, no test gate)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version label for the binary (e.g. 1.0.0)"
+        required: true
+        default: "1.0.0"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-binaries-${{ github.ref }}-${{ github.event.inputs.version }}
+  cancel-in-progress: false
+
+jobs:
+  build-android:
+    name: Build signed Android binaries
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.10'
+
+      - name: Decode keystore
+        env:
+          ANDROID_KEYSTORE_BASE64:    ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD:  ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS:          ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD:       ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$ANDROID_KEYSTORE_BASE64" ]; then
+            echo "ANDROID_KEYSTORE_BASE64 secret is empty - aborting." >&2
+            exit 1
+          fi
+                    KEYSTORE_PATH="$GITHUB_WORKSPACE/android/keystore/upload.jks"
+          mkdir -p android/keystore
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$KEYSTORE_PATH"
+          cat > android/keystore.properties <<EOF
+          storeFile=$KEYSTORE_PATH
+          storePassword=$ANDROID_KEYSTORE_PASSWORD
+          keyAlias=$ANDROID_KEY_ALIAS
+          keyPassword=$ANDROID_KEY_PASSWORD
+          EOF
+
+      - name: Build release artefacts
+        working-directory: android
+        run: gradle --no-daemon :app:assembleRelease :app:bundleRelease
+
+      - name: Stage outputs
+        run: |
+          mkdir -p staged
+          cp android/app/build/outputs/apk/release/*.apk staged/ 2>/dev/null || echo 'no app apk'
+          cp android/app/build/outputs/bundle/release/*.aab staged/ 2>/dev/null || echo 'no aab'
+          ls -la staged/ || echo 'no staged outputs'
+
+      - name: Upload artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-binaries-v${{ github.event.inputs.version }}
+          path: staged/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Create or update draft GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="v${{ github.event.inputs.version }}-android"
+          gh release view "$VERSION" --repo "${{ github.repository }}" >/dev/null 2>&1 \
+            && gh release upload "$VERSION" staged/* --repo "${{ github.repository }}" --clobber \
+            || gh release create "$VERSION" staged/* \
+                --repo "${{ github.repository }}" \
+                --draft \
+                --title "Android binaries $VERSION" \
+                --notes "Self-signed Android binaries built by release-binaries-only workflow. Replace upload key and tag a real version when ready to publish."
+
+

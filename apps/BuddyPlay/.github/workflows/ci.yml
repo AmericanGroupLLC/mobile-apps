@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    name: Android (Lint + Unit + Assemble Debug)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/*.gradle*', 'android/**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.10'
+      - name: Generate Gradle wrapper
+        run: |
+          gradle wrapper --gradle-version 8.10
+          chmod +x gradlew
+      - name: Lint
+        run: ./gradlew :app:lintDebug --warning-mode all || true
+      # NOTE: :core is a pure-Kotlin/JVM module — use `:core:test`, NOT `:core:testDebugUnitTest`.
+      - name: Unit tests (core)
+        run: ./gradlew :core:test
+      - name: Unit tests (app)
+        run: ./gradlew :app:testDebugUnitTest
+      - name: Assemble Debug
+        run: ./gradlew :app:assembleDebug
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          directory: android
+          flags: android
+          name: android-unit-coverage
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload debug APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-debug-apks
+          path: |
+            android/app/build/outputs/apk/debug/*.apk
+          retention-days: 14
+
+  ios:
+    name: iOS Swift Package tests
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show Xcode version
+        run: xcodebuild -version
+      - name: BuddyCore tests on iPhone 15 sim
+        working-directory: shared/BuddyCore
+        run: |
+          xcodebuild test \
+            -scheme BuddyCore-Package \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            CODE_SIGNING_ALLOWED=NO | xcpretty --simple || true
+      - name: Install xcodegen
+        run: brew install xcodegen
+      - name: Generate iOS project
+        working-directory: ios
+        run: xcodegen generate
+      - name: Build iOS (simulator)
+        working-directory: ios
+        run: |
+          xcodebuild -project BuddyPlay.xcodeproj \
+            -scheme BuddyPlay \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            build CODE_SIGNING_ALLOWED=NO | xcpretty --simple
+
+  marketing:
+    name: Marketing site (lint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - name: HTML / CSS lint (best-effort)
+        run: |
+          npx --yes htmlhint index.html || true
+          npx --yes stylelint "styles.css" || true

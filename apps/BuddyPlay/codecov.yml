@@ -1,0 +1,49 @@
+# Codecov configuration — keeps coverage thresholds reasonable across the
+# 2-platform native repo (Swift / Kotlin).
+#
+# Coverage is uploaded by ci.yml + ios.yml + android.yml. Each upload uses a
+# `flag` so the per-platform numbers stay distinguishable in the Codecov
+# dashboard.
+
+codecov:
+  require_ci_to_pass: false
+  notify:
+    wait_for_ci: true
+
+coverage:
+  precision: 1
+  round: down
+  range: "60...95"
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 2%
+        informational: true
+      ios:
+        flags: [ios]
+        target: auto
+        informational: true
+      android:
+        flags: [android]
+        target: auto
+        informational: true
+    patch:
+      default:
+        target: 70%
+        informational: true
+
+flags:
+  ios:
+    paths:
+      - shared/BuddyCore/Sources/
+      - ios/BuddyPlay/
+  android:
+    paths:
+      - android/core/src/main/
+      - android/app/src/main/
+
+comment:
+  layout: "header,diff,flags,components,footer"
+  behavior: default
+  require_changes: false

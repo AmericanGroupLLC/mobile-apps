@@ -1,0 +1,100 @@
+name: iOS (simulator)
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'ios/**'
+      - 'shared/BuddyCore/**'
+      - '.github/workflows/ios.yml'
+  pull_request:
+    paths:
+      - 'ios/**'
+      - 'shared/BuddyCore/**'
+  workflow_dispatch:
+
+jobs:
+  swift-tests:
+    name: BuddyCore Swift Package tests
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - run: xcodebuild -version
+      - name: Run tests on iPhone 15 Simulator
+        working-directory: shared/BuddyCore
+        run: |
+          xcodebuild test \
+            -scheme BuddyCore-Package \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -enableCodeCoverage YES \
+            CODE_SIGNING_ALLOWED=NO | xcpretty --simple --report junit
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          flags: ios
+          name: ios-package-coverage
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  ios-build:
+    name: iOS app build (no signing)
+    runs-on: macos-14
+    needs: swift-tests
+    steps:
+      - uses: actions/checkout@v4
+      - run: brew install xcodegen
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+      - name: Build for iPhone Simulator
+        working-directory: ios
+        run: |
+          xcodebuild -project BuddyPlay.xcodeproj \
+            -scheme BuddyPlay \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            CODE_SIGNING_ALLOWED=NO \
+            build | xcpretty --simple
+
+  ios-ui-tests:
+    name: iOS XCUITest (sim)
+    runs-on: macos-14
+    needs: swift-tests
+    steps:
+      - uses: actions/checkout@v4
+      - run: brew install xcodegen
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+      - name: Run XCUITests on iPhone 15 Simulator
+        working-directory: ios
+        run: |
+          xcodebuild test \
+            -project BuddyPlay.xcodeproj \
+            -scheme BuddyPlay \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -enableCodeCoverage YES \
+            -derivedDataPath build/derivedData \
+            CODE_SIGNING_ALLOWED=NO | xcpretty --simple --report junit
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          flags: ios
+          name: ios-coverage
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-xcuitest-report
+          path: ios/build/reports/junit.xml
+          retention-days: 14
+          if-no-files-found: ignore

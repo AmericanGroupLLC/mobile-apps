@@ -1,0 +1,6 @@
+v0.1.0 - Initial release on App Store and Google Play.
+- Full feature parity across iPhone, Android.
+- Privacy: no account required, no tracking by default.
+- Open source: https://github.com/AmericanGroupLLC/BuddyPlay
+
+Issues + ideas welcome: https://github.com/AmericanGroupLLC/BuddyPlay/issues
