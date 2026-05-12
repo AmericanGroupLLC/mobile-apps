@@ -4,32 +4,37 @@ import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val MyHealthOrange = Color(0xFFF9496F)
-private val MyHealthIndigo = Color(0xFF5E5CE6)
-private val MyHealthGreen = Color(0xFF34C759)
+// ─── Color schemes ──────────────────────────────────────────────────────────
+//
+// Care+ palette is defined in `Color.kt`. Material's `primary`/`secondary`/
+// `tertiary` slots map to the four tab accents as follows:
+//   primary   -> CareBlue   (the lead surface, used for global CTAs)
+//   secondary -> DietCoral
+//   tertiary  -> TrainGreen
+//
+// The fourth accent (WorkoutPink) is referenced directly via [CarePlusColor]
+// since Material 3's scheme only exposes 3 slots. Per-tab accenting is done
+// through [CareTab].accent, not via MaterialTheme's color scheme.
 
 private val LightScheme = lightColorScheme(
-    primary = MyHealthOrange,
-    secondary = MyHealthIndigo,
-    tertiary = MyHealthGreen,
+    primary = CarePlusColor.CareBlue,
+    secondary = CarePlusColor.DietCoral,
+    tertiary = CarePlusColor.TrainGreen,
 )
 private val DarkScheme = darkColorScheme(
-    primary = MyHealthOrange,
-    secondary = MyHealthIndigo,
-    tertiary = MyHealthGreen,
+    primary = CarePlusColor.CareBlue,
+    secondary = CarePlusColor.DietCoral,
+    tertiary = CarePlusColor.TrainGreen,
 )
 
 @Composable
@@ -54,5 +59,10 @@ fun MyHealthTheme(
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
-    MaterialTheme(colorScheme = colorScheme, typography = Typography(), content = content)
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = CarePlusTypography,
+        shapes = CarePlusShapes,
+        content = content,
+    )
 }

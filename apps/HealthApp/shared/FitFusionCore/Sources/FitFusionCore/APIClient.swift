@@ -16,11 +16,29 @@ public final class APIClient {
     private init() {
         // Restore guest flag at boot so background tasks short-circuit correctly.
         self.isGuest = UserDefaults.standard.bool(forKey: "isGuest")
+        // Care+ week 1: migrate the legacy plaintext JWT (UserDefaults["token"])
+        // into the Keychain. Idempotent — safe on every cold start.
+        #if canImport(Security)
+        KeychainStore.shared.migrateLegacyJWTIfNeeded()
+        #endif
     }
 
     private var token: String? {
-        get { UserDefaults.standard.string(forKey: "token") }
-        set { UserDefaults.standard.set(newValue, forKey: "token") }
+        get {
+            #if canImport(Security)
+            // Prefer Keychain. Fall back to legacy slot only if the migration
+            // hasn't run yet (e.g. unit tests that bypass `init`).
+            if let k = KeychainStore.shared.jwt { return k }
+            #endif
+            return UserDefaults.standard.string(forKey: "token")
+        }
+        set {
+            #if canImport(Security)
+            KeychainStore.shared.jwt = newValue
+            #else
+            UserDefaults.standard.set(newValue, forKey: "token")
+            #endif
+        }
     }
 
     /// When true, every authenticated route short-circuits and returns a local

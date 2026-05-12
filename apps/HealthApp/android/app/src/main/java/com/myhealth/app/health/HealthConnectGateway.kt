@@ -26,6 +26,23 @@ import javax.inject.Singleton
 class HealthConnectGateway @Inject constructor(
     @ApplicationContext private val context: Context,
 ) {
+    companion object {
+        /**
+         * Static permission set exposed for the rememberLauncherForActivityResult
+         * call site in [com.myhealth.app.ui.onboarding.OnboardingScreen].
+         * Keep in sync with the instance-level [readPermissions] below.
+         */
+        val READ_PERMS: Set<String> = setOf(
+            HealthPermission.getReadPermission(StepsRecord::class),
+            HealthPermission.getReadPermission(HeartRateRecord::class),
+            HealthPermission.getReadPermission(RestingHeartRateRecord::class),
+            HealthPermission.getReadPermission(OxygenSaturationRecord::class),
+            HealthPermission.getReadPermission(SleepSessionRecord::class),
+            HealthPermission.getReadPermission(WeightRecord::class),
+            HealthPermission.getReadPermission(Vo2MaxRecord::class),
+        )
+    }
+
     val isAvailable: Boolean
         get() = HealthConnectClient.getSdkStatus(context) == HealthConnectClient.SDK_AVAILABLE
 
@@ -33,15 +50,7 @@ class HealthConnectGateway @Inject constructor(
         if (isAvailable) HealthConnectClient.getOrCreate(context) else null
     }
 
-    val readPermissions: Set<String> = setOf(
-        HealthPermission.getReadPermission(StepsRecord::class),
-        HealthPermission.getReadPermission(HeartRateRecord::class),
-        HealthPermission.getReadPermission(RestingHeartRateRecord::class),
-        HealthPermission.getReadPermission(OxygenSaturationRecord::class),
-        HealthPermission.getReadPermission(SleepSessionRecord::class),
-        HealthPermission.getReadPermission(WeightRecord::class),
-        HealthPermission.getReadPermission(Vo2MaxRecord::class),
-    )
+    val readPermissions: Set<String> = READ_PERMS
 
     suspend fun stepsToday(): Long {
         val c = client ?: return 0

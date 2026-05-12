@@ -182,3 +182,46 @@
 - [ ] Android Settings toggle for Health-conditions opt-in.
 - [ ] Wear OS Readiness tile real value (currently placeholder reading SharedPreferences).
 - [ ] Release signing config for Android phone app (`signingConfigs.release`).
+
+---
+
+## Care+ v1 — Week 1 of the 8-week MVP (added in v1.5.0)
+
+> Cross-references: [`PRIVACY-CARE.md`](./PRIVACY-CARE.md),
+> [`DESIGN.md` §9](./DESIGN.md), [`CHANGELOG.md`](./CHANGELOG.md) v1.5.0.
+
+### Tab restructure
+- [x] **Care · Diet · Train · Workout** four-tab shell on iOS + Android (was 5-tab).
+- [x] Global header per tab — avatar → Profile, bell → News drawer (3 inner tabs).
+- [x] All ~30 spec inventory destinations wired with `ComingSoon` placeholders so navigation never crashes.
+
+### Onboarding
+- [x] Six pages: Welcome → Login/Guest → Birth details → Permissions → Goal → Health issues.
+- [x] Permissions page actually requests Health Connect permissions (Android) — fixes the pre-Care+ gap.
+
+### Care tab (real this week)
+- [x] **Care home** with quick-connect tiles + per-condition Care plan rows.
+- [x] **MyChart connect (SMART-on-FHIR)** — real OAuth2 PKCE against Epic sandbox.
+- [x] **Insurance card OCR** — on-device Vision / ML Kit pipeline.
+- [x] **Doctor finder** — backend NPPES proxy; favorites land in PHI store.
+
+### Diet, Train, Workout (one new feature each)
+- [x] **Vendor browse (Diet)** — backend stub returning 6 sample vendors filtered by `HealthCondition`.
+- [x] **Standup timer (Train)** — local notification, configurable interval, reuses existing AlarmManager / `UNUserNotificationCenter` patterns.
+- [x] **RPE rating sheet (Workout)** — Borg CR-10. First Android `ModalBottomSheet`. Persists to PHI store.
+
+### PHI plumbing
+- [x] iOS `KeychainStore` + `PHIStore` (programmatic Core Data, `NSFileProtectionComplete`).
+- [x] Android `SecureTokenStore` + `MyHealthPhiDatabase` (SQLCipher).
+- [x] Server `audit_log` table + `auditLog` middleware mounted ahead of every Care+ route.
+
+### Backend
+- [x] `routes/fhir.js`, `routes/vendor.js`, `routes/doctors.js`, `routes/insurance.js` (all audit-logged).
+- [x] Schema additions: `audit_log`, `insurance_card`, `provider_favorite`, `rpe_log`, `mychart_issuer`.
+
+### Open questions for week 2
+- [ ] Vendor partner identity (Sun Basket / Trifecta / Factor / TBD).
+- [ ] HIPAA-grade hosting + signed BAA (current backend is dev-only).
+- [ ] App brand: "Care+" wordmark vs continued "MyHealth/FitFusion".
+- [ ] Watch + Wear restructure — deferred from week 1.
+- [ ] iMessage extension — left as-is.

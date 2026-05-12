@@ -1,26 +1,29 @@
 import SwiftUI
 import FitFusionCore
 
-/// Restructured 6-tab + More layout. The 5 primary surfaces always visible,
-/// the rest live behind a More tab so we don't blow past iOS's tab-bar
-/// affordances (anything beyond 5 collapses into "More" automatically).
+/// Care+ root tab bar. Four tabs: Care · Diet · Train · Workout.
+/// Former 5-tab layout (Home/Train/Diary/Sleep/More) is consolidated:
+///   • Home dashboard tiles  →  surfaced inside Care home + Workout home
+///   • Train                 →  unchanged (now the Train tab proper)
+///   • Diary                 →  rebranded as Diet tab home
+///   • Sleep                 →  surfaced inside Workout tab
+///   • More                  →  reachable via header avatar (Profile) and
+///                              header bell (News drawer) on every tab
 struct MainTabView: View {
     var body: some View {
         TabView {
-            HomeDashboardView()
-                .tabItem { Label("Home", systemImage: "house.fill") }
+            CareHomeView()
+                .tabItem { Label("Care", systemImage: CarePlusTab.care.symbol) }
 
-            TrainView()
-                .tabItem { Label("Train", systemImage: "figure.strengthtraining.traditional") }
+            DietHomeView()
+                .tabItem { Label("Diet", systemImage: CarePlusTab.diet.symbol) }
 
-            FoodDiaryView()
-                .tabItem { Label("Diary", systemImage: "book.closed.fill") }
+            TrainHomeView()
+                .tabItem { Label("Train", systemImage: CarePlusTab.train.symbol) }
 
-            SleepRecoveryView()
-                .tabItem { Label("Sleep", systemImage: "moon.stars.fill") }
-
-            MoreView()
-                .tabItem { Label("More", systemImage: "square.grid.2x2.fill") }
+            WorkoutHomeView()
+                .tabItem { Label("Workout", systemImage: CarePlusTab.workout.symbol) }
         }
+        .tint(CarePlusPalette.careBlue)
     }
 }

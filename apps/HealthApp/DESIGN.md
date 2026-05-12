@@ -309,3 +309,77 @@ HealthApp/
 - HealthKit / Health Connect respect platform-level user permission gates.
 - Backend uses bcrypt-hashed passwords + JWT; tokens never leave AsyncStorage / UserDefaults / DataStore on the client.
 - Erase-all-data action wipes every entity from the local DB and resets onboarding.
+
+---
+
+## 9. Care+ tab restructure (v1.5.0 — Week 1 of 8)
+
+> **Status:** Week 1 of the Care+ 8-week MVP build. Documented end-to-end
+> in [`PRIVACY-CARE.md`](./PRIVACY-CARE.md) and the planning file at
+> `.llms/plans/careplus_week1_native.plan.md`. Numbered to fit alongside
+> sections 1–8 above.
+
+### 9.1 Why
+
+The original 5-tab consumer fitness app (Home / Train / Diary / Sleep /
+More) has been restructured into the **four Care+ tabs** so the product
+can carry both consumer-fitness and clinical-adjacent surfaces without
+one layer drowning out the other:
+
+```
+   ┌────────┬────────┬────────┬─────────┐
+   │  Care  │  Diet  │  Train │ Workout │
+   └────────┴────────┴────────┴─────────┘
+       │       │       │        │
+       │       │       │        └── existing run / strength logger / sleep
+       │       │       └── existing programs + the new standup timer
+       │       └── existing food diary + the new vendor browse
+       └── new MyChart connect, insurance OCR, doctor finder, care plan
+```
+
+Former More-tab destinations (Vitals, Anatomy, Articles, Profile,
+Settings, Medicines, Activities) are now reachable via the **global
+header avatar** (Profile sheet) and **bell** (News drawer with three
+inner tabs: Urgent · For You · Wellness). No content was removed —
+only re-homed.
+
+### 9.2 Compliance / PHI plumbing
+
+The new clinical surfaces (MyChart, insurance card, doctor favorites,
+RPE log) carry HIPAA-grade PHI. To keep section 8 honest, week 1
+establishes:
+
+- **Tokens** in iOS Keychain (`shared/.../Security/KeychainStore.swift`)
+  / Android EncryptedSharedPreferences
+  (`data/secure/SecureTokenStore.kt`). One-time JWT migration evicts the
+  legacy `UserDefaults["token"]` slot at first launch.
+- **PHI rows** in a separate persistent store: iOS `PHIStore` Core Data
+  stack with `NSFileProtectionComplete`; Android `MyHealthPhiDatabase`
+  Room database backed by SQLCipher
+  (`data/secure/PhiDatabase.kt::PhiDatabaseProvider`).
+- **Audit log** for every backend PHI route — `server/middleware/auditLog.js`
+  writes one row per request to `audit_log`. Mounted ahead of the new
+  `/api/fhir`, `/api/vendor`, `/api/doctors`, `/api/insurance` routers.
+- **Full policy** in [`PRIVACY-CARE.md`](./PRIVACY-CARE.md), including
+  the BAA-status table for Epic / Ribbon Health / hosting / vendor
+  partners (some still TBD — the doc tracks the gating).
+
+### 9.3 SMART-on-FHIR (MyChart)
+
+Real OAuth2 PKCE flow against Epic's public sandbox:
+- Shared Swift module: `shared/.../FHIR/{FHIROAuthClient,FHIRClient,EpicSandboxConfig}.swift`.
+- iOS `Services/FHIROAuthSession.swift` — `ASWebAuthenticationSession`.
+- Android `fhir/{FhirOAuthClient,FhirRepository,EpicSandboxConfig}.kt` —
+  AppAuth + Custom Tabs + Ktor.
+- Backend `routes/fhir.js` — audit-logged FHIR proxy.
+
+Production credentials wait on App Orchard approval; the URL/scope set
+already documents the production swap path (single-file change).
+
+### 9.4 Design tokens
+
+`shared/.../DesignSystem/Theme.swift` exposes `CarePlusPalette`
+(per-tab accents + status colors), `CarePlusType`, `CarePlusSpacing`,
+`CarePlusRadius`. Mirrored on Android in `ui/theme/{Color,Typography,Shape}.kt`.
+SF Symbols ↔ Material Icons mapping documented inline so designs sized
+in Figma render at the same pixel size on both platforms.

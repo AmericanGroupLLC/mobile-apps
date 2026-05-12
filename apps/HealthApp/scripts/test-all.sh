@@ -27,6 +27,8 @@ green "▶ Backend (Jest + smoke)"
     fi
   fi
   npm ci --no-audit --no-fund
+  # Care+ v1: runs both the original api.test.js and the new careplus.test.js
+  # (vendor / insurance / fhir-401 / doctors-validation / audit-log smoke).
   npm test
   node server.js & SERVER_PID=$!
   sleep 3

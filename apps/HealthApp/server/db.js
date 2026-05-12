@@ -117,6 +117,78 @@ db.exec(`
   );
   CREATE INDEX IF NOT EXISTS idx_leaderboard_challenge
     ON leaderboard_entries(challenge_id, score DESC);
+
+  -- ─── Care+ v1: PHI tables (week 1) ──────────────────────────────────
+  --
+  -- Every read/write of a PHI table MUST go through routes that mount
+  -- the auditLog middleware (server/middleware/auditLog.js). See
+  -- PRIVACY-CARE.md for the full policy.
+
+  CREATE TABLE IF NOT EXISTS audit_log (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id     INTEGER,
+    method      TEXT NOT NULL,
+    path        TEXT NOT NULL,
+    status      INTEGER,
+    ip          TEXT,
+    user_agent  TEXT,
+    created_at  TEXT DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_audit_user_time
+    ON audit_log(user_id, created_at DESC);
+
+  CREATE TABLE IF NOT EXISTS insurance_card (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id     INTEGER NOT NULL,
+    payer       TEXT,
+    member_id   TEXT,
+    group_no    TEXT,
+    bin         TEXT,
+    pcn         TEXT,
+    rx_grp      TEXT,
+    captured_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS provider_favorite (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id      INTEGER NOT NULL,
+    npi          TEXT NOT NULL,
+    name         TEXT NOT NULL,
+    specialty    TEXT,
+    phone        TEXT,
+    address_line TEXT,
+    zip          TEXT,
+    favorited_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE(user_id, npi)
+  );
+
+  CREATE TABLE IF NOT EXISTS rpe_log (
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id           INTEGER NOT NULL,
+    workout_session_id TEXT,
+    rating            INTEGER NOT NULL CHECK(rating BETWEEN 1 AND 10),
+    notes             TEXT,
+    logged_at         TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+  CREATE INDEX IF NOT EXISTS idx_rpe_user_time
+    ON rpe_log(user_id, logged_at DESC);
+
+  CREATE TABLE IF NOT EXISTS mychart_issuer (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id         INTEGER NOT NULL,
+    issuer          TEXT NOT NULL,
+    display_name    TEXT NOT NULL,
+    -- Care+ design rule (PRIVACY-CARE.md §2): patient_id is a clinical
+    -- identifier. We deliberately do NOT store it server-side. The app
+    -- caches it in the on-device PHI store (iOS PHIStore, Android PHI
+    -- Room db). The server only knows that "user X has connected issuer Y".
+    connected_at    TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE(user_id, issuer)
+  );
 `);
 
 module.exports = db;

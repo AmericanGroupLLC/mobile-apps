@@ -94,5 +94,29 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
             </intent-filter>
         </receiver>
+
+        <!-- ─── Care+ v1 (Week 1) ──────────────────────────────────── -->
+
+        <!-- Standup-timer alarm receiver. Reuses MedicineReminderScheduler's
+             AlarmManager pattern; isolated to its own class so cancel /
+             reschedule logic doesn't tangle. -->
+        <receiver
+            android:name=".ui.train.StandupAlarmReceiver"
+            android:exported="false"/>
+
+        <!-- AppAuth's RedirectUriReceiverActivity captures the SMART-on-FHIR
+             OAuth callback (myhealth://oauth/fhir/callback) and routes it
+             back to the launching MyChartConnectScreen. -->
+        <activity
+            android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            android:exported="true"
+            tools:node="replace">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="myhealth" android:host="oauth"/>
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

@@ -81,5 +81,19 @@
     </array>
     <key>NSSupportsLiveActivities</key>
     <true/>
+    <!-- ─── Care+ v1 (Week 1) ────────────────────────────────────────── -->
+    <!-- SMART-on-FHIR OAuth callback. Used by ASWebAuthenticationSession
+         in `Services/FHIROAuthSession.swift`. -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>com.fitfusion.ios.oauth</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>myhealth</string>
+            </array>
+        </dict>
+    </array>
 </dict>
 </plist>

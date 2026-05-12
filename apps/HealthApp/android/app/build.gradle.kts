@@ -166,4 +166,16 @@ dependencies {
     // PostHog product analytics (free tier — 1M events/month, OSS).
     // Wired through AnalyticsService — opt-in via Settings.
     implementation("com.posthog:posthog-android:3.13.0")
+
+    // ─── Care+ v1 deps (Week 1) ──────────────────────────────────────────
+    //
+    // EncryptedSharedPreferences for OAuth tokens / PHI secrets.
+    // SQLCipher for the PHI Room database.
+    // AppAuth for SMART-on-FHIR PKCE OAuth via Custom Tabs.
+    // Browser/Custom Tabs surface Epic's auth screen in-app.
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    implementation("net.zetetic:android-database-sqlcipher:4.5.4")
+    implementation("androidx.sqlite:sqlite:2.4.0")
+    implementation("net.openid:appauth:0.11.1")
+    implementation("androidx.browser:browser:1.8.0")
 }

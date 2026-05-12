@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const Sentry = require('./middleware/sentry');
 const Analytics = require('./middleware/analytics');
+const auditLog = require('./middleware/auditLog');
 
 const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
@@ -11,6 +12,11 @@ const nutritionRoutes = require('./routes/nutrition');
 const insightsRoutes = require('./routes/insights');
 const socialRoutes = require('./routes/social');
 const medicineRoutes = require('./routes/medicine');
+// ─── Care+ v1 (Week 1) ─────────────────────────────────────────────────
+const fhirRoutes = require('./routes/fhir');
+const vendorRoutes = require('./routes/vendor');
+const doctorsRoutes = require('./routes/doctors');
+const insuranceRoutes = require('./routes/insurance');
 
 const app = express();
 
@@ -41,6 +47,15 @@ app.use('/api/nutrition', nutritionRoutes);
 app.use('/api/insights', insightsRoutes);
 app.use('/api/social', socialRoutes);
 app.use('/api/medicine', medicineRoutes);
+
+// ─── Care+ v1 routes (audit-logged) ────────────────────────────────────
+//
+// Every Care+ route that touches PHI is wrapped in `auditLog` so the
+// `audit_log` table records who-did-what-when. See PRIVACY-CARE.md.
+app.use('/api/fhir', auditLog, fhirRoutes);
+app.use('/api/vendor', auditLog, vendorRoutes);
+app.use('/api/doctors', auditLog, doctorsRoutes);
+app.use('/api/insurance', auditLog, insuranceRoutes);
 
 // Sentry error handler MUST come before any other error middleware.
 Sentry.errorHandler(app);

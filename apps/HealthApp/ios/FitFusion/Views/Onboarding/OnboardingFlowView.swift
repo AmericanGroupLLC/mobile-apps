@@ -1,106 +1,254 @@
 import SwiftUI
 import FitFusionCore
+import HealthKit
+import UserNotifications
+import CoreLocation
 
-/// Multi-page first-launch onboarding. Welcome \u{2192} Profile setup \u{2192} Goal \u{2192} Done.
-/// Persists `didOnboard` in UserDefaults so this view only shows once.
+/// Care+ 6-page onboarding flow.
+/// Welcome → Login → Birth details → Permissions → Goal → Health issues.
+/// Final page sets `didOnboard` and starts the trial timer.
 struct OnboardingFlowView: View {
     @AppStorage(AuthStore.didOnboardKey) private var didOnboard: Bool = false
+    @AppStorage("careplus.trialStartISO") private var trialStartISO: String = ""
     @State private var page = 0
 
+    // Page-1 (login) — actual auth handled via parent's AuthStore.
+    @EnvironmentObject var auth: AuthStore
+    @State private var email = ""
+    @State private var password = ""
+
+    // Page-2 (birth)
     @State private var name = ""
     @State private var birthDate = Calendar.current.date(byAdding: .year, value: -30, to: Date()) ?? Date()
-    @State private var sex: ProfileSex = .female
-    @State private var heightCm: Double = 170
-    @State private var weightKg: Double = 65
-    @State private var unitsImperial = false
+    @State private var birthTimeApprox = "Morning"
+    @State private var birthLocation = ""
+
+    // Page-3 (permissions) state
+    @State private var hkGranted = false
+    @State private var notifGranted = false
+    @State private var locationGranted = false
+    @State private var fhirConnected = false
+
+    // Page-4 (goal)
     @State private var goal: HealthGoal = .maintain
+    // Page-5 (health issues)
+    @StateObject private var hcStore = HealthConditionsStore.shared
 
     var body: some View {
         ZStack {
-            LinearGradient(colors: [.orange.opacity(0.18),
-                                    .pink.opacity(0.16),
-                                    .indigo.opacity(0.18)],
+            LinearGradient(colors: [CarePlusPalette.careBlue.opacity(0.18),
+                                    CarePlusPalette.dietCoral.opacity(0.16),
+                                    CarePlusPalette.workoutPink.opacity(0.18)],
                            startPoint: .topLeading, endPoint: .bottomTrailing)
                 .ignoresSafeArea()
 
             TabView(selection: $page) {
                 welcome.tag(0)
-                profileSetup.tag(1)
-                goalSetup.tag(2)
-                done.tag(3)
+                loginOrGuest.tag(1)
+                birthDetails.tag(2)
+                permissions.tag(3)
+                goalSetup.tag(4)
+                healthIssues.tag(5)
             }
             .tabViewStyle(.page(indexDisplayMode: .always))
             .indexViewStyle(.page(backgroundDisplayMode: .always))
         }
     }
 
-    // MARK: - Pages
+    // MARK: - Page 0 — Welcome
 
     private var welcome: some View {
         VStack(spacing: 16) {
             Spacer()
             ZStack {
-                Circle().fill(LinearGradient(colors: [.orange, .pink, .purple],
+                Circle().fill(LinearGradient(colors: [CarePlusPalette.careBlue,
+                                                      CarePlusPalette.dietCoral,
+                                                      CarePlusPalette.workoutPink],
                                              startPoint: .topLeading, endPoint: .bottomTrailing))
                     .frame(width: 120, height: 120)
-                Image(systemName: "heart.fill")
+                Image(systemName: "heart.text.square.fill")
                     .font(.system(size: 56, weight: .bold))
                     .foregroundStyle(.white)
             }
             Text("Welcome to MyHealth").font(.largeTitle).bold()
-            Text("Your personal fitness OS \u{2014} fitness, food, sleep, mood, vitals, and biological age. All on your device.")
+            Text("Care · Diet · Train · Workout — your complete health companion. All on your device, plus optional clinical integration.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal)
             Spacer()
-            primaryButton(title: "Get started") { withAnimation { page = 1 } }
+            primary("Get started") { withAnimation { page = 1 } }
         }
         .padding()
     }
 
-    private var profileSetup: some View {
+    // MARK: - Page 1 — Login or guest
+
+    private var loginOrGuest: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
-                Text("Tell us about you").font(.title2).bold()
-                Text("This personalises readiness, calories, and biological age. Stays on this device.")
+                Text("Sign in or continue").font(.title2).bold()
+                Text("Sign in to sync across devices, or continue as a guest. You can sync later.")
                     .font(.footnote).foregroundStyle(.secondary)
 
-                groupedField("Name") {
-                    TextField("Your name", text: $name).textContentType(.name)
+                grouped("Email") {
+                    TextField("you@example.com", text: $email)
+                        .textContentType(.emailAddress).autocapitalization(.none)
+                }
+                grouped("Password") {
+                    SecureField("••••••••", text: $password)
                 }
 
-                groupedField("Date of birth") {
+                Button {
+                    Task {
+                        await auth.login(email: email, password: password)
+                        if auth.isAuthenticated { withAnimation { page = 2 } }
+                    }
+                } label: {
+                    Text(auth.loading ? "Signing in…" : "Sign in").bold()
+                        .frame(maxWidth: .infinity).padding()
+                        .background(CarePlusPalette.careBlue,
+                                    in: RoundedRectangle(cornerRadius: 14))
+                        .foregroundStyle(.white)
+                }.disabled(email.isEmpty || password.count < 6 || auth.loading)
+
+                Button {
+                    auth.continueAsGuest()
+                    withAnimation { page = 2 }
+                } label: {
+                    Text("Continue as guest").bold()
+                        .frame(maxWidth: .infinity).padding()
+                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))
+                }
+                if let err = auth.errorMessage {
+                    Text(err).font(.caption).foregroundStyle(CarePlusPalette.danger)
+                }
+            }
+            .padding()
+        }
+    }
+
+    // MARK: - Page 2 — Birth details
+
+    private var birthDetails: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Your birth details").font(.title2).bold()
+                Text("Used for biological age, fertility window estimates, and (if you opt in) astro insights. Stored on this device.")
+                    .font(.footnote).foregroundStyle(.secondary)
+
+                grouped("Name") {
+                    TextField("Your name", text: $name).textContentType(.name)
+                }
+                grouped("Date of birth") {
                     DatePicker("DOB", selection: $birthDate, displayedComponents: .date)
                         .labelsHidden()
                 }
-
-                groupedField("Sex (for HealthKit)") {
-                    Picker("", selection: $sex) {
-                        ForEach(ProfileSex.allCases) { Text($0.label).tag($0) }
+                grouped("Approximate time of birth") {
+                    Picker("", selection: $birthTimeApprox) {
+                        ForEach(["Morning","Afternoon","Evening","Night","Unknown"], id: \.self) {
+                            Text($0).tag($0)
+                        }
                     }.pickerStyle(.segmented)
                 }
-
-                Toggle("Use imperial units (ft/lb)", isOn: $unitsImperial)
-                    .padding(.vertical, 4)
-
-                groupedField(unitsImperial ? "Height (cm-equivalent)" : "Height (cm)") {
-                    Stepper(value: $heightCm, in: 120...220, step: 1) {
-                        Text("\(Int(heightCm)) cm")
-                    }
-                }
-                groupedField(unitsImperial ? "Weight (kg-equivalent)" : "Weight (kg)") {
-                    Stepper(value: $weightKg, in: 30...200, step: 0.5) {
-                        Text(String(format: "%.1f kg", weightKg))
-                    }
+                grouped("City of birth (optional)") {
+                    TextField("e.g. Sunnyvale, CA", text: $birthLocation)
                 }
 
-                primaryButton(title: "Continue") { withAnimation { page = 2 } }
-                    .disabled(name.isEmpty)
+                primary("Continue") {
+                    UserDefaults.standard.set(name, forKey: "profile.name")
+                    UserDefaults.standard.set(birthLocation, forKey: "profile.birthLocation")
+                    withAnimation { page = 3 }
+                }
+                .disabled(name.isEmpty)
+                .padding(.top, 12)
+            }
+            .padding()
+        }
+    }
+
+    // MARK: - Page 3 — Permissions
+
+    private var permissions: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Permissions").font(.title2).bold()
+                Text("Each is optional. Care+ works without any of them, but features improve with each grant.")
+                    .font(.footnote).foregroundStyle(.secondary)
+
+                permissionRow(
+                    title: "Apple Health",
+                    subtitle: "Steps, HR, sleep, weight. Read & write.",
+                    symbol: "heart.text.square.fill",
+                    granted: hkGranted
+                ) {
+                    Task {
+                        await iOSHealthKitManager.shared.requestAuthorization()
+                        hkGranted = HKHealthStore.isHealthDataAvailable()
+                    }
+                }
+                permissionRow(
+                    title: "MyChart (SMART-on-FHIR)",
+                    subtitle: "Read your conditions, meds, labs.",
+                    symbol: "cross.case.fill",
+                    granted: fhirConnected
+                ) { /* deferred — full connect lives on Care home */ fhirConnected = false }
+
+                permissionRow(
+                    title: "Notifications",
+                    subtitle: "Reminders for meds + standup timer.",
+                    symbol: "bell.fill",
+                    granted: notifGranted
+                ) {
+                    Task {
+                        let center = UNUserNotificationCenter.current()
+                        if let granted = try? await center.requestAuthorization(options: [.alert, .sound, .badge]) {
+                            notifGranted = granted
+                        }
+                    }
+                }
+
+                permissionRow(
+                    title: "Location",
+                    subtitle: "Doctor finder + run tracker.",
+                    symbol: "location.fill",
+                    granted: locationGranted
+                ) {
+                    LocationPermissionHelper.shared.request { granted in
+                        locationGranted = granted
+                    }
+                }
+
+                primary("Continue") { withAnimation { page = 4 } }
                     .padding(.top, 12)
             }
             .padding()
         }
     }
+
+    private func permissionRow(title: String, subtitle: String, symbol: String,
+                               granted: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Image(systemName: symbol)
+                    .font(.title3.weight(.semibold))
+                    .frame(width: 36, height: 36)
+                    .background(CarePlusPalette.careBlue.opacity(0.18), in: Circle())
+                    .foregroundStyle(CarePlusPalette.careBlue)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title).font(.headline)
+                    Text(subtitle).font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Image(systemName: granted ? "checkmark.circle.fill" : "chevron.right")
+                    .foregroundStyle(granted ? CarePlusPalette.success : .tertiary)
+            }
+            .padding()
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Page 4 — Goal
 
     private var goalSetup: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -108,71 +256,64 @@ struct OnboardingFlowView: View {
             Text("What's your goal?").font(.title2).bold().padding(.horizontal)
             VStack(spacing: 8) {
                 ForEach(HealthGoal.allCases) { g in
-                    Button {
-                        goal = g
-                    } label: {
-                        HStack(spacing: 12) {
-                            Image(systemName: g.icon)
-                                .font(.title3.weight(.bold))
-                                .frame(width: 36, height: 36)
-                                .background(.indigo.opacity(0.18), in: Circle())
-                                .foregroundStyle(.indigo)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(g.label).font(.headline)
-                                Text(g.subtitle).font(.caption2).foregroundStyle(.secondary)
-                            }
+                    Button { goal = g } label: {
+                        HStack {
+                            Image(systemName: g.icon).foregroundStyle(CarePlusPalette.careBlue)
+                            Text(g.label).font(.headline)
                             Spacer()
                             if goal == g {
-                                Image(systemName: "checkmark.circle.fill").foregroundStyle(.indigo)
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundStyle(CarePlusPalette.careBlue)
                             }
                         }
                         .padding()
                         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-                    }
-                    .buttonStyle(.plain)
+                    }.buttonStyle(.plain)
                 }
             }
             .padding(.horizontal)
             Spacer()
-            primaryButton(title: "Almost done") { withAnimation { page = 3 } }
+            primary("Continue") { withAnimation { page = 5 } }
                 .padding(.horizontal)
         }
     }
 
-    private var done: some View {
-        VStack(spacing: 18) {
-            Spacer()
-            Image(systemName: "checkmark.seal.fill")
-                .font(.system(size: 96, weight: .bold))
-                .foregroundStyle(LinearGradient(colors: [.green, .indigo],
-                                                startPoint: .top, endPoint: .bottom))
-            Text("You're all set, \(name).").font(.title2).bold()
-            Text("Open Vitals to scan your data. Add a medicine reminder. Log a meal. Everything stays private on this device.")
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal)
-            Spacer()
-            primaryButton(title: "Enter MyHealth") {
-                CloudStore.shared.saveProfile(
-                    name: name,
-                    birthDateISO: ISO8601DateFormatter().string(from: birthDate),
-                    sex: sex.rawValue,
-                    heightCm: heightCm,
-                    weightKg: weightKg,
-                    goal: goal.rawValue,
-                    unitsImperial: unitsImperial
-                )
-                didOnboard = true
+    // MARK: - Page 5 — Health issues
+
+    private var healthIssues: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Any conditions to declare?").font(.title2).bold()
+                Text("Used to filter unsafe exercises and tune food suggestions. Stored only on this device.")
+                    .font(.footnote).foregroundStyle(.secondary)
+
+                ForEach(HealthCondition.allCases.filter { $0 != .none }) { c in
+                    Toggle(isOn: Binding(
+                        get: { hcStore.conditions.contains(c) },
+                        set: { _ in hcStore.toggle(c) }
+                    )) {
+                        Label(c.label, systemImage: c.symbol)
+                    }
+                    .padding(.vertical, 4)
+                }
+
+                primary("Finish") {
+                    if trialStartISO.isEmpty {
+                        trialStartISO = ISO8601DateFormatter().string(from: Date())
+                    }
+                    didOnboard = true
+                }
+                .padding(.top, 12)
             }
+            .padding()
         }
-        .padding()
     }
 
     // MARK: - Helpers
 
     @ViewBuilder
-    private func groupedField<Content: View>(_ label: String,
-                                             @ViewBuilder content: () -> Content) -> some View {
+    private func grouped<Content: View>(_ label: String,
+                                        @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(label).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
             content()
@@ -181,19 +322,18 @@ struct OnboardingFlowView: View {
         }
     }
 
-    private func primaryButton(title: String, action: @escaping () -> Void) -> some View {
+    private func primary(_ title: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title).bold()
                 .frame(maxWidth: .infinity).padding()
-                .background(LinearGradient(colors: [.orange, .pink],
-                                           startPoint: .leading, endPoint: .trailing),
+                .background(CarePlusPalette.careBlue,
                             in: RoundedRectangle(cornerRadius: 14))
                 .foregroundStyle(.white)
         }
     }
 }
 
-// MARK: - Onboarding domain enums
+// MARK: - HealthGoal (kept here for backwards compat with rest of app)
 
 enum ProfileSex: String, CaseIterable, Identifiable {
     case female, male, other
@@ -235,5 +375,30 @@ enum HealthGoal: String, CaseIterable, Identifiable {
         case .endurance: return "figure.run"
         case .general: return "leaf.fill"
         }
+    }
+}
+
+// MARK: - Location permission helper
+
+final class LocationPermissionHelper: NSObject, CLLocationManagerDelegate {
+    static let shared = LocationPermissionHelper()
+    private let manager = CLLocationManager()
+    private var callback: ((Bool) -> Void)?
+
+    override init() {
+        super.init()
+        manager.delegate = self
+    }
+
+    func request(callback: @escaping (Bool) -> Void) {
+        self.callback = callback
+        manager.requestWhenInUseAuthorization()
+    }
+
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        let granted = [.authorizedAlways, .authorizedWhenInUse]
+            .contains(manager.authorizationStatus)
+        callback?(granted)
+        callback = nil
     }
 }
